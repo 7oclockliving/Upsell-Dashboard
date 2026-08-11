@@ -107,6 +107,10 @@
   <div class="card"><div id="products"></div></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
 
+  <h2>Bestellungen mit Upsell <small>Bestellnummern im gewählten Zeitraum</small></h2>
+  <div class="card" id="upsellOrders"></div>
+  <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
+
   <h2>Szenarien <small>Take-Rate „echt" = Käufe ÷ Anzeigen (Tracking ab 11.08.2026)</small></h2>
   <div class="card" id="scenarioTable"></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
@@ -208,6 +212,7 @@ function currentRange(){
 
 function merge(sel){
   const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,
+    upsellOrdersList:[],
     abandoned:{total:0,shown:0,activated:0,revenue:0,ab:{test:0,control:0,none:0}},
     products:{},scenarios:{},shown:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
   for(const d of sel){
@@ -215,6 +220,7 @@ function merge(sel){
     agg.upsellOrders+=d.upsellOrders;agg.upsellUnits+=d.upsellUnits;agg.upsellRevenue+=d.upsellRevenue;
     agg.upsellOrdersRevenue+=d.upsellOrdersRevenue||0;
     agg.activatedOrders+=d.activatedOrders||0;
+    for(const o of d.upsellOrdersList||[])agg.upsellOrdersList.push({...o,date:d.date});
     const ab=d.abandoned||{};
     agg.abandoned.total+=ab.total||0;agg.abandoned.shown+=ab.shown||0;
     agg.abandoned.activated+=ab.activated||0;agg.abandoned.revenue+=ab.revenue||0;
@@ -297,6 +303,18 @@ function render(){
     box.innerHTML='<table><thead><tr><th>Produkt</th><th class="num">Verkäufe</th><th class="num">Umsatz</th><th class="num">Gewährter Rabatt</th><th style="width:22%">Anteil</th><th>Szenario</th></tr></thead><tbody>'+
       lastProds.map(x=>'<tr><td><strong>'+esc(x.title)+'</strong></td><td class="num">'+fmtN(x.units)+'</td><td class="num"><strong>'+fmtEur(x.revenue,c)+'</strong></td><td class="num">'+fmtEur(x.discountGiven,c)+'</td><td><div class="bar-bg"><div class="bar" style="width:'+Math.max(3,Math.round(x.revenue/max*100))+'%"></div></div></td><td>'+Object.keys(x.scenarios).map(s=>'<span class="pill">'+esc(s)+'</span>').join('')+'</td></tr>').join('')+
       '</tbody></table>';
+  }
+
+  // Bestellungen mit Upsell (11.08.2026): Bestellnummern-Liste, neueste zuerst
+  const uo=document.getElementById('upsellOrders');
+  const list=[...a.upsellOrdersList].sort((x,y)=>y.date.localeCompare(x.date)||y.name.localeCompare(x.name));
+  if(!list.length){uo.innerHTML='<div class="empty">Keine Upsell-Bestellungen im gewählten Zeitraum.</div>';}
+  else{
+    const MAXR=150;
+    uo.innerHTML='<table><thead><tr><th>Bestellung</th><th>Datum</th><th class="num">Bestellwert</th><th class="num">davon Upsell</th><th>Szenario</th></tr></thead><tbody>'+
+      list.slice(0,MAXR).map(o=>'<tr><td><strong>'+esc(o.name)+'</strong></td><td>'+fmtD(o.date)+'</td><td class="num">'+fmtEur(o.total,c)+'</td><td class="num"><strong>'+fmtEur(o.upsellRevenue,c)+'</strong></td><td>'+(o.scenarios||[]).map(s=>'<span class="pill">'+esc(s)+'</span>').join('')+'</td></tr>').join('')+
+      '</tbody></table>'+
+      (list.length>MAXR?'<div class="empty" style="padding:10px">… und '+fmtN(list.length-MAXR)+' weitere (Zeitraum verkleinern)</div>':'');
   }
 
   // Szenario-Tabelle inkl. beider Take-Rates
