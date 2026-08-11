@@ -12,13 +12,21 @@
  * A/B-Zuordnung: Order-Attribut "_sevn_ab_upsell" ("test" | "control").
  *
  * Env-Variablen (GitHub Secrets):
- *   SHOPIFY_SHOP  z.B. "7oclock-de.myshopify.com"
- *   SHOPIFY_TOKEN Admin-API-Token (shpat_…) mit read_orders
+ *   SHOPIFY_SHOP        z.B. "7oclock-de.myshopify.com"
+ *   SEVN_CLIENT_ID      Client-ID der App "sevn-checkout-upsell" (Dev Dashboard)
+ *   SEVN_CLIENT_SECRET  Client-Secret derselben App
+ *   (alternativ SHOPIFY_TOKEN = fertiger Admin-Token shpat_… mit read_orders)
+ *
+ * Auth: Client-Credentials-Grant der eigenen App (Tokens sind kurzlebig und
+ * werden pro Lauf frisch geholt) – die App braucht dafür den Scope
+ * read_orders (ab Version 17, Reinstall im Dev Dashboard nötig).
  * ============================================================================
  */
 
 const SHOP = process.env.SHOPIFY_SHOP || '7oclock-de.myshopify.com';
-const TOKEN = process.env.SHOPIFY_TOKEN;
+const CLIENT_ID = process.env.SEVN_CLIENT_ID;
+const CLIENT_SECRET = process.env.SEVN_CLIENT_SECRET;
+let TOKEN = process.env.SHOPIFY_TOKEN || null;
 const API_VERSION = '2026-07';
 /** Go-live des Checkout-Upsells (Profil "7 O'CLOCK + SEVN Upsell App") */
 const SINCE = '2026-08-10';
@@ -26,9 +34,31 @@ const SINCE = '2026-08-10';
 const UPSELL_ATTR = '_sevn_upsell';
 const AB_ATTR = '_sevn_ab_upsell';
 
-if (!TOKEN) {
-  console.error('SHOPIFY_TOKEN fehlt (GitHub Secret setzen).');
+if (!TOKEN && (!CLIENT_ID || !CLIENT_SECRET)) {
+  console.error(
+    'Secrets fehlen: SEVN_CLIENT_ID + SEVN_CLIENT_SECRET (oder SHOPIFY_TOKEN).',
+  );
   process.exit(1);
+}
+
+/** Kurzlebigen Admin-Token via Client-Credentials-Grant holen (einmal pro Lauf) */
+async function getToken() {
+  if (TOKEN) return TOKEN;
+  const res = await fetch(`https://${SHOP}/admin/oauth/access_token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+      grant_type: 'client_credentials',
+    }),
+  });
+  const j = await res.json();
+  if (!j.access_token) {
+    throw new Error('Token-Austausch fehlgeschlagen: HTTP ' + res.status);
+  }
+  TOKEN = j.access_token;
+  return TOKEN;
 }
 
 async function gql(query, variables) {
@@ -36,7 +66,7 @@ async function gql(query, variables) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Shopify-Access-Token': TOKEN,
+      'X-Shopify-Access-Token': await getToken(),
     },
     body: JSON.stringify({ query, variables }),
   });
