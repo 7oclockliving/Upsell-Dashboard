@@ -6,6 +6,10 @@
  * schreibt docs/data.json, das von docs/index.html (GitHub Pages) geladen
  * wird.
  *
+ * Struktur (seit 11.08.2026, Zeitraum-Tabs): Aggregation PRO TAG – die
+ * Seite rechnet daraus beliebige Zeiträume (Letzter Tag / 7 / 30 / 90 /
+ * 365 Tage / Custom) clientseitig zusammen.
+ *
  * Datenquelle: Shopify Admin GraphQL API (2026-07).
  * Erkennung der Upsell-Käufe: Line-Item-Attribut "_sevn_upsell"
  *   (Wert = Szenario-/Mapping-Handle, z.B. "geschirr-matt").
@@ -13,14 +17,12 @@
  *
  * Env-Variablen (GitHub Secrets):
  *   SHOPIFY_SHOP        z.B. "7oclock-de.myshopify.com"
- *   SEVN_CLIENT_ID      Client-ID der App "sevn-checkout-upsell" (Dev Dashboard)
+ *   SEVN_CLIENT_ID      Client-ID der App "sevn-checkout-upsell"
  *   SEVN_CLIENT_SECRET  Client-Secret derselben App
  *   (alternativ SHOPIFY_TOKEN = fertiger Admin-Token shpat_… mit read_orders)
  *
- * Auth: Client-Credentials-Grant der eigenen App (Tokens sind kurzlebig und
- * werden pro Lauf frisch geholt) – die App braucht dafür den Scope
- * read_orders (ab Version 17). Kein product-Feld in der Query – das würde
- * zusätzlich read_products erfordern (Fehler beim ersten Lauf, 11.08.2026).
+ * Auth: Client-Credentials-Grant. KEIN product-Feld in der Query – das
+ * würde zusätzlich read_products erfordern.
  * ============================================================================
  */
 
@@ -42,7 +44,6 @@ if (!TOKEN && (!CLIENT_ID || !CLIENT_SECRET)) {
   process.exit(1);
 }
 
-/** Kurzlebigen Admin-Token via Client-Credentials-Grant holen (einmal pro Lauf) */
 async function getToken() {
   if (TOKEN) return TOKEN;
   const res = await fetch(`https://${SHOP}/admin/oauth/access_token`, {
@@ -82,7 +83,6 @@ const ORDERS_QUERY = `
       pageInfo { hasNextPage endCursor }
       nodes {
         id
-        name
         createdAt
         totalPriceSet { shopMoney { amount currencyCode } }
         customAttributes { key value }
@@ -109,12 +109,13 @@ function scenarioGroup(marker) {
 }
 
 const num = (v) => Math.round(parseFloat(v || '0') * 100) / 100;
+const round2 = (x) => Math.round(x * 100) / 100;
 
 async function main() {
   const orders = [];
   let cursor = null;
   const q = `created_at:>=${SINCE}`;
-  for (let page = 0; page < 60; page++) {
+  for (let page = 0; page < 100; page++) {
     const data = await gql(ORDERS_QUERY, { cursor, q });
     const conn = data.orders;
     orders.push(...conn.nodes);
@@ -122,32 +123,40 @@ async function main() {
     cursor = conn.pageInfo.endCursor;
   }
 
-  const products = {}; // key: title
-  const scenarios = {}; // key: group
-  const daily = {}; // key: yyyy-mm-dd
-  const ab = {
-    test: { orders: 0, upsellOrders: 0, revenue: 0 },
-    control: { orders: 0, upsellOrders: 0, revenue: 0 },
-    none: { orders: 0, upsellOrders: 0, revenue: 0 },
-  };
-  let upsellRevenue = 0;
-  let upsellUnits = 0;
-  let upsellOrderCount = 0;
+  const days = {}; // key: yyyy-mm-dd (Datum aus createdAt, UTC)
   let currency = 'EUR';
 
+  const emptyDay = () => ({
+    orders: 0,
+    totalRevenue: 0,
+    upsellOrders: 0,
+    upsellUnits: 0,
+    upsellRevenue: 0,
+    products: {}, // title -> {units, orders, revenue, discountGiven, scenarios{}}
+    scenarios: {}, // name -> {upsellOrders, units, revenue}
+    ab: {
+      test: { orders: 0, upsellOrders: 0, revenue: 0 },
+      control: { orders: 0, upsellOrders: 0, revenue: 0 },
+      none: { orders: 0, upsellOrders: 0, revenue: 0 },
+    },
+  });
+
   for (const o of orders) {
-    const day = o.createdAt.slice(0, 10);
-    daily[day] ??= { orders: 0, upsellOrders: 0, upsellRevenue: 0 };
-    daily[day].orders++;
+    const date = o.createdAt.slice(0, 10);
+    days[date] ??= emptyDay();
+    const d = days[date];
+    d.orders++;
+    d.totalRevenue += num(o.totalPriceSet?.shopMoney?.amount);
+    currency = o.totalPriceSet?.shopMoney?.currencyCode || currency;
 
     const abVal =
       (o.customAttributes || []).find((a) => a.key === AB_ATTR)?.value || 'none';
-    const bucket = ab[abVal] ? abVal : 'none';
-    ab[bucket].orders++;
-    ab[bucket].revenue += num(o.totalPriceSet?.shopMoney?.amount);
-    currency = o.totalPriceSet?.shopMoney?.currencyCode || currency;
+    const bucket = d.ab[abVal] ? abVal : 'none';
+    d.ab[bucket].orders++;
+    d.ab[bucket].revenue += num(o.totalPriceSet?.shopMoney?.amount);
 
     let orderHasUpsell = false;
+    const seenScen = new Set();
     for (const li of o.lineItems.nodes) {
       const marker = (li.customAttributes || []).find(
         (a) => a.key === UPSELL_ATTR,
@@ -157,93 +166,67 @@ async function main() {
 
       const gross = num(li.originalTotalSet?.shopMoney?.amount);
       const paid = num(li.discountedTotalSet?.shopMoney?.amount);
+      const g = scenarioGroup(marker);
 
-      products[li.title] ??= {
-        title: li.title,
+      d.products[li.title] ??= {
         units: 0,
         orders: 0,
         revenue: 0,
         discountGiven: 0,
         scenarios: {},
       };
-      const p = products[li.title];
+      const p = d.products[li.title];
       p.units += li.quantity;
       p.orders++;
-      p.revenue += paid;
-      p.discountGiven += Math.max(0, gross - paid);
-      p.scenarios[scenarioGroup(marker)] =
-        (p.scenarios[scenarioGroup(marker)] || 0) + li.quantity;
+      p.revenue = round2(p.revenue + paid);
+      p.discountGiven = round2(p.discountGiven + Math.max(0, gross - paid));
+      p.scenarios[g] = (p.scenarios[g] || 0) + li.quantity;
 
-      const g = scenarioGroup(marker);
-      scenarios[g] ??= { name: g, upsellOrders: 0, units: 0, revenue: 0 };
-      scenarios[g].units += li.quantity;
-      scenarios[g].revenue += paid;
+      d.scenarios[g] ??= { upsellOrders: 0, units: 0, revenue: 0 };
+      d.scenarios[g].units += li.quantity;
+      d.scenarios[g].revenue = round2(d.scenarios[g].revenue + paid);
+      if (!seenScen.has(g)) {
+        seenScen.add(g);
+        d.scenarios[g].upsellOrders++;
+      }
 
-      upsellRevenue += paid;
-      upsellUnits += li.quantity;
-      daily[day].upsellRevenue += paid;
+      d.upsellUnits += li.quantity;
+      d.upsellRevenue = round2(d.upsellRevenue + paid);
     }
     if (orderHasUpsell) {
-      upsellOrderCount++;
-      daily[day].upsellOrders++;
-      ab[bucket].upsellOrders++;
-      // Ein Order zählt je Szenario nur einmal:
-      const seen = new Set();
-      for (const li of o.lineItems.nodes) {
-        const marker = (li.customAttributes || []).find(
-          (a) => a.key === UPSELL_ATTR,
-        )?.value;
-        if (!marker) continue;
-        const g = scenarioGroup(marker);
-        if (!seen.has(g)) {
-          seen.add(g);
-          scenarios[g].upsellOrders++;
-        }
-      }
+      d.upsellOrders++;
+      d.ab[bucket].upsellOrders++;
     }
   }
 
-  const round2 = (x) => Math.round(x * 100) / 100;
   const out = {
     generatedAt: new Date().toISOString(),
     since: SINCE,
     currency,
-    totals: {
-      orders: orders.length,
-      upsellOrders: upsellOrderCount,
-      takeRatePct: orders.length
-        ? round2((upsellOrderCount / orders.length) * 100)
-        : 0,
-      upsellUnits,
-      upsellRevenue: round2(upsellRevenue),
-    },
-    ab: Object.fromEntries(
-      Object.entries(ab).map(([k, v]) => [
-        k,
-        {
-          orders: v.orders,
-          upsellOrders: v.upsellOrders,
-          takeRatePct: v.orders ? round2((v.upsellOrders / v.orders) * 100) : 0,
-          aov: v.orders ? round2(v.revenue / v.orders) : 0,
-        },
-      ]),
-    ),
-    products: Object.values(products)
-      .map((p) => ({ ...p, revenue: round2(p.revenue), discountGiven: round2(p.discountGiven) }))
-      .sort((a, b) => b.revenue - a.revenue),
-    scenarios: Object.values(scenarios)
-      .map((s) => ({ ...s, revenue: round2(s.revenue) }))
-      .sort((a, b) => b.revenue - a.revenue),
-    daily: Object.entries(daily)
+    days: Object.entries(days)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, v]) => ({ date, ...v, upsellRevenue: round2(v.upsellRevenue) })),
+      .map(([date, d]) => ({
+        date,
+        ...d,
+        totalRevenue: round2(d.totalRevenue),
+        ab: Object.fromEntries(
+          Object.entries(d.ab).map(([k, v]) => [
+            k,
+            { ...v, revenue: round2(v.revenue) },
+          ]),
+        ),
+      })),
   };
+
+  const totalOrders = out.days.reduce((s, d) => s + d.orders, 0);
+  const totalUpsell = out.days.reduce((s, d) => s + d.upsellOrders, 0);
+  const totalRev = round2(out.days.reduce((s, d) => s + d.upsellRevenue, 0));
 
   const { writeFileSync, mkdirSync } = await import('node:fs');
   mkdirSync('docs', { recursive: true });
-  writeFileSync('docs/data.json', JSON.stringify(out, null, 2));
+  writeFileSync('docs/data.json', JSON.stringify(out, null, 1));
   console.log(
-    `OK: ${orders.length} Bestellungen seit ${SINCE}, davon ${upsellOrderCount} mit Upsell (${out.totals.takeRatePct} %), Upsell-Umsatz ${out.totals.upsellRevenue} ${currency}.`,
+    `OK: ${totalOrders} Bestellungen seit ${SINCE} an ${out.days.length} Tagen, davon ${totalUpsell} mit Upsell, Upsell-Umsatz ${totalRev} ${currency}.`,
   );
 }
 
