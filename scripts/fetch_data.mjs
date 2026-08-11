@@ -38,6 +38,8 @@ const UPSELL_ATTR = '_sevn_upsell';
 const AB_ATTR = '_sevn_ab_upsell';
 /** Anzeige-Tracking (ab 11.08.2026, App v18): Wert = Mapping-Handle */
 const SHOWN_ATTR = '_sevn_upsell_shown';
+/** Aktivierungs-Tracking (ab App v19, Teaser-Modus): Wert = Mapping-Handle */
+const ACTIVATED_ATTR = '_sevn_upsell_activated';
 
 if (!TOKEN && (!CLIENT_ID || !CLIENT_SECRET)) {
   console.error(
@@ -102,6 +104,29 @@ const ORDERS_QUERY = `
   }
 `;
 
+/**
+ * Abgebrochene Checkouts (11.08.2026, Abbruch-Analyse): Checkouts mit
+ * hinterlassenen Kontaktdaten, die NICHT abgeschlossen wurden. Die Cart-
+ * Attribute der Extension (_sevn_upsell_shown / _sevn_upsell_activated /
+ * _sevn_ab_upsell) haengen als customAttributes dran – damit laesst sich
+ * die Abbruchquote mit/ohne Deal-Anzeige vergleichen (Korrelation!
+ * Kausal beantwortet das nur der A/B-Test). completedAt != null wird
+ * uebersprungen (spaeter doch abgeschlossen). Scope: read_orders.
+ */
+const ABANDONED_QUERY = `
+  query SevnAbandoned($cursor: String, $q: String!) {
+    abandonedCheckouts(first: 100, after: $cursor, query: $q) {
+      pageInfo { hasNextPage endCursor }
+      nodes {
+        createdAt
+        completedAt
+        customAttributes { key value }
+        totalPriceSet { shopMoney { amount } }
+      }
+    }
+  }
+`;
+
 function scenarioGroup(marker) {
   if (!marker) return 'Unbekannt';
   if (marker.startsWith('geschirr')) return 'Geschirr';
@@ -135,7 +160,16 @@ async function main() {
     upsellUnits: 0,
     upsellRevenue: 0,
     upsellOrdersRevenue: 0, // Gesamt-Bestellwert der Bestellungen MIT Upsell (fuer AOV-Uplift)
+    activatedOrders: 0, // Bestellungen mit Deal-Aktivierung (Teaser-Modus, ab App v19)
     shown: {}, // Szenario-Gruppe -> {shown, converted} (Anzeige-Tracking, ab App v18)
+    // Abgebrochene Checkouts des Tages (Abbruch-Analyse 11.08.2026)
+    abandoned: {
+      total: 0,
+      shown: 0, // davon: Deal wurde angezeigt
+      activated: 0, // davon: Deal wurde aktiviert (Teaser-Modus)
+      revenue: 0, // Warenwert der abgebrochenen Checkouts
+      ab: { test: 0, control: 0, none: 0 },
+    },
     products: {}, // title -> {units, orders, revenue, discountGiven, scenarios{}}
     scenarios: {}, // name -> {upsellOrders, units, revenue}
     ab: {
@@ -164,6 +198,9 @@ async function main() {
     if (shownGroup) {
       d.shown[shownGroup] ??= { shown: 0, converted: 0 };
       d.shown[shownGroup].shown++;
+    }
+    if ((o.customAttributes || []).some((a) => a.key === ACTIVATED_ATTR)) {
+      d.activatedOrders++;
     }
 
     let orderHasUpsell = false;
@@ -212,10 +249,42 @@ async function main() {
     }
   }
 
+  // --- Abgebrochene Checkouts (11.08.2026) ---------------------------------
+  // Defensiv: Schlaegt die Abandoned-Query fehl (z.B. fehlende Berechtigung),
+  // laeuft der Rest des Datenlaufs normal weiter; das Dashboard zeigt dann
+  // einen Hinweis statt der Abbruch-Sektion (abandonedAvailable=false).
+  let abandonedAvailable = true;
+  try {
+    let aCursor = null;
+    for (let page = 0; page < 100; page++) {
+      const data = await gql(ABANDONED_QUERY, { cursor: aCursor, q });
+      const conn = data.abandonedCheckouts;
+      for (const n of conn.nodes) {
+        if (n.completedAt) continue; // spaeter doch abgeschlossen -> keine Abbruch-Zaehlung
+        const date = n.createdAt.slice(0, 10);
+        days[date] ??= emptyDay();
+        const a = days[date].abandoned;
+        a.total++;
+        a.revenue = round2(a.revenue + num(n.totalPriceSet?.shopMoney?.amount));
+        const attrs = n.customAttributes || [];
+        if (attrs.some((x) => x.key === SHOWN_ATTR)) a.shown++;
+        if (attrs.some((x) => x.key === ACTIVATED_ATTR)) a.activated++;
+        const abVal = attrs.find((x) => x.key === AB_ATTR)?.value;
+        a.ab[abVal === 'test' || abVal === 'control' ? abVal : 'none']++;
+      }
+      if (!conn.pageInfo.hasNextPage) break;
+      aCursor = conn.pageInfo.endCursor;
+    }
+  } catch (e) {
+    abandonedAvailable = false;
+    console.error('WARNUNG: Abgebrochene Checkouts nicht verfuegbar:', e.message);
+  }
+
   const out = {
     generatedAt: new Date().toISOString(),
     since: SINCE,
     currency,
+    abandonedAvailable,
     days: Object.entries(days)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, d]) => ({
@@ -238,8 +307,9 @@ async function main() {
   const { writeFileSync, mkdirSync } = await import('node:fs');
   mkdirSync('docs', { recursive: true });
   writeFileSync('docs/data.json', JSON.stringify(out, null, 1));
+  const totalAbandoned = out.days.reduce((s, d) => s + (d.abandoned?.total || 0), 0);
   console.log(
-    `OK: ${totalOrders} Bestellungen seit ${SINCE} an ${out.days.length} Tagen, davon ${totalUpsell} mit Upsell, Upsell-Umsatz ${totalRev} ${currency}.`,
+    `OK: ${totalOrders} Bestellungen seit ${SINCE} an ${out.days.length} Tagen, davon ${totalUpsell} mit Upsell, Upsell-Umsatz ${totalRev} ${currency}. Abgebrochene Checkouts: ${abandonedAvailable ? totalAbandoned : 'nicht verfuegbar'}.`,
   );
 }
 
