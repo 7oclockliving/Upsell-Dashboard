@@ -1,0 +1,40 @@
+# ============================================================================
+# Tägliche Aktualisierung des SEVN Upsell-Dashboards (7 o'clock)
+# Holt Bestelldaten aus Shopify, schreibt docs/data.json und veröffentlicht
+# damit automatisch die neue Version der GitHub-Pages-Seite.
+#
+# Benötigte Repository-Secrets (Settings → Secrets and variables → Actions):
+#   SHOPIFY_SHOP   z.B. 7oclock-de.myshopify.com
+#   SHOPIFY_TOKEN  Admin-API-Token (shpat_…) mit read_orders
+# GitHub Pages einmalig aktivieren: Settings → Pages → Branch main, /docs
+# ============================================================================
+name: Update Upsell-Dashboard
+
+on:
+  schedule:
+    - cron: "30 4 * * *" # täglich 04:30 UTC = 06:30 deutscher Sommerzeit
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Daten aus Shopify holen
+        env:
+          SHOPIFY_SHOP: ${{ secrets.SHOPIFY_SHOP }}
+          SHOPIFY_TOKEN: ${{ secrets.SHOPIFY_TOKEN }}
+        run: node scripts/fetch_data.mjs
+      - name: Änderungen committen
+        run: |
+          git config user.name "sevn-dashboard-bot"
+          git config user.email "actions@github.com"
+          git add docs/data.json
+          git diff --cached --quiet || git commit -m "Datenupdate $(date -u +%F)"
+          git push
