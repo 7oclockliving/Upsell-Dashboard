@@ -87,6 +87,7 @@ const ORDERS_QUERY = `
       pageInfo { hasNextPage endCursor }
       nodes {
         id
+        name
         createdAt
         totalPriceSet { shopMoney { amount currencyCode } }
         customAttributes { key value }
@@ -161,6 +162,9 @@ async function main() {
     upsellRevenue: 0,
     upsellOrdersRevenue: 0, // Gesamt-Bestellwert der Bestellungen MIT Upsell (fuer AOV-Uplift)
     activatedOrders: 0, // Bestellungen mit Deal-Aktivierung (Teaser-Modus, ab App v19)
+    // Bestellnummern der Upsell-Bestellungen (11.08.2026, Wunsch Alina):
+    // {name, total, upsellRevenue, scenarios[]} – KEINE Kundendaten!
+    upsellOrdersList: [],
     shown: {}, // Szenario-Gruppe -> {shown, converted} (Anzeige-Tracking, ab App v18)
     // Abgebrochene Checkouts des Tages (Abbruch-Analyse 11.08.2026)
     abandoned: {
@@ -204,6 +208,7 @@ async function main() {
     }
 
     let orderHasUpsell = false;
+    let orderUpsellPaid = 0;
     const seenScen = new Set();
     for (const li of o.lineItems.nodes) {
       const marker = (li.customAttributes || []).find(
@@ -240,12 +245,19 @@ async function main() {
 
       d.upsellUnits += li.quantity;
       d.upsellRevenue = round2(d.upsellRevenue + paid);
+      orderUpsellPaid = round2(orderUpsellPaid + paid);
     }
     if (orderHasUpsell) {
       d.upsellOrders++;
       d.upsellOrdersRevenue = round2(d.upsellOrdersRevenue + num(o.totalPriceSet?.shopMoney?.amount));
       d.ab[bucket].upsellOrders++;
       if (shownGroup) d.shown[shownGroup].converted++;
+      d.upsellOrdersList.push({
+        name: o.name,
+        total: num(o.totalPriceSet?.shopMoney?.amount),
+        upsellRevenue: orderUpsellPaid,
+        scenarios: [...seenScen],
+      });
     }
   }
 
