@@ -118,6 +118,12 @@
   <h2>A/B-Test</h2>
   <div class="card" id="ab"></div>
 
+  <h2>Checkout-Abbrüche <small>mit vs. ohne Deal-Anzeige</small></h2>
+  <div class="tiles" id="abandonTiles"></div>
+  <div class="card" id="abandonTable"></div>
+  <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
+  <div class="range-note" id="abandonNote"></div>
+
   <h2>Verlauf</h2>
   <div class="card" id="chartLines"></div>
   <div class="card" style="margin-top:14px" id="chartRevenue"></div>
@@ -201,12 +207,18 @@ function currentRange(){
 }
 
 function merge(sel){
-  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,
+  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,
+    abandoned:{total:0,shown:0,activated:0,revenue:0,ab:{test:0,control:0,none:0}},
     products:{},scenarios:{},shown:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
   for(const d of sel){
     agg.orders+=d.orders;agg.totalRevenue+=d.totalRevenue;
     agg.upsellOrders+=d.upsellOrders;agg.upsellUnits+=d.upsellUnits;agg.upsellRevenue+=d.upsellRevenue;
     agg.upsellOrdersRevenue+=d.upsellOrdersRevenue||0;
+    agg.activatedOrders+=d.activatedOrders||0;
+    const ab=d.abandoned||{};
+    agg.abandoned.total+=ab.total||0;agg.abandoned.shown+=ab.shown||0;
+    agg.abandoned.activated+=ab.activated||0;agg.abandoned.revenue+=ab.revenue||0;
+    for(const k of['test','control','none'])agg.abandoned.ab[k]+=(ab.ab||{})[k]||0;
     for(const[t,p]of Object.entries(d.products||{})){
       agg.products[t]??={title:t,units:0,orders:0,revenue:0,discountGiven:0,scenarios:{}};
       const a=agg.products[t];
@@ -319,9 +331,51 @@ function render(){
       (aovT&&aovK?'<div class="ab-row" style="margin-top:8px"><span>AOV-Uplift Test vs. Control</span><strong style="color:var(--brick)">'+fmtP(((aovT/aovK)-1)*100)+' %</strong></div>':'');
   }
 
+  renderAbandoned(a,p,c);
+
   drawLines(sel);
   drawRevenue(sel,c);
   drawWeekdays(sel,c);
+}
+
+// Checkout-Abbrüche (11.08.2026): Abbruchquote mit vs. ohne Deal-Anzeige.
+// WICHTIG: Korrelation, keine Kausalität – der saubere Beweis kommt aus dem
+// A/B-Test (Zeilen erscheinen automatisch, sobald er aktiv ist).
+function renderAbandoned(a,p,c){
+  const tiles=document.getElementById('abandonTiles');
+  const tb=document.getElementById('abandonTable');
+  const note=document.getElementById('abandonNote');
+  const av=DATA.abandonedAvailable!==false&&a.abandoned!==undefined;
+  if(!av||((a.abandoned.total===0)&&a.orders===0)){
+    tiles.innerHTML='';
+    tb.innerHTML='<div class="empty">Noch keine Abbruch-Daten – sie kommen mit dem nächsten Datenlauf (täglich ca. 10:00 Uhr).</div>';
+    note.textContent='';
+    return;
+  }
+  const A=a.abandoned,P=p.abandoned||{total:0,shown:0,activated:0};
+  const ordersShown=Object.values(a.shown).reduce((s,x)=>s+x.shown,0);
+  const rate=(ab,ok)=>(ab+ok)?ab/(ab+ok)*100:null;
+  const fmtR=(r)=>r===null?'–':fmtP(r)+' %';
+  tiles.innerHTML=[
+    tile('Abgebrochene Checkouts',fmtN(A.total),fmtEur(A.revenue||0,c)+' Warenwert · Vorzeitraum: '+fmtN(P.total||0)),
+    tile('Abbruchquote gesamt',fmtR(rate(A.total,a.orders)),'Abbrüche ÷ (Abbrüche + Bestellungen)'),
+    tile('Abbruchquote mit Deal',fmtR(rate(A.shown,ordersShown)),fmtN(A.shown)+' Abbrüche · '+fmtN(ordersShown)+' Käufe nach Deal-Anzeige',true),
+    tile('Abbruchquote ohne Deal',fmtR(rate(A.total-A.shown,a.orders-ordersShown)),'Checkouts ohne Deal-Anzeige'),
+  ].join('');
+  const rows=[
+    ['Alle Checkouts',A.total,a.orders],
+    ['Deal angezeigt',A.shown,ordersShown],
+    ['Deal nicht angezeigt',A.total-A.shown,a.orders-ordersShown],
+  ];
+  if((A.activated||0)+(a.activatedOrders||0)>0)rows.push(['Deal aktiviert (Teaser)',A.activated||0,a.activatedOrders||0]);
+  if((A.ab.test||0)+(A.ab.control||0)>0){
+    rows.push(['A/B: Test (sieht Deal)',A.ab.test,a.ab.test.orders]);
+    rows.push(['A/B: Control (ohne Deal)',A.ab.control,a.ab.control.orders]);
+  }
+  tb.innerHTML='<table><thead><tr><th>Gruppe</th><th class="num">Abgebrochen</th><th class="num">Abgeschlossen</th><th class="num">Abbruchquote</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr><td><strong>'+r[0]+'</strong></td><td class="num">'+fmtN(r[1])+'</td><td class="num">'+fmtN(r[2])+'</td><td class="num"><strong>'+fmtR(rate(r[1],r[2]))+'</strong></td></tr>').join('')+
+    '</tbody></table>';
+  note.textContent='Hinweis: Als Abbruch zählen nur Checkouts mit hinterlassener E-Mail/Telefonnummer. „Deal angezeigt" wird erst seit dem 11.08.2026 getrackt, „aktiviert" erst mit dem Teaser-Test. Der Vergleich mit/ohne Deal ist Korrelation (unterschiedliche Warenkörbe) – kausal beantwortet das nur der A/B-Test.';
 }
 
 function tile(label,value,sub,accent){return '<div class="tile"><div class="label">'+label+'</div><div class="value'+(accent?' accent':'')+'">'+value+'</div><div class="sub">'+sub+'</div></div>';}
