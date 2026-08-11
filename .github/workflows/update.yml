@@ -4,8 +4,9 @@
 # damit automatisch die neue Version der GitHub-Pages-Seite.
 #
 # Benötigte Repository-Secrets (Settings → Secrets and variables → Actions):
-#   SHOPIFY_SHOP   z.B. 7oclock-de.myshopify.com
-#   SHOPIFY_TOKEN  Admin-API-Token (shpat_…) mit read_orders
+#   SHOPIFY_SHOP        z.B. 7oclock-de.myshopify.com
+#   SEVN_CLIENT_ID      Client-ID der App "sevn-checkout-upsell" (Dev Dashboard)
+#   SEVN_CLIENT_SECRET  Client-Secret derselben App (Dev Dashboard → API-Anmeldedaten)
 # GitHub Pages einmalig aktivieren: Settings → Pages → Branch main, /docs
 # ============================================================================
 name: Update Upsell-Dashboard
@@ -29,7 +30,8 @@ jobs:
       - name: Daten aus Shopify holen
         env:
           SHOPIFY_SHOP: ${{ secrets.SHOPIFY_SHOP }}
-          SHOPIFY_TOKEN: ${{ secrets.SHOPIFY_TOKEN }}
+          SEVN_CLIENT_ID: ${{ secrets.SEVN_CLIENT_ID }}
+          SEVN_CLIENT_SECRET: ${{ secrets.SEVN_CLIENT_SECRET }}
         run: node scripts/fetch_data.mjs
       - name: Änderungen committen
         run: |
