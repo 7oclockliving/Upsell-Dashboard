@@ -1,7 +1,8 @@
 {
- "generatedAt": "2026-08-11T11:18:29.078Z",
+ "generatedAt": "2026-08-11T16:01:14.216Z",
  "since": "2026-08-10",
  "currency": "EUR",
+ "abandonedAvailable": true,
  "days": [
   {
    "date": "2026-08-09",
@@ -11,7 +12,19 @@
    "upsellUnits": 0,
    "upsellRevenue": 0,
    "upsellOrdersRevenue": 0,
+   "activatedOrders": 0,
    "shown": {},
+   "abandoned": {
+    "total": 0,
+    "shown": 0,
+    "activated": 0,
+    "revenue": 0,
+    "ab": {
+     "test": 0,
+     "control": 0,
+     "none": 0
+    }
+   },
    "products": {},
    "scenarios": {},
    "ab": {
@@ -40,7 +53,19 @@
    "upsellUnits": 13,
    "upsellRevenue": 202.87,
    "upsellOrdersRevenue": 1243.33,
+   "activatedOrders": 0,
    "shown": {},
+   "abandoned": {
+    "total": 41,
+    "shown": 0,
+    "activated": 0,
+    "revenue": 3464.82,
+    "ab": {
+     "test": 0,
+     "control": 0,
+     "none": 41
+    }
+   },
    "products": {
     "Geriffeltes Weinglas | Paris": {
      "units": 3,
@@ -162,13 +187,38 @@
   },
   {
    "date": "2026-08-11",
-   "orders": 95,
-   "totalRevenue": 10231.48,
-   "upsellOrders": 8,
-   "upsellUnits": 8,
-   "upsellRevenue": 99.7,
-   "upsellOrdersRevenue": 1130,
-   "shown": {},
+   "orders": 153,
+   "totalRevenue": 15804.45,
+   "upsellOrders": 12,
+   "upsellUnits": 13,
+   "upsellRevenue": 172.72,
+   "upsellOrdersRevenue": 1678.84,
+   "activatedOrders": 0,
+   "shown": {
+    "Lose Gläser (Staffel)": {
+     "shown": 10,
+     "converted": 1
+    },
+    "Gläser-Bundles": {
+     "shown": 16,
+     "converted": 1
+    },
+    "Geschirr": {
+     "shown": 8,
+     "converted": 2
+    }
+   },
+   "abandoned": {
+    "total": 22,
+    "shown": 4,
+    "activated": 0,
+    "revenue": 2242.27,
+    "ab": {
+     "test": 0,
+     "control": 0,
+     "none": 22
+    }
+   },
    "products": {
     "Große Bowl Ø27cm in Cremeweiß gerillt | Nia": {
      "units": 1,
@@ -232,23 +282,68 @@
      "scenarios": {
       "Gläser-Bundles": 1
      }
+    },
+    "Glas mit Spiral-Twist | Orlando": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 9,
+     "discountGiven": 0.99,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Dipschalen 6er Set in Cremeweiß | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 21,
+     "discountGiven": 8.99,
+     "scenarios": {
+      "Geschirr": 1
+     }
+    },
+    "Große Bowl Ø27cm in Cremeweiß matt | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 26.6,
+     "discountGiven": 11.39,
+     "scenarios": {
+      "Geschirr": 1
+     }
+    },
+    "Großes organisches Glas | Alaska": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 9.29,
+     "discountGiven": 3.99,
+     "scenarios": {
+      "Gläser-Bundles": 1
+     }
+    },
+    "Kleines organisches Glas | Alaska": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 7.13,
+     "discountGiven": 3.06,
+     "scenarios": {
+      "Gläser-Bundles": 1
+     }
     }
    },
    "scenarios": {
     "Geschirr": {
-     "upsellOrders": 1,
-     "units": 1,
-     "revenue": 26.6
-    },
-    "Lose Gläser (Staffel)": {
      "upsellOrders": 3,
      "units": 3,
-     "revenue": 22
+     "revenue": 74.2
     },
-    "Gläser-Bundles": {
+    "Lose Gläser (Staffel)": {
      "upsellOrders": 4,
      "units": 4,
-     "revenue": 51.1
+     "revenue": 31
+    },
+    "Gläser-Bundles": {
+     "upsellOrders": 5,
+     "units": 6,
+     "revenue": 67.52
     }
    },
    "ab": {
@@ -263,9 +358,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 95,
-     "upsellOrders": 8,
-     "revenue": 10231.48
+     "orders": 153,
+     "upsellOrders": 12,
+     "revenue": 15804.45
     }
    }
   }
