@@ -1,215 +1,258 @@
 {
-  "generatedAt": "2026-08-11T10:06:03.247Z",
-  "since": "2026-08-10",
-  "currency": "EUR",
-  "totals": {
-    "orders": 291,
-    "upsellOrders": 16,
-    "takeRatePct": 5.5,
-    "upsellUnits": 20,
-    "upsellRevenue": 285.07
-  },
-  "ab": {
+ "generatedAt": "2026-08-11T10:32:24.624Z",
+ "since": "2026-08-10",
+ "currency": "EUR",
+ "days": [
+  {
+   "date": "2026-08-09",
+   "orders": 6,
+   "totalRevenue": 609.71,
+   "upsellOrders": 0,
+   "upsellUnits": 0,
+   "upsellRevenue": 0,
+   "products": {},
+   "scenarios": {},
+   "ab": {
     "test": {
-      "orders": 0,
-      "upsellOrders": 0,
-      "takeRatePct": 0,
-      "aov": 0
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
     },
     "control": {
-      "orders": 0,
-      "upsellOrders": 0,
-      "takeRatePct": 0,
-      "aov": 0
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
     },
     "none": {
-      "orders": 291,
-      "upsellOrders": 16,
-      "takeRatePct": 5.5,
-      "aov": 98.09
+     "orders": 6,
+     "upsellOrders": 0,
+     "revenue": 609.71
     }
+   }
   },
-  "products": [
-    {
-      "title": "Geriffeltes Weinglas | Paris",
-      "units": 3,
-      "orders": 3,
-      "revenue": 55,
-      "discountGiven": 19.97,
-      "scenarios": {
-        "Lose Gläser (Staffel)": 1,
-        "Gläser-Bundles": 2
-      }
+  {
+   "date": "2026-08-10",
+   "orders": 207,
+   "totalRevenue": 21466.32,
+   "upsellOrders": 9,
+   "upsellUnits": 13,
+   "upsellRevenue": 202.87,
+   "products": {
+    "Geriffeltes Weinglas | Paris": {
+     "units": 3,
+     "orders": 3,
+     "revenue": 55,
+     "discountGiven": 19.97,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1,
+      "Gläser-Bundles": 2
+     }
     },
-    {
-      "title": "Große Bowl Ø27cm in Cremeweiß matt | Nia",
-      "units": 2,
-      "orders": 2,
-      "revenue": 49.4,
-      "discountGiven": 26.58,
-      "scenarios": {
-        "Geschirr": 2
-      }
+    "Großes organisches Glas | Alaska": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 10.4,
+     "discountGiven": 2.59,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
     },
-    {
-      "title": "Dipschalen 6er Set in Cremeweiß matt | Nia",
-      "units": 2,
-      "orders": 2,
-      "revenue": 39,
-      "discountGiven": 20.98,
-      "scenarios": {
-        "Geschirr": 2
-      }
+    "Großes Glas Blumen-Design | Florenz": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 8,
+     "discountGiven": 1.99,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
     },
-    {
-      "title": "Karaffe im organischen Design | Alaska",
-      "units": 3,
-      "orders": 3,
-      "revenue": 35.7,
-      "discountGiven": 15.27,
-      "scenarios": {
-        "Gläser-Bundles": 3
-      }
+    "Große Bowl Ø27cm in Cremeweiß matt | Nia": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 49.4,
+     "discountGiven": 26.58,
+     "scenarios": {
+      "Geschirr": 2
+     }
     },
-    {
-      "title": "Große Bowl Ø27cm in Cremeweiß gerillt | Nia",
-      "units": 1,
-      "orders": 1,
-      "revenue": 26.6,
-      "discountGiven": 11.39,
-      "scenarios": {
-        "Geschirr": 1
-      }
+    "Dipschalen 6er Set in Cremeweiß matt | Nia": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 39,
+     "discountGiven": 20.98,
+     "scenarios": {
+      "Geschirr": 2
+     }
     },
-    {
-      "title": "Großes perlenbesetztes Glas | Atlanta",
-      "units": 1,
-      "orders": 1,
-      "revenue": 10.99,
-      "discountGiven": 0,
-      "scenarios": {
-        "Lose Gläser (Staffel)": 1
-      }
+    "Großes perlenbesetztes Glas | Atlanta": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 10.99,
+     "discountGiven": 0,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
     },
-    {
-      "title": "Großes organisches Glas | Alaska",
-      "units": 1,
-      "orders": 1,
-      "revenue": 10.4,
-      "discountGiven": 2.59,
-      "scenarios": {
-        "Lose Gläser (Staffel)": 1
-      }
+    "Karaffe im organischen Design | Alaska": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 11.9,
+     "discountGiven": 5.09,
+     "scenarios": {
+      "Gläser-Bundles": 1
+     }
     },
-    {
-      "title": "Glastasse Streifen-Design | Norway",
-      "units": 1,
-      "orders": 1,
-      "revenue": 10,
-      "discountGiven": 0,
-      "scenarios": {
-        "Gläser-Bundles": 1
-      }
+    "Kleines organisches Glas | Alaska": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 8.18,
+     "discountGiven": 2.05,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
     },
-    {
-      "title": "Großes Glas Streifen-Design | Norway",
-      "units": 1,
-      "orders": 1,
-      "revenue": 9.8,
-      "discountGiven": 4.19,
-      "scenarios": {
-        "Gläser-Bundles": 1
-      }
-    },
-    {
-      "title": "Kleines organisches Glas | Alaska",
-      "units": 1,
-      "orders": 1,
-      "revenue": 8.18,
-      "discountGiven": 2.05,
-      "scenarios": {
-        "Lose Gläser (Staffel)": 1
-      }
-    },
-    {
-      "title": "Großes Glas Blumen-Design | Florenz",
-      "units": 1,
-      "orders": 1,
-      "revenue": 8,
-      "discountGiven": 1.99,
-      "scenarios": {
-        "Lose Gläser (Staffel)": 1
-      }
-    },
-    {
-      "title": "Großes Trinkglas im gerillten Design | Venice",
-      "units": 1,
-      "orders": 1,
-      "revenue": 8,
-      "discountGiven": 1.99,
-      "scenarios": {
-        "Lose Gläser (Staffel)": 1
-      }
-    },
-    {
-      "title": "Großes Glas Bogen-Design | Rom",
-      "units": 1,
-      "orders": 1,
-      "revenue": 7,
-      "discountGiven": 2.99,
-      "scenarios": {
-        "Lose Gläser (Staffel)": 1
-      }
-    },
-    {
-      "title": "Kleines Glas Bogen-Design | Rom",
-      "units": 1,
-      "orders": 1,
-      "revenue": 7,
-      "discountGiven": 2.99,
-      "scenarios": {
-        "Lose Gläser (Staffel)": 1
-      }
+    "Glastasse Streifen-Design | Norway": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 10,
+     "discountGiven": 0,
+     "scenarios": {
+      "Gläser-Bundles": 1
+     }
     }
-  ],
-  "scenarios": [
-    {
-      "name": "Geschirr",
-      "upsellOrders": 3,
-      "units": 5,
-      "revenue": 115
+   },
+   "scenarios": {
+    "Lose Gläser (Staffel)": {
+     "upsellOrders": 3,
+     "units": 5,
+     "revenue": 57.57
     },
-    {
-      "name": "Gläser-Bundles",
-      "upsellOrders": 7,
-      "units": 7,
-      "revenue": 90.5
+    "Geschirr": {
+     "upsellOrders": 2,
+     "units": 4,
+     "revenue": 88.4
     },
-    {
-      "name": "Lose Gläser (Staffel)",
-      "upsellOrders": 6,
-      "units": 8,
-      "revenue": 79.57
+    "Gläser-Bundles": {
+     "upsellOrders": 4,
+     "units": 4,
+     "revenue": 56.9
     }
-  ],
-  "daily": [
-    {
-      "date": "2026-08-09",
-      "orders": 6,
-      "upsellOrders": 0,
-      "upsellRevenue": 0
+   },
+   "ab": {
+    "test": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
     },
-    {
-      "date": "2026-08-10",
-      "orders": 207,
-      "upsellOrders": 9,
-      "upsellRevenue": 202.87
+    "control": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
     },
-    {
-      "date": "2026-08-11",
-      "orders": 78,
-      "upsellOrders": 7,
-      "upsellRevenue": 82.2
+    "none": {
+     "orders": 207,
+     "upsellOrders": 9,
+     "revenue": 21466.32
     }
-  ]
+   }
+  },
+  {
+   "date": "2026-08-11",
+   "orders": 86,
+   "totalRevenue": 8852.38,
+   "upsellOrders": 7,
+   "upsellUnits": 7,
+   "upsellRevenue": 82.2,
+   "products": {
+    "Große Bowl Ø27cm in Cremeweiß gerillt | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 26.6,
+     "discountGiven": 11.39,
+     "scenarios": {
+      "Geschirr": 1
+     }
+    },
+    "Großes Trinkglas im gerillten Design | Venice": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 8,
+     "discountGiven": 1.99,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Karaffe im organischen Design | Alaska": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 23.8,
+     "discountGiven": 10.18,
+     "scenarios": {
+      "Gläser-Bundles": 2
+     }
+    },
+    "Großes Glas Streifen-Design | Norway": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 9.8,
+     "discountGiven": 4.19,
+     "scenarios": {
+      "Gläser-Bundles": 1
+     }
+    },
+    "Großes Glas Bogen-Design | Rom": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 7,
+     "discountGiven": 2.99,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Kleines Glas Bogen-Design | Rom": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 7,
+     "discountGiven": 2.99,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    }
+   },
+   "scenarios": {
+    "Geschirr": {
+     "upsellOrders": 1,
+     "units": 1,
+     "revenue": 26.6
+    },
+    "Lose Gläser (Staffel)": {
+     "upsellOrders": 3,
+     "units": 3,
+     "revenue": 22
+    },
+    "Gläser-Bundles": {
+     "upsellOrders": 3,
+     "units": 3,
+     "revenue": 33.6
+    }
+   },
+   "ab": {
+    "test": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "control": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "none": {
+     "orders": 86,
+     "upsellOrders": 7,
+     "revenue": 8852.38
+    }
+   }
+  }
+ ]
 }
