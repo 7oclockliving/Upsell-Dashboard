@@ -19,7 +19,8 @@
  *
  * Auth: Client-Credentials-Grant der eigenen App (Tokens sind kurzlebig und
  * werden pro Lauf frisch geholt) – die App braucht dafür den Scope
- * read_orders (ab Version 17, Reinstall im Dev Dashboard nötig).
+ * read_orders (ab Version 17). Kein product-Feld in der Query – das würde
+ * zusätzlich read_products erfordern (Fehler beim ersten Lauf, 11.08.2026).
  * ============================================================================
  */
 
@@ -92,7 +93,6 @@ const ORDERS_QUERY = `
             customAttributes { key value }
             originalTotalSet { shopMoney { amount } }
             discountedTotalSet { shopMoney { amount } }
-            product { id }
           }
         }
       }
