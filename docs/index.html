@@ -12,17 +12,26 @@
     --cream:#F7F2EA; --cream2:#F1EAE0; --card:#FFFFFF;
     --ink:#3E2A1E; --ink-soft:#7A4A2B; --muted:#9B8A7C;
     --brick:#B5493A; --brick-soft:#E8D5D1; --taupe:#A79B8D;
-    --line:#E5DCCF; --ok:#5E7A5E;
+    --line:#E5DCCF;
     --serif:'Cormorant Garamond',Georgia,serif; --sans:'Lato',system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;padding:32px 20px 64px}
   .wrap{max-width:1080px;margin:0 auto}
-  header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:26px;flex-wrap:wrap;gap:10px}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:20px}
   .brand{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:.4px}
   .brand small{display:block;font-family:var(--sans);font-size:11px;letter-spacing:3px;color:var(--ink-soft);text-transform:uppercase;margin-top:2px}
-  .stamp{font-size:12px;color:var(--muted);text-align:right}
-  h2{font-family:var(--serif);font-size:21px;font-weight:600;margin:34px 0 14px}
+  .stamp{font-size:13px;color:var(--muted);margin-top:10px}
+  .stamp em{font-style:italic}
+  .tabs{display:flex;flex-wrap:wrap;gap:4px;background:var(--cream2);border:1px solid var(--line);border-radius:12px;padding:4px;margin:18px 0 8px;width:fit-content}
+  .tab{border:none;background:transparent;font-family:var(--sans);font-size:14px;font-weight:700;color:var(--ink-soft);padding:8px 16px;border-radius:9px;cursor:pointer}
+  .tab.active{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(62,42,30,.12)}
+  .custom-row{display:none;gap:10px;align-items:center;margin:10px 0 4px;font-size:13px;color:var(--ink-soft);flex-wrap:wrap}
+  .custom-row.show{display:flex}
+  .custom-row input[type=date]{font-family:var(--sans);font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+  .custom-row button{font-family:var(--sans);font-size:13px;font-weight:700;padding:7px 14px;border:none;border-radius:8px;background:var(--brick);color:#fff;cursor:pointer}
+  .range-note{font-size:12px;color:var(--muted);margin-bottom:14px}
+  h2{font-family:var(--serif);font-size:21px;font-weight:600;margin:30px 0 14px}
   .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
   .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
   .tile .label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-soft)}
@@ -56,6 +65,14 @@
     <div class="stamp" id="stamp">lädt…</div>
   </header>
 
+  <div class="tabs" id="tabs"></div>
+  <div class="custom-row" id="customRow">
+    <label>Von <input type="date" id="fromDate"></label>
+    <label>Bis <input type="date" id="toDate"></label>
+    <button id="applyCustom">Anwenden</button>
+  </div>
+  <div class="range-note" id="rangeNote"></div>
+
   <div class="tiles" id="tiles"></div>
 
   <h2>Upsell-Produkte</h2>
@@ -75,80 +92,161 @@
   <h2>Verlauf</h2>
   <div class="card" id="chart"></div>
 
-  <p class="footnote">Basis: alle Bestellungen seit Go-live (<span id="since"></span>) mit Upsell-Markierung (<code>_sevn_upsell</code>).
+  <p class="footnote">Basis: alle Bestellungen mit Upsell-Markierung (<code>_sevn_upsell</code>), alle Kalendertage inkl. Sa + So.
   Umsatz = tatsächlich bezahlte Upsell-Positionen nach Rabatt. Aktualisiert sich täglich automatisch um ca. 6:30 Uhr.</p>
 </div>
 
 <script>
-const fmtEur = (v,c)=> new Intl.NumberFormat('de-DE',{style:'currency',currency:c||'EUR'}).format(v);
-const fmtN = (v)=> new Intl.NumberFormat('de-DE').format(v);
+const fmtEur=(v,c)=>new Intl.NumberFormat('de-DE',{style:'currency',currency:c||'EUR'}).format(v);
+const fmtN=(v)=>new Intl.NumberFormat('de-DE').format(v);
+const fmtD=(iso)=>{const[y,m,d]=iso.split('-');return d+'.'+m+'.'+y;};
+
+const RANGES=[
+  {key:'d1',label:'Letzter Tag',days:1},
+  {key:'d7',label:'Letzte 7 Tage',days:7},
+  {key:'d30',label:'Letzte 30 Tage',days:30},
+  {key:'d90',label:'Letzte 90 Tage',days:90},
+  {key:'d365',label:'Letzte 365 Tage',days:365},
+  {key:'custom',label:'Custom',days:null},
+];
+let DATA=null, active='d7', customFrom=null, customTo=null;
 
 fetch('./data.json?ts='+Date.now()).then(r=>{
   if(!r.ok) throw new Error('data.json fehlt');
   return r.json();
-}).then(render).catch(()=> {
+}).then(d=>{DATA=d;initTabs();render();}).catch(()=>{
   document.getElementById('stamp').textContent='Noch keine Daten – der erste Datenlauf steht aus.';
-  document.getElementById('tiles').innerHTML='<div class="tile"><div class="empty">Sobald der erste automatische Datenlauf durch ist, erscheinen hier die Zahlen.</div></div>';
+  document.getElementById('tiles').innerHTML='<div class="tile"><div class="empty">Sobald der erste Datenlauf durch ist, erscheinen hier die Zahlen.</div></div>';
 });
 
-function render(d){
-  const c=d.currency;
-  document.getElementById('stamp').innerHTML='Stand: '+new Date(d.generatedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})+' Uhr';
-  document.getElementById('since').textContent=new Date(d.since).toLocaleDateString('de-DE');
+function initTabs(){
+  const t=document.getElementById('tabs');
+  t.innerHTML=RANGES.map(r=>'<button class="tab" data-key="'+r.key+'">'+r.label+'</button>').join('');
+  t.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+    active=b.dataset.key;
+    document.getElementById('customRow').classList.toggle('show',active==='custom');
+    if(active!=='custom') render(); else if(customFrom&&customTo) render(); else updateTabs();
+  }));
+  const last=DATA.days.length?DATA.days[DATA.days.length-1].date:DATA.since;
+  document.getElementById('toDate').value=last;
+  document.getElementById('fromDate').value=DATA.since;
+  document.getElementById('applyCustom').addEventListener('click',()=>{
+    customFrom=document.getElementById('fromDate').value;
+    customTo=document.getElementById('toDate').value;
+    if(customFrom&&customTo) render();
+  });
+}
+function updateTabs(){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.key===active));
+}
 
-  const t=d.totals;
+function currentRange(){
+  const days=DATA.days;
+  if(!days.length) return {from:DATA.since,to:DATA.since,sel:[]};
+  const last=days[days.length-1].date;
+  let from,to=last;
+  if(active==='custom'&&customFrom&&customTo){from=customFrom;to=customTo;}
+  else{
+    const r=RANGES.find(x=>x.key===active)||RANGES[1];
+    const d=new Date(last+'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate()-((r.days||7)-1));
+    from=d.toISOString().slice(0,10);
+  }
+  return {from,to,sel:days.filter(x=>x.date>=from&&x.date<=to)};
+}
+
+function merge(sel){
+  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,
+    products:{},scenarios:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
+  for(const d of sel){
+    agg.orders+=d.orders;agg.totalRevenue+=d.totalRevenue;
+    agg.upsellOrders+=d.upsellOrders;agg.upsellUnits+=d.upsellUnits;agg.upsellRevenue+=d.upsellRevenue;
+    for(const[t,p]of Object.entries(d.products||{})){
+      agg.products[t]??={title:t,units:0,orders:0,revenue:0,discountGiven:0,scenarios:{}};
+      const a=agg.products[t];
+      a.units+=p.units;a.orders+=p.orders;a.revenue+=p.revenue;a.discountGiven+=p.discountGiven;
+      for(const[s,u]of Object.entries(p.scenarios||{}))a.scenarios[s]=(a.scenarios[s]||0)+u;
+    }
+    for(const[n,s]of Object.entries(d.scenarios||{})){
+      agg.scenarios[n]??={name:n,upsellOrders:0,units:0,revenue:0};
+      agg.scenarios[n].upsellOrders+=s.upsellOrders;agg.scenarios[n].units+=s.units;agg.scenarios[n].revenue+=s.revenue;
+    }
+    for(const k of['test','control','none']){
+      const v=(d.ab||{})[k];if(!v)continue;
+      agg.ab[k].orders+=v.orders;agg.ab[k].upsellOrders+=v.upsellOrders;agg.ab[k].revenue+=v.revenue;
+    }
+  }
+  return agg;
+}
+
+function render(){
+  updateTabs();
+  const c=DATA.currency;
+  const {from,to,sel}=currentRange();
+  const a=merge(sel);
+  const allOrders=DATA.days.reduce((s,d)=>s+d.orders,0);
+  const last=DATA.days.length?DATA.days[DATA.days.length-1].date:DATA.since;
+
+  document.getElementById('stamp').innerHTML=
+    'Aktualisiert am '+new Date(DATA.generatedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})+' Uhr<br>'+
+    '<em>Datensatz: '+fmtD(DATA.since)+' bis '+fmtD(last)+' · '+fmtN(allOrders)+' Bestellungen · alle Tage (inkl. Sa + So)</em>';
+  document.getElementById('rangeNote').textContent='Zeitraum: '+fmtD(from)+' bis '+fmtD(to)+' · '+sel.length+' Tag(e) mit Bestellungen';
+
+  const takeRate=a.orders?Math.round(a.upsellOrders/a.orders*10000)/100:0;
   document.getElementById('tiles').innerHTML=[
-    tile('Bestellungen gesamt',fmtN(t.orders),'seit Go-live'),
-    tile('Mit Upsell',fmtN(t.upsellOrders),'Bestellungen mit ≥ 1 Upsell-Artikel'),
-    tile('Take-Rate',t.takeRatePct.toLocaleString('de-DE')+' %','Anteil Bestellungen mit Upsell',true),
-    tile('Upsell-Umsatz',fmtEur(t.upsellRevenue,c),fmtN(t.upsellUnits)+' Artikel · nach Rabatt',true),
+    tile('Bestellungen',fmtN(a.orders),'im gewählten Zeitraum'),
+    tile('Mit Upsell',fmtN(a.upsellOrders),'Bestellungen mit ≥ 1 Upsell-Artikel'),
+    tile('Take-Rate',takeRate.toLocaleString('de-DE')+' %','Anteil Bestellungen mit Upsell',true),
+    tile('Upsell-Umsatz',fmtEur(a.upsellRevenue,c),fmtN(a.upsellUnits)+' Artikel · nach Rabatt',true),
   ].join('');
 
   const box=document.getElementById('products');
-  if(!d.products.length){box.innerHTML='<div class="empty">Noch keine Upsell-Käufe erfasst.</div>';}
+  const prods=Object.values(a.products).sort((x,y)=>y.revenue-x.revenue);
+  if(!prods.length){box.innerHTML='<div class="empty">Keine Upsell-Käufe im gewählten Zeitraum.</div>';}
   else{
-    const max=Math.max(...d.products.map(p=>p.revenue),1);
-    box.innerHTML='<table><thead><tr><th>Produkt</th><th class="num">Verkäufe</th><th class="num">Umsatz</th><th class="num">Gewährter Rabatt</th><th style="width:26%">Anteil</th><th>Szenario</th></tr></thead><tbody>'+
-      d.products.map(p=>'<tr><td><strong>'+esc(p.title)+'</strong></td><td class="num">'+fmtN(p.units)+'</td><td class="num"><strong>'+fmtEur(p.revenue,c)+'</strong></td><td class="num">'+fmtEur(p.discountGiven,c)+'</td><td><div class="bar-bg"><div class="bar" style="width:'+Math.max(3,Math.round(p.revenue/max*100))+'%"></div></div></td><td>'+Object.keys(p.scenarios).map(s=>'<span class="pill">'+esc(s)+'</span>').join('')+'</td></tr>').join('')+
+    const max=Math.max(...prods.map(p=>p.revenue),1);
+    box.innerHTML='<table><thead><tr><th>Produkt</th><th class="num">Verkäufe</th><th class="num">Umsatz</th><th class="num">Gewährter Rabatt</th><th style="width:24%">Anteil</th><th>Szenario</th></tr></thead><tbody>'+
+      prods.map(p=>'<tr><td><strong>'+esc(p.title)+'</strong></td><td class="num">'+fmtN(p.units)+'</td><td class="num"><strong>'+fmtEur(p.revenue,c)+'</strong></td><td class="num">'+fmtEur(p.discountGiven,c)+'</td><td><div class="bar-bg"><div class="bar" style="width:'+Math.max(3,Math.round(p.revenue/max*100))+'%"></div></div></td><td>'+Object.keys(p.scenarios).map(s=>'<span class="pill">'+esc(s)+'</span>').join('')+'</td></tr>').join('')+
       '</tbody></table>';
   }
 
-  const sc=document.getElementById('scenarios');
-  sc.innerHTML = d.scenarios.length
-    ? d.scenarios.map(s=>'<div class="ab-row"><span><strong>'+esc(s.name)+'</strong> · '+fmtN(s.units)+' Artikel in '+fmtN(s.upsellOrders)+' Bestellungen</span><strong>'+fmtEur(s.revenue,c)+'</strong></div>').join('')
-    : '<div class="empty">Noch keine Daten.</div>';
+  const scen=Object.values(a.scenarios).sort((x,y)=>y.revenue-x.revenue);
+  document.getElementById('scenarios').innerHTML=scen.length
+    ?scen.map(s=>'<div class="ab-row"><span><strong>'+esc(s.name)+'</strong> · '+fmtN(s.units)+' Artikel in '+fmtN(s.upsellOrders)+' Bestellungen</span><strong>'+fmtEur(s.revenue,c)+'</strong></div>').join('')
+    :'<div class="empty">Keine Daten im Zeitraum.</div>';
 
   const abBox=document.getElementById('ab');
-  const test=d.ab.test, ctrl=d.ab.control, none=d.ab.none;
-  if((test.orders+ctrl.orders)===0){
-    abBox.innerHTML='<div class="empty">A/B-Test ist derzeit nicht aktiv – alle '+fmtN(none.orders)+' Bestellungen sehen den Upsell.</div>';
-  } else {
-    abBox.innerHTML='<div class="grid2">'+abCol('Test (mit Upsell)','test',test,c)+abCol('Control (ohne)','control',ctrl,c)+'</div>'+
-      (test.aov&&ctrl.aov?'<div class="ab-row" style="margin-top:8px"><span>AOV-Uplift Test vs. Control</span><strong style="color:var(--brick)">'+(((test.aov/ctrl.aov)-1)*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %</strong></div>':'');
+  const t=a.ab.test,k=a.ab.control,n=a.ab.none;
+  if((t.orders+k.orders)===0){
+    abBox.innerHTML='<div class="empty">A/B-Test nicht aktiv – alle '+fmtN(n.orders)+' Bestellungen sehen den Upsell.</div>';
+  }else{
+    const col=(title,cls,v)=>'<div><div class="ab-head '+cls+'">'+title+'</div>'+
+      '<div class="ab-row"><span>Bestellungen</span><strong>'+fmtN(v.orders)+'</strong></div>'+
+      '<div class="ab-row"><span>Take-Rate</span><strong>'+(v.orders?Math.round(v.upsellOrders/v.orders*10000)/100:0).toLocaleString('de-DE')+' %</strong></div>'+
+      '<div class="ab-row"><span>Ø Bestellwert</span><strong>'+fmtEur(v.orders?v.revenue/v.orders:0,c)+'</strong></div></div>';
+    const aovT=t.orders?t.revenue/t.orders:0,aovK=k.orders?k.revenue/k.orders:0;
+    abBox.innerHTML='<div class="grid2">'+col('Test (mit Upsell)','test',t)+col('Control (ohne)','control',k)+'</div>'+
+      (aovT&&aovK?'<div class="ab-row" style="margin-top:8px"><span>AOV-Uplift Test vs. Control</span><strong style="color:var(--brick)">'+(((aovT/aovK)-1)*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %</strong></div>':'');
   }
 
-  drawChart(d.daily,c);
+  drawChart(sel,c);
 }
 
 function tile(label,value,sub,accent){return '<div class="tile"><div class="label">'+label+'</div><div class="value'+(accent?' accent':'')+'">'+value+'</div><div class="sub">'+sub+'</div></div>';}
-function abCol(title,cls,v,c){return '<div><div class="ab-head '+cls+'">'+title+'</div>'+
-  '<div class="ab-row"><span>Bestellungen</span><strong>'+fmtN(v.orders)+'</strong></div>'+
-  '<div class="ab-row"><span>Take-Rate</span><strong>'+v.takeRatePct.toLocaleString('de-DE')+' %</strong></div>'+
-  '<div class="ab-row"><span>Ø Bestellwert</span><strong>'+fmtEur(v.aov,c)+'</strong></div></div>';}
 function esc(s){return String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
 
-function drawChart(daily,c){
+function drawChart(sel,c){
   const el=document.getElementById('chart');
-  if(!daily||!daily.length){el.innerHTML='<div class="empty">Noch keine Daten.</div>';return;}
+  if(!sel||!sel.length){el.innerHTML='<div class="empty">Keine Daten im Zeitraum.</div>';return;}
   const W=1020,H=260,P={l:46,r:52,t:16,b:34};
-  const iw=W-P.l-P.r, ih=H-P.t-P.b;
-  const maxO=Math.max(...daily.map(x=>x.orders),1);
-  const maxR=Math.max(...daily.map(x=>x.upsellRevenue),1);
-  const n=daily.length, bw=Math.min(34,iw/n*0.55);
-  const X=i=> P.l + (n===1? iw/2 : i*(iw/(n-1||1)));
+  const iw=W-P.l-P.r,ih=H-P.t-P.b;
+  const maxO=Math.max(...sel.map(x=>x.orders),1);
+  const maxR=Math.max(...sel.map(x=>x.upsellRevenue),1);
+  const n=sel.length,bw=Math.min(34,iw/n*0.55);
+  const X=i=>P.l+(n===1?iw/2:i*(iw/(n-1||1)));
   let bars='',line='',dots='',labels='';
-  daily.forEach((x,i)=>{
-    const bx=X(i)-bw/2, bh=x.orders/maxO*ih;
+  sel.forEach((x,i)=>{
+    const bx=X(i)-bw/2,bh=x.orders/maxO*ih;
     bars+='<rect x="'+bx+'" y="'+(P.t+ih-bh)+'" width="'+bw+'" height="'+bh+'" rx="4" fill="#E5DCCF"/>';
     const ly=P.t+ih-(x.upsellRevenue/maxR*ih);
     line+=(i?'L':'M')+X(i)+' '+ly+' ';
