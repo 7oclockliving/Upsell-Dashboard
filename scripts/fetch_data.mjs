@@ -36,6 +36,8 @@ const SINCE = '2026-08-10';
 
 const UPSELL_ATTR = '_sevn_upsell';
 const AB_ATTR = '_sevn_ab_upsell';
+/** Anzeige-Tracking (ab 11.08.2026, App v18): Wert = Mapping-Handle */
+const SHOWN_ATTR = '_sevn_upsell_shown';
 
 if (!TOKEN && (!CLIENT_ID || !CLIENT_SECRET)) {
   console.error(
@@ -132,6 +134,8 @@ async function main() {
     upsellOrders: 0,
     upsellUnits: 0,
     upsellRevenue: 0,
+    upsellOrdersRevenue: 0, // Gesamt-Bestellwert der Bestellungen MIT Upsell (fuer AOV-Uplift)
+    shown: {}, // Szenario-Gruppe -> {shown, converted} (Anzeige-Tracking, ab App v18)
     products: {}, // title -> {units, orders, revenue, discountGiven, scenarios{}}
     scenarios: {}, // name -> {upsellOrders, units, revenue}
     ab: {
@@ -154,6 +158,13 @@ async function main() {
     const bucket = d.ab[abVal] ? abVal : 'none';
     d.ab[bucket].orders++;
     d.ab[bucket].revenue += num(o.totalPriceSet?.shopMoney?.amount);
+
+    const shownVal = (o.customAttributes || []).find((a) => a.key === SHOWN_ATTR)?.value;
+    const shownGroup = shownVal ? scenarioGroup(shownVal) : null;
+    if (shownGroup) {
+      d.shown[shownGroup] ??= { shown: 0, converted: 0 };
+      d.shown[shownGroup].shown++;
+    }
 
     let orderHasUpsell = false;
     const seenScen = new Set();
@@ -195,7 +206,9 @@ async function main() {
     }
     if (orderHasUpsell) {
       d.upsellOrders++;
+      d.upsellOrdersRevenue = round2(d.upsellOrdersRevenue + num(o.totalPriceSet?.shopMoney?.amount));
       d.ab[bucket].upsellOrders++;
+      if (shownGroup) d.shown[shownGroup].converted++;
     }
   }
 
