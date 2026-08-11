@@ -11,8 +11,8 @@
   :root{
     --cream:#F7F2EA; --cream2:#F1EAE0; --card:#FFFFFF;
     --ink:#3E2A1E; --ink-soft:#7A4A2B; --muted:#9B8A7C;
-    --brick:#B5493A; --brick-soft:#E8D5D1; --taupe:#A79B8D;
-    --line:#E5DCCF;
+    --brick:#B5493A; --brick-soft:#E8D5D1; --taupe:#A79B8D; --sand:#D9C4A1;
+    --line:#E5DCCF; --up:#5E7A5E; --down:#B5493A;
     --serif:'Cormorant Garamond',Georgia,serif; --sans:'Lato',system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -32,19 +32,22 @@
   .custom-row button{font-family:var(--sans);font-size:13px;font-weight:700;padding:7px 14px;border:none;border-radius:8px;background:var(--brick);color:#fff;cursor:pointer}
   .range-note{font-size:12px;color:var(--muted);margin-bottom:14px}
   h2{font-family:var(--serif);font-size:21px;font-weight:600;margin:30px 0 14px}
-  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
-  .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  h2 small{font-family:var(--sans);font-size:12px;font-weight:400;color:var(--muted);margin-left:8px}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:14px;margin-bottom:14px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
   .tile .label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-soft)}
-  .tile .value{font-family:var(--serif);font-size:34px;font-weight:600;margin-top:6px}
+  .tile .value{font-family:var(--serif);font-size:31px;font-weight:600;margin-top:5px}
   .tile .value.accent{color:var(--brick)}
   .tile .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .delta{font-size:12px;font-weight:700;margin-left:6px}
+  .delta.up{color:var(--up)} .delta.down{color:var(--down)}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
   table{width:100%;border-collapse:collapse}
   th{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-soft);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
   th.num,td.num{text-align:right}
-  td{padding:10px;border-bottom:1px solid var(--cream2);vertical-align:middle}
+  td{padding:9px 10px;border-bottom:1px solid var(--cream2);vertical-align:middle}
   tr:last-child td{border-bottom:none}
-  .bar-bg{background:var(--cream2);border-radius:6px;height:10px;min-width:90px;overflow:hidden}
+  .bar-bg{background:var(--cream2);border-radius:6px;height:10px;min-width:80px;overflow:hidden}
   .bar{background:var(--brick);height:100%;border-radius:6px}
   .pill{display:inline-block;background:var(--brick-soft);color:var(--brick);border-radius:999px;font-size:11px;font-weight:700;padding:2px 10px;margin:1px 2px 1px 0}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -53,8 +56,11 @@
   .ab-row:last-child{border-bottom:none}
   .ab-head{font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
   .ab-head.test{color:var(--brick)} .ab-head.control{color:var(--taupe)}
-  .empty{padding:38px;text-align:center;color:var(--muted);font-style:italic}
+  .empty{padding:32px;text-align:center;color:var(--muted);font-style:italic}
   .footnote{font-size:12px;color:var(--muted);margin-top:26px}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--ink-soft);margin-top:10px;justify-content:center}
+  .legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;background:var(--dot)}
+  .csv-btn{float:right;font-family:var(--sans);font-size:12px;font-weight:700;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--cream2);color:var(--ink-soft);cursor:pointer;margin-top:-4px}
   svg text{font-family:var(--sans)}
 </style>
 </head>
@@ -74,32 +80,38 @@
   <div class="range-note" id="rangeNote"></div>
 
   <div class="tiles" id="tiles"></div>
+  <div class="tiles" id="tiles2"></div>
 
-  <h2>Upsell-Produkte</h2>
+  <h2>Upsell-Produkte <button class="csv-btn" id="csvBtn">CSV exportieren</button></h2>
   <div class="card"><div id="products"></div></div>
 
-  <div class="grid2">
-    <div>
-      <h2>Szenarien</h2>
-      <div class="card" id="scenarios"></div>
-    </div>
-    <div>
-      <h2>A/B-Test</h2>
-      <div class="card" id="ab"></div>
-    </div>
+  <h2>Szenarien <small>Take-Rate „echt" = Käufe ÷ Anzeigen (Tracking ab 11.08.2026)</small></h2>
+  <div class="card" id="scenarioTable"></div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="card"><div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px">Umsatz-Anteile in %</div><div id="piePct"></div></div>
+    <div class="card"><div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px">Umsatz in €</div><div id="pieEur"></div></div>
   </div>
 
+  <h2>A/B-Test</h2>
+  <div class="card" id="ab"></div>
+
   <h2>Verlauf</h2>
-  <div class="card" id="chart"></div>
+  <div class="card" id="chartLines"></div>
+  <div class="card" style="margin-top:14px" id="chartRevenue"></div>
+
+  <h2>Wochentage <small>im gewählten Zeitraum</small></h2>
+  <div class="card" id="weekdays"></div>
 
   <p class="footnote">Basis: alle Bestellungen mit Upsell-Markierung (<code>_sevn_upsell</code>), alle Kalendertage inkl. Sa + So.
-  Umsatz = tatsächlich bezahlte Upsell-Positionen nach Rabatt. Aktualisiert sich täglich automatisch um ca. 6:30 Uhr.</p>
+  Umsatz = tatsächlich bezahlte Upsell-Positionen nach Rabatt. Aktualisiert sich täglich automatisch um ca. 10:00 Uhr.</p>
 </div>
 
 <script>
 const fmtEur=(v,c)=>new Intl.NumberFormat('de-DE',{style:'currency',currency:c||'EUR'}).format(v);
 const fmtN=(v)=>new Intl.NumberFormat('de-DE').format(v);
+const fmtP=(v)=>v.toLocaleString('de-DE',{maximumFractionDigits:1});
 const fmtD=(iso)=>{const[y,m,d]=iso.split('-');return d+'.'+m+'.'+y;};
+const PIE_COLORS=['#B5493A','#A79B8D','#7A4A2B','#D9C4A1','#E8D5D1'];
 
 const RANGES=[
   {key:'d1',label:'Letzter Tag',days:1},
@@ -109,14 +121,13 @@ const RANGES=[
   {key:'d365',label:'Letzte 365 Tage',days:365},
   {key:'custom',label:'Custom',days:null},
 ];
-let DATA=null, active='d7', customFrom=null, customTo=null;
+let DATA=null, active='d1', customFrom=null, customTo=null, lastProds=[];
 
 fetch('./data.json?ts='+Date.now()).then(r=>{
   if(!r.ok) throw new Error('data.json fehlt');
   return r.json();
 }).then(d=>{DATA=d;initTabs();render();}).catch(()=>{
   document.getElementById('stamp').textContent='Noch keine Daten – der erste Datenlauf steht aus.';
-  document.getElementById('tiles').innerHTML='<div class="tile"><div class="empty">Sobald der erste Datenlauf durch ist, erscheinen hier die Zahlen.</div></div>';
 });
 
 function initTabs(){
@@ -135,41 +146,52 @@ function initTabs(){
     customTo=document.getElementById('toDate').value;
     if(customFrom&&customTo) render();
   });
+  document.getElementById('csvBtn').addEventListener('click',exportCsv);
 }
 function updateTabs(){
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.key===active));
 }
+function shiftDate(iso,delta){const d=new Date(iso+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+delta);return d.toISOString().slice(0,10);}
+function daysBetween(a,b){return Math.round((new Date(b+'T00:00:00Z')-new Date(a+'T00:00:00Z'))/86400000)+1;}
 
 function currentRange(){
   const days=DATA.days;
-  if(!days.length) return {from:DATA.since,to:DATA.since,sel:[]};
+  if(!days.length) return {from:DATA.since,to:DATA.since,sel:[],prev:[]};
   const last=days[days.length-1].date;
   let from,to=last;
   if(active==='custom'&&customFrom&&customTo){from=customFrom;to=customTo;}
   else{
-    const r=RANGES.find(x=>x.key===active)||RANGES[1];
-    const d=new Date(last+'T00:00:00Z');
-    d.setUTCDate(d.getUTCDate()-((r.days||7)-1));
-    from=d.toISOString().slice(0,10);
+    const r=RANGES.find(x=>x.key===active)||RANGES[0];
+    from=shiftDate(last,-((r.days||1)-1));
   }
-  return {from,to,sel:days.filter(x=>x.date>=from&&x.date<=to)};
+  const len=daysBetween(from,to);
+  const pFrom=shiftDate(from,-len), pTo=shiftDate(from,-1);
+  return {from,to,
+    sel:days.filter(x=>x.date>=from&&x.date<=to),
+    prev:days.filter(x=>x.date>=pFrom&&x.date<=pTo)};
 }
 
 function merge(sel){
-  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,
-    products:{},scenarios:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
+  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,
+    products:{},scenarios:{},shown:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
   for(const d of sel){
     agg.orders+=d.orders;agg.totalRevenue+=d.totalRevenue;
     agg.upsellOrders+=d.upsellOrders;agg.upsellUnits+=d.upsellUnits;agg.upsellRevenue+=d.upsellRevenue;
+    agg.upsellOrdersRevenue+=d.upsellOrdersRevenue||0;
     for(const[t,p]of Object.entries(d.products||{})){
       agg.products[t]??={title:t,units:0,orders:0,revenue:0,discountGiven:0,scenarios:{}};
       const a=agg.products[t];
       a.units+=p.units;a.orders+=p.orders;a.revenue+=p.revenue;a.discountGiven+=p.discountGiven;
+      agg.discountGiven+=p.discountGiven;
       for(const[s,u]of Object.entries(p.scenarios||{}))a.scenarios[s]=(a.scenarios[s]||0)+u;
     }
     for(const[n,s]of Object.entries(d.scenarios||{})){
       agg.scenarios[n]??={name:n,upsellOrders:0,units:0,revenue:0};
       agg.scenarios[n].upsellOrders+=s.upsellOrders;agg.scenarios[n].units+=s.units;agg.scenarios[n].revenue+=s.revenue;
+    }
+    for(const[n,s]of Object.entries(d.shown||{})){
+      agg.shown[n]??={shown:0,converted:0};
+      agg.shown[n].shown+=s.shown;agg.shown[n].converted+=s.converted;
     }
     for(const k of['test','control','none']){
       const v=(d.ab||{})[k];if(!v)continue;
@@ -179,41 +201,75 @@ function merge(sel){
   return agg;
 }
 
+function delta(cur,prev){
+  if(!prev) return '';
+  const pct=((cur/prev)-1)*100;
+  if(!isFinite(pct)) return '';
+  const cls=pct>=0?'up':'down', arrow=pct>=0?'↑':'↓';
+  return '<span class="delta '+cls+'">'+arrow+' '+fmtP(Math.abs(pct))+' %</span>';
+}
+
 function render(){
   updateTabs();
   const c=DATA.currency;
-  const {from,to,sel}=currentRange();
-  const a=merge(sel);
+  const {from,to,sel,prev}=currentRange();
+  const a=merge(sel), p=merge(prev);
   const allOrders=DATA.days.reduce((s,d)=>s+d.orders,0);
   const last=DATA.days.length?DATA.days[DATA.days.length-1].date:DATA.since;
 
   document.getElementById('stamp').innerHTML=
     'Aktualisiert am '+new Date(DATA.generatedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})+' Uhr<br>'+
     '<em>Datensatz: '+fmtD(DATA.since)+' bis '+fmtD(last)+' · '+fmtN(allOrders)+' Bestellungen · alle Tage (inkl. Sa + So)</em>';
-  document.getElementById('rangeNote').textContent='Zeitraum: '+fmtD(from)+' bis '+fmtD(to)+' · '+sel.length+' Tag(e) mit Bestellungen';
+  document.getElementById('rangeNote').textContent='Zeitraum: '+fmtD(from)+' bis '+fmtD(to)+' · Vergleich: gleich langer Zeitraum davor';
 
-  const takeRate=a.orders?Math.round(a.upsellOrders/a.orders*10000)/100:0;
+  const tr=a.orders?a.upsellOrders/a.orders*100:0;
+  const trPrev=p.orders?p.upsellOrders/p.orders*100:0;
   document.getElementById('tiles').innerHTML=[
-    tile('Bestellungen',fmtN(a.orders),'im gewählten Zeitraum'),
-    tile('Mit Upsell',fmtN(a.upsellOrders),'Bestellungen mit ≥ 1 Upsell-Artikel'),
-    tile('Take-Rate',takeRate.toLocaleString('de-DE')+' %','Anteil Bestellungen mit Upsell',true),
-    tile('Upsell-Umsatz',fmtEur(a.upsellRevenue,c),fmtN(a.upsellUnits)+' Artikel · nach Rabatt',true),
+    tile('Bestellungen',fmtN(a.orders)+delta(a.orders,p.orders),'im gewählten Zeitraum'),
+    tile('Mit Upsell',fmtN(a.upsellOrders)+delta(a.upsellOrders,p.upsellOrders),'Bestellungen mit ≥ 1 Upsell-Artikel'),
+    tile('Take-Rate overall',fmtP(tr)+' %'+delta(tr,trPrev),'% aller Bestellungen mit Upsell-Kauf',true),
+    tile('Upsell-Umsatz',fmtEur(a.upsellRevenue,c)+delta(a.upsellRevenue,p.upsellRevenue),fmtN(a.upsellUnits)+' Artikel · nach Rabatt',true),
+  ].join('');
+
+  const aovWith=a.upsellOrders?a.upsellOrdersRevenue/a.upsellOrders:0;
+  const withoutOrders=a.orders-a.upsellOrders;
+  const aovWithout=withoutOrders?(a.totalRevenue-a.upsellOrdersRevenue)/withoutOrders:0;
+  const aovAll=a.orders?a.totalRevenue/a.orders:0;
+  const uplift=aovWithout?((aovWith/aovWithout)-1)*100:0;
+  const roi=a.discountGiven?a.upsellRevenue/a.discountGiven:0;
+  document.getElementById('tiles2').innerHTML=[
+    tile('Ø Bestellwert mit Upsell',fmtEur(aovWith,c),'AOV der Upsell-Bestellungen'),
+    tile('Ø Bestellwert ohne',fmtEur(aovWithout,c),'AOV overall: '+fmtEur(aovAll,c)),
+    tile('AOV-Uplift',(uplift>=0?'+':'')+fmtP(uplift)+' %','mit Upsell vs. ohne',true),
+    tile('€-Mehrwert je Bestellung',fmtEur(aovWith-aovWithout,c),'Differenz der Ø Bestellwerte',true),
+    tile('Upsell-ROI',roi?fmtP(roi)+'×':'–','€ Upsell-Umsatz je Rabatt-€ ('+fmtEur(a.discountGiven,c)+' Rabatt)'),
   ].join('');
 
   const box=document.getElementById('products');
-  const prods=Object.values(a.products).sort((x,y)=>y.revenue-x.revenue);
-  if(!prods.length){box.innerHTML='<div class="empty">Keine Upsell-Käufe im gewählten Zeitraum.</div>';}
+  lastProds=Object.values(a.products).sort((x,y)=>y.revenue-x.revenue);
+  if(!lastProds.length){box.innerHTML='<div class="empty">Keine Upsell-Käufe im gewählten Zeitraum.</div>';}
   else{
-    const max=Math.max(...prods.map(p=>p.revenue),1);
-    box.innerHTML='<table><thead><tr><th>Produkt</th><th class="num">Verkäufe</th><th class="num">Umsatz</th><th class="num">Gewährter Rabatt</th><th style="width:24%">Anteil</th><th>Szenario</th></tr></thead><tbody>'+
-      prods.map(p=>'<tr><td><strong>'+esc(p.title)+'</strong></td><td class="num">'+fmtN(p.units)+'</td><td class="num"><strong>'+fmtEur(p.revenue,c)+'</strong></td><td class="num">'+fmtEur(p.discountGiven,c)+'</td><td><div class="bar-bg"><div class="bar" style="width:'+Math.max(3,Math.round(p.revenue/max*100))+'%"></div></div></td><td>'+Object.keys(p.scenarios).map(s=>'<span class="pill">'+esc(s)+'</span>').join('')+'</td></tr>').join('')+
+    const max=Math.max(...lastProds.map(x=>x.revenue),1);
+    box.innerHTML='<table><thead><tr><th>Produkt</th><th class="num">Verkäufe</th><th class="num">Umsatz</th><th class="num">Gewährter Rabatt</th><th style="width:22%">Anteil</th><th>Szenario</th></tr></thead><tbody>'+
+      lastProds.map(x=>'<tr><td><strong>'+esc(x.title)+'</strong></td><td class="num">'+fmtN(x.units)+'</td><td class="num"><strong>'+fmtEur(x.revenue,c)+'</strong></td><td class="num">'+fmtEur(x.discountGiven,c)+'</td><td><div class="bar-bg"><div class="bar" style="width:'+Math.max(3,Math.round(x.revenue/max*100))+'%"></div></div></td><td>'+Object.keys(x.scenarios).map(s=>'<span class="pill">'+esc(s)+'</span>').join('')+'</td></tr>').join('')+
       '</tbody></table>';
   }
 
   const scen=Object.values(a.scenarios).sort((x,y)=>y.revenue-x.revenue);
-  document.getElementById('scenarios').innerHTML=scen.length
-    ?scen.map(s=>'<div class="ab-row"><span><strong>'+esc(s.name)+'</strong> · '+fmtN(s.units)+' Artikel in '+fmtN(s.upsellOrders)+' Bestellungen</span><strong>'+fmtEur(s.revenue,c)+'</strong></div>').join('')
-    :'<div class="empty">Keine Daten im Zeitraum.</div>';
+  const st=document.getElementById('scenarioTable');
+  if(!scen.length){st.innerHTML='<div class="empty">Keine Daten im Zeitraum.</div>';}
+  else{
+    st.innerHTML='<table><thead><tr><th>Szenario</th><th class="num">Artikel</th><th class="num">Bestellungen</th><th class="num">Umsatz</th><th class="num">Anteil aller Bestellungen</th><th class="num">Take-Rate echt (gesehen → gekauft)</th></tr></thead><tbody>'+
+      scen.map(s=>{
+        const share=a.orders?s.upsellOrders/a.orders*100:0;
+        const sh=a.shown[s.name];
+        const real=sh&&sh.shown?fmtP(sh.converted/sh.shown*100)+' % <span style="color:var(--muted)">('+sh.converted+'/'+sh.shown+')</span>':'–';
+        return '<tr><td><strong>'+esc(s.name)+'</strong></td><td class="num">'+fmtN(s.units)+'</td><td class="num">'+fmtN(s.upsellOrders)+'</td><td class="num"><strong>'+fmtEur(s.revenue,c)+'</strong></td><td class="num">'+fmtP(share)+' %</td><td class="num">'+real+'</td></tr>';
+      }).join('')+'</tbody></table>';
+  }
+
+  drawPie('piePct',scen,c,'pct');
+  drawPie('pieEur',scen,c,'eur');
 
   const abBox=document.getElementById('ab');
   const t=a.ab.test,k=a.ab.control,n=a.ab.none;
@@ -222,42 +278,129 @@ function render(){
   }else{
     const col=(title,cls,v)=>'<div><div class="ab-head '+cls+'">'+title+'</div>'+
       '<div class="ab-row"><span>Bestellungen</span><strong>'+fmtN(v.orders)+'</strong></div>'+
-      '<div class="ab-row"><span>Take-Rate</span><strong>'+(v.orders?Math.round(v.upsellOrders/v.orders*10000)/100:0).toLocaleString('de-DE')+' %</strong></div>'+
+      '<div class="ab-row"><span>Take-Rate</span><strong>'+fmtP(v.orders?v.upsellOrders/v.orders*100:0)+' %</strong></div>'+
       '<div class="ab-row"><span>Ø Bestellwert</span><strong>'+fmtEur(v.orders?v.revenue/v.orders:0,c)+'</strong></div></div>';
     const aovT=t.orders?t.revenue/t.orders:0,aovK=k.orders?k.revenue/k.orders:0;
     abBox.innerHTML='<div class="grid2">'+col('Test (mit Upsell)','test',t)+col('Control (ohne)','control',k)+'</div>'+
-      (aovT&&aovK?'<div class="ab-row" style="margin-top:8px"><span>AOV-Uplift Test vs. Control</span><strong style="color:var(--brick)">'+(((aovT/aovK)-1)*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %</strong></div>':'');
+      (aovT&&aovK?'<div class="ab-row" style="margin-top:8px"><span>AOV-Uplift Test vs. Control</span><strong style="color:var(--brick)">'+fmtP(((aovT/aovK)-1)*100)+' %</strong></div>':'');
   }
 
-  drawChart(sel,c);
+  drawLines(sel);
+  drawRevenue(sel,c);
+  drawWeekdays(sel,c);
 }
 
 function tile(label,value,sub,accent){return '<div class="tile"><div class="label">'+label+'</div><div class="value'+(accent?' accent':'')+'">'+value+'</div><div class="sub">'+sub+'</div></div>';}
 function esc(s){return String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
 
-function drawChart(sel,c){
-  const el=document.getElementById('chart');
-  if(!sel||!sel.length){el.innerHTML='<div class="empty">Keine Daten im Zeitraum.</div>';return;}
-  const W=1020,H=260,P={l:46,r:52,t:16,b:34};
-  const iw=W-P.l-P.r,ih=H-P.t-P.b;
-  const maxO=Math.max(...sel.map(x=>x.orders),1);
-  const maxR=Math.max(...sel.map(x=>x.upsellRevenue),1);
-  const n=sel.length,bw=Math.min(34,iw/n*0.55);
-  const X=i=>P.l+(n===1?iw/2:i*(iw/(n-1||1)));
-  let bars='',line='',dots='',labels='';
-  sel.forEach((x,i)=>{
-    const bx=X(i)-bw/2,bh=x.orders/maxO*ih;
-    bars+='<rect x="'+bx+'" y="'+(P.t+ih-bh)+'" width="'+bw+'" height="'+bh+'" rx="4" fill="#E5DCCF"/>';
-    const ly=P.t+ih-(x.upsellRevenue/maxR*ih);
-    line+=(i?'L':'M')+X(i)+' '+ly+' ';
-    dots+='<circle cx="'+X(i)+'" cy="'+ly+'" r="3.5" fill="#B5493A"/>';
-    if(n<=14||i%Math.ceil(n/12)===0){
-      labels+='<text x="'+X(i)+'" y="'+(H-10)+'" font-size="10" fill="#9B8A7C" text-anchor="middle">'+x.date.slice(8,10)+'.'+x.date.slice(5,7)+'.</text>';
-    }
+function drawPie(id,scen,c,mode){
+  const el=document.getElementById(id);
+  const total=scen.reduce((s,x)=>s+x.revenue,0);
+  if(!scen.length||!total){el.innerHTML='<div class="empty">Keine Daten.</div>';return;}
+  const R=78,CX=110,CY=100,IR=44;
+  let angle=-Math.PI/2,paths='',labels='';
+  scen.forEach((s,i)=>{
+    const frac=s.revenue/total, a2=angle+frac*2*Math.PI;
+    const large=frac>0.5?1:0;
+    const x1=CX+R*Math.cos(angle),y1=CY+R*Math.sin(angle);
+    const x2=CX+R*Math.cos(a2),y2=CY+R*Math.sin(a2);
+    const xi2=CX+IR*Math.cos(a2),yi2=CY+IR*Math.sin(a2);
+    const xi1=CX+IR*Math.cos(angle),yi1=CY+IR*Math.sin(angle);
+    paths+='<path d="M'+x1+' '+y1+' A'+R+' '+R+' 0 '+large+' 1 '+x2+' '+y2+' L'+xi2+' '+yi2+' A'+IR+' '+IR+' 0 '+large+' 0 '+xi1+' '+yi1+' Z" fill="'+PIE_COLORS[i%PIE_COLORS.length]+'"/>';
+    const mid=(angle+a2)/2,lx=CX+(R+22)*Math.cos(mid),ly=CY+(R+22)*Math.sin(mid);
+    const txt=mode==='pct'?fmtP(frac*100)+' %':fmtEur(s.revenue,c);
+    if(frac>0.03) labels+='<text x="'+lx+'" y="'+ly+'" font-size="12" font-weight="700" fill="#3E2A1E" text-anchor="middle">'+txt+'</text>';
+    angle=a2;
   });
-  el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+
-    bars+'<path d="'+line+'" fill="none" stroke="#B5493A" stroke-width="2.5"/>'+dots+labels+
-    '<text x="'+P.l+'" y="'+(P.t+2)+'" font-size="10" fill="#9B8A7C">Balken: Bestellungen/Tag · Linie: Upsell-Umsatz ('+(c||'EUR')+')</text></svg>';
+  el.innerHTML='<svg viewBox="0 0 400 200" style="width:100%;height:auto"><g transform="translate(70,0)">'+paths+labels+'</g></svg>'+
+    '<div class="legend">'+scen.map((s,i)=>'<span style="--dot:'+PIE_COLORS[i%PIE_COLORS.length]+'">'+esc(s.name)+'</span>').join('')+'</div>';
+}
+
+function chartFrame(sel){
+  const W=1020,H=250,P={l:46,r:52,t:20,b:34};
+  const iw=W-P.l-P.r,ih=H-P.t-P.b;
+  const n=sel.length;
+  const X=i=>P.l+(n===1?iw/2:i*(iw/(n-1||1)));
+  let labels='';
+  sel.forEach((x,i)=>{
+    if(n<=14||i%Math.ceil(n/12)===0)
+      labels+='<text x="'+X(i)+'" y="'+(H-10)+'" font-size="10" fill="#9B8A7C" text-anchor="middle">'+x.date.slice(8,10)+'.'+x.date.slice(5,7)+'.</text>';
+  });
+  return {W,H,P,iw,ih,n,X,labels};
+}
+function linePath(sel,X,yFn){let p='';sel.forEach((x,i)=>{p+=(i?'L':'M')+X(i)+' '+yFn(x)+' ';});return p;}
+
+function drawLines(sel){
+  const el=document.getElementById('chartLines');
+  if(!sel.length){el.innerHTML='<div class="empty">Keine Daten im Zeitraum.</div>';return;}
+  const f=chartFrame(sel);
+  const max=Math.max(...sel.map(x=>x.orders),1);
+  const y=v=>f.P.t+f.ih-(v/max*f.ih);
+  let dots='';
+  sel.forEach((x,i)=>{
+    dots+='<circle cx="'+f.X(i)+'" cy="'+y(x.orders)+'" r="3" fill="#A79B8D"/>';
+    dots+='<circle cx="'+f.X(i)+'" cy="'+y(x.upsellOrders)+'" r="3" fill="#B5493A"/>';
+  });
+  el.innerHTML='<svg viewBox="0 0 '+f.W+' '+f.H+'" style="width:100%;height:auto">'+
+    '<path d="'+linePath(sel,f.X,x=>y(x.orders))+'" fill="none" stroke="#A79B8D" stroke-width="2.5"/>'+
+    '<path d="'+linePath(sel,f.X,x=>y(x.upsellOrders))+'" fill="none" stroke="#B5493A" stroke-width="2.5"/>'+
+    dots+f.labels+
+    '<text x="'+f.P.l+'" y="14" font-size="10" fill="#9B8A7C">Linien: Bestellungen (taupe) · Upsell-Bestellungen (rot)</text></svg>';
+}
+
+function drawRevenue(sel,c){
+  const el=document.getElementById('chartRevenue');
+  if(!sel.length){el.innerHTML='<div class="empty">Keine Daten im Zeitraum.</div>';return;}
+  const f=chartFrame(sel);
+  const max=Math.max(...sel.map(x=>x.upsellRevenue),1);
+  const bw=Math.min(34,f.iw/f.n*0.55);
+  let bars='';
+  sel.forEach((x,i)=>{
+    const bh=x.upsellRevenue/max*f.ih;
+    bars+='<rect x="'+(f.X(i)-bw/2)+'" y="'+(f.P.t+f.ih-bh)+'" width="'+bw+'" height="'+bh+'" rx="4" fill="#B5493A"/>';
+    if(f.n<=14) bars+='<text x="'+f.X(i)+'" y="'+(f.P.t+f.ih-bh-6)+'" font-size="10" font-weight="700" fill="#7A4A2B" text-anchor="middle">'+fmtEur(x.upsellRevenue,c)+'</text>';
+  });
+  el.innerHTML='<svg viewBox="0 0 '+f.W+' '+f.H+'" style="width:100%;height:auto">'+bars+f.labels+
+    '<text x="'+f.P.l+'" y="14" font-size="10" fill="#9B8A7C">Upsell-Umsatz pro Tag ('+(c||'EUR')+')</text></svg>';
+}
+
+function drawWeekdays(sel,c){
+  const el=document.getElementById('weekdays');
+  if(!sel.length){el.innerHTML='<div class="empty">Keine Daten im Zeitraum.</div>';return;}
+  const names=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  const agg=names.map(()=>({rev:0,orders:0,ups:0,days:0}));
+  sel.forEach(x=>{
+    const wd=(new Date(x.date+'T00:00:00Z').getUTCDay()+6)%7;
+    agg[wd].rev+=x.upsellRevenue;agg[wd].orders+=x.orders;agg[wd].ups+=x.upsellOrders;agg[wd].days++;
+  });
+  const max=Math.max(...agg.map(x=>x.rev),1);
+  const W=1020,H=230,P={l:30,r:30,t:24,b:48},iw=W-P.l-P.r,ih=H-P.t-P.b;
+  const bw=Math.min(72,iw/7*0.6);
+  let bars='';
+  agg.forEach((x,i)=>{
+    const cx=P.l+iw/7*(i+0.5);
+    const bh=x.rev/max*ih;
+    bars+='<rect x="'+(cx-bw/2)+'" y="'+(P.t+ih-bh)+'" width="'+bw+'" height="'+Math.max(bh,1)+'" rx="5" fill="'+(x.days?'#B5493A':'#E5DCCF')+'"/>';
+    if(x.rev>0) bars+='<text x="'+cx+'" y="'+(P.t+ih-bh-7)+'" font-size="11" font-weight="700" fill="#7A4A2B" text-anchor="middle">'+fmtEur(x.rev,c)+'</text>';
+    bars+='<text x="'+cx+'" y="'+(H-26)+'" font-size="12" font-weight="700" fill="#3E2A1E" text-anchor="middle">'+names[i]+'</text>';
+    const tr=x.orders?fmtP(x.ups/x.orders*100)+' %':'–';
+    bars+='<text x="'+cx+'" y="'+(H-10)+'" font-size="10" fill="#9B8A7C" text-anchor="middle">'+(x.days?tr:'keine Daten')+'</text>';
+  });
+  el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+bars+
+    '<text x="'+P.l+'" y="14" font-size="10" fill="#9B8A7C">Balken: Upsell-Umsatz · darunter: Take-Rate je Wochentag</text></svg>';
+}
+
+function exportCsv(){
+  if(!lastProds.length) return;
+  const rows=[['Produkt','Verkäufe','Umsatz','Gewährter Rabatt','Szenarien']];
+  lastProds.forEach(p=>rows.push([p.title,p.units,String(p.revenue).replace('.',','),String(p.discountGiven).replace('.',','),Object.keys(p.scenarios).join(' / ')]));
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const aEl=document.createElement('a');
+  aEl.href=URL.createObjectURL(blob);
+  aEl.download='sevn-upsell-produkte.csv';
+  aEl.click();
+  URL.revokeObjectURL(aEl.href);
 }
 </script>
 </body>
