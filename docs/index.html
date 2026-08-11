@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>SEVN Upsell-Dashboard · 7 o'clock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F2EA; --cream2:#F1EAE0; --card:#FFFFFF;
+    --ink:#3E2A1E; --ink-soft:#7A4A2B; --muted:#9B8A7C;
+    --brick:#B5493A; --brick-soft:#E8D5D1; --taupe:#A79B8D;
+    --line:#E5DCCF; --ok:#5E7A5E;
+    --serif:'Cormorant Garamond',Georgia,serif; --sans:'Lato',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;padding:32px 20px 64px}
+  .wrap{max-width:1080px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:26px;flex-wrap:wrap;gap:10px}
+  .brand{font-family:var(--serif);font-size:30px;font-weight:600;letter-spacing:.4px}
+  .brand small{display:block;font-family:var(--sans);font-size:11px;letter-spacing:3px;color:var(--ink-soft);text-transform:uppercase;margin-top:2px}
+  .stamp{font-size:12px;color:var(--muted);text-align:right}
+  h2{font-family:var(--serif);font-size:21px;font-weight:600;margin:34px 0 14px}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .tile .label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-soft)}
+  .tile .value{font-family:var(--serif);font-size:34px;font-weight:600;margin-top:6px}
+  .tile .value.accent{color:var(--brick)}
+  .tile .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-soft);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  th.num,td.num{text-align:right}
+  td{padding:10px;border-bottom:1px solid var(--cream2);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  .bar-bg{background:var(--cream2);border-radius:6px;height:10px;min-width:90px;overflow:hidden}
+  .bar{background:var(--brick);height:100%;border-radius:6px}
+  .pill{display:inline-block;background:var(--brick-soft);color:var(--brick);border-radius:999px;font-size:11px;font-weight:700;padding:2px 10px;margin:1px 2px 1px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .ab-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--cream2);font-size:14px}
+  .ab-row:last-child{border-bottom:none}
+  .ab-head{font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+  .ab-head.test{color:var(--brick)} .ab-head.control{color:var(--taupe)}
+  .empty{padding:38px;text-align:center;color:var(--muted);font-style:italic}
+  .footnote{font-size:12px;color:var(--muted);margin-top:26px}
+  svg text{font-family:var(--sans)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">7 o'clock <small>SEVN Upsell-Dashboard</small></div>
+    <div class="stamp" id="stamp">lädt…</div>
+  </header>
+
+  <div class="tiles" id="tiles"></div>
+
+  <h2>Upsell-Produkte</h2>
+  <div class="card"><div id="products"></div></div>
+
+  <div class="grid2">
+    <div>
+      <h2>Szenarien</h2>
+      <div class="card" id="scenarios"></div>
+    </div>
+    <div>
+      <h2>A/B-Test</h2>
+      <div class="card" id="ab"></div>
+    </div>
+  </div>
+
+  <h2>Verlauf</h2>
+  <div class="card" id="chart"></div>
+
+  <p class="footnote">Basis: alle Bestellungen seit Go-live (<span id="since"></span>) mit Upsell-Markierung (<code>_sevn_upsell</code>).
+  Umsatz = tatsächlich bezahlte Upsell-Positionen nach Rabatt. Aktualisiert sich täglich automatisch um ca. 6:30 Uhr.</p>
+</div>
+
+<script>
+const fmtEur = (v,c)=> new Intl.NumberFormat('de-DE',{style:'currency',currency:c||'EUR'}).format(v);
+const fmtN = (v)=> new Intl.NumberFormat('de-DE').format(v);
+
+fetch('./data.json?ts='+Date.now()).then(r=>{
+  if(!r.ok) throw new Error('data.json fehlt');
+  return r.json();
+}).then(render).catch(()=> {
+  document.getElementById('stamp').textContent='Noch keine Daten – der erste Datenlauf steht aus.';
+  document.getElementById('tiles').innerHTML='<div class="tile"><div class="empty">Sobald der erste automatische Datenlauf durch ist, erscheinen hier die Zahlen.</div></div>';
+});
+
+function render(d){
+  const c=d.currency;
+  document.getElementById('stamp').innerHTML='Stand: '+new Date(d.generatedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})+' Uhr';
+  document.getElementById('since').textContent=new Date(d.since).toLocaleDateString('de-DE');
+
+  const t=d.totals;
+  document.getElementById('tiles').innerHTML=[
+    tile('Bestellungen gesamt',fmtN(t.orders),'seit Go-live'),
+    tile('Mit Upsell',fmtN(t.upsellOrders),'Bestellungen mit ≥ 1 Upsell-Artikel'),
+    tile('Take-Rate',t.takeRatePct.toLocaleString('de-DE')+' %','Anteil Bestellungen mit Upsell',true),
+    tile('Upsell-Umsatz',fmtEur(t.upsellRevenue,c),fmtN(t.upsellUnits)+' Artikel · nach Rabatt',true),
+  ].join('');
+
+  const box=document.getElementById('products');
+  if(!d.products.length){box.innerHTML='<div class="empty">Noch keine Upsell-Käufe erfasst.</div>';}
+  else{
+    const max=Math.max(...d.products.map(p=>p.revenue),1);
+    box.innerHTML='<table><thead><tr><th>Produkt</th><th class="num">Verkäufe</th><th class="num">Umsatz</th><th class="num">Gewährter Rabatt</th><th style="width:26%">Anteil</th><th>Szenario</th></tr></thead><tbody>'+
+      d.products.map(p=>'<tr><td><strong>'+esc(p.title)+'</strong></td><td class="num">'+fmtN(p.units)+'</td><td class="num"><strong>'+fmtEur(p.revenue,c)+'</strong></td><td class="num">'+fmtEur(p.discountGiven,c)+'</td><td><div class="bar-bg"><div class="bar" style="width:'+Math.max(3,Math.round(p.revenue/max*100))+'%"></div></div></td><td>'+Object.keys(p.scenarios).map(s=>'<span class="pill">'+esc(s)+'</span>').join('')+'</td></tr>').join('')+
+      '</tbody></table>';
+  }
+
+  const sc=document.getElementById('scenarios');
+  sc.innerHTML = d.scenarios.length
+    ? d.scenarios.map(s=>'<div class="ab-row"><span><strong>'+esc(s.name)+'</strong> · '+fmtN(s.units)+' Artikel in '+fmtN(s.upsellOrders)+' Bestellungen</span><strong>'+fmtEur(s.revenue,c)+'</strong></div>').join('')
+    : '<div class="empty">Noch keine Daten.</div>';
+
+  const abBox=document.getElementById('ab');
+  const test=d.ab.test, ctrl=d.ab.control, none=d.ab.none;
+  if((test.orders+ctrl.orders)===0){
+    abBox.innerHTML='<div class="empty">A/B-Test ist derzeit nicht aktiv – alle '+fmtN(none.orders)+' Bestellungen sehen den Upsell.</div>';
+  } else {
+    abBox.innerHTML='<div class="grid2">'+abCol('Test (mit Upsell)','test',test,c)+abCol('Control (ohne)','control',ctrl,c)+'</div>'+
+      (test.aov&&ctrl.aov?'<div class="ab-row" style="margin-top:8px"><span>AOV-Uplift Test vs. Control</span><strong style="color:var(--brick)">'+(((test.aov/ctrl.aov)-1)*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %</strong></div>':'');
+  }
+
+  drawChart(d.daily,c);
+}
+
+function tile(label,value,sub,accent){return '<div class="tile"><div class="label">'+label+'</div><div class="value'+(accent?' accent':'')+'">'+value+'</div><div class="sub">'+sub+'</div></div>';}
+function abCol(title,cls,v,c){return '<div><div class="ab-head '+cls+'">'+title+'</div>'+
+  '<div class="ab-row"><span>Bestellungen</span><strong>'+fmtN(v.orders)+'</strong></div>'+
+  '<div class="ab-row"><span>Take-Rate</span><strong>'+v.takeRatePct.toLocaleString('de-DE')+' %</strong></div>'+
+  '<div class="ab-row"><span>Ø Bestellwert</span><strong>'+fmtEur(v.aov,c)+'</strong></div></div>';}
+function esc(s){return String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
+
+function drawChart(daily,c){
+  const el=document.getElementById('chart');
+  if(!daily||!daily.length){el.innerHTML='<div class="empty">Noch keine Daten.</div>';return;}
+  const W=1020,H=260,P={l:46,r:52,t:16,b:34};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b;
+  const maxO=Math.max(...daily.map(x=>x.orders),1);
+  const maxR=Math.max(...daily.map(x=>x.upsellRevenue),1);
+  const n=daily.length, bw=Math.min(34,iw/n*0.55);
+  const X=i=> P.l + (n===1? iw/2 : i*(iw/(n-1||1)));
+  let bars='',line='',dots='',labels='';
+  daily.forEach((x,i)=>{
+    const bx=X(i)-bw/2, bh=x.orders/maxO*ih;
+    bars+='<rect x="'+bx+'" y="'+(P.t+ih-bh)+'" width="'+bw+'" height="'+bh+'" rx="4" fill="#E5DCCF"/>';
+    const ly=P.t+ih-(x.upsellRevenue/maxR*ih);
+    line+=(i?'L':'M')+X(i)+' '+ly+' ';
+    dots+='<circle cx="'+X(i)+'" cy="'+ly+'" r="3.5" fill="#B5493A"/>';
+    if(n<=14||i%Math.ceil(n/12)===0){
+      labels+='<text x="'+X(i)+'" y="'+(H-10)+'" font-size="10" fill="#9B8A7C" text-anchor="middle">'+x.date.slice(8,10)+'.'+x.date.slice(5,7)+'.</text>';
+    }
+  });
+  el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+
+    bars+'<path d="'+line+'" fill="none" stroke="#B5493A" stroke-width="2.5"/>'+dots+labels+
+    '<text x="'+P.l+'" y="'+(P.t+2)+'" font-size="10" fill="#9B8A7C">Balken: Bestellungen/Tag · Linie: Upsell-Umsatz ('+(c||'EUR')+')</text></svg>';
+}
+</script>
+</body>
+</html>
