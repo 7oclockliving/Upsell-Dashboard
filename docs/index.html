@@ -135,6 +135,9 @@ const fmtN=(v)=>new Intl.NumberFormat('de-DE').format(v);
 const fmtP=(v)=>v.toLocaleString('de-DE',{maximumFractionDigits:1});
 const fmtD=(iso)=>{const[y,m,d]=iso.split('-');return d+'.'+m+'.'+y;};
 const PIE_COLORS=['#B5493A','#A79B8D','#7A4A2B','#D9C4A1','#E8D5D1'];
+/* Mobil: Charts in schmalerem Koordinatensystem zeichnen, damit die Schrift lesbar bleibt */
+const isMobile=()=>window.matchMedia('(max-width:760px)').matches;
+let rzT;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(DATA)render();},200);});
 
 const RANGES=[
   {key:'d1',label:'Letzter Tag',days:1},
@@ -348,16 +351,18 @@ function drawPie(id,scen,c,mode){
 }
 
 function chartFrame(sel,draw){
-  const W=1020,H=250,P={l:46,r:52,t:20,b:34};
+  const M=isMobile();
+  const W=M?420:1020,H=M?230:250,P=M?{l:24,r:24,t:20,b:34}:{l:46,r:52,t:20,b:34};
   const iw=W-P.l-P.r,ih=H-P.t-P.b;
   const n=sel.length;
   const X=i=>P.l+(n===1?iw/2:i*(iw/(n-1||1)));
   let labels='';
+  const every=Math.ceil(n/(M?6:12));
   sel.forEach((x,i)=>{
-    if(n<=14||i%Math.ceil(n/12)===0)
+    if(n<=(M?7:14)||i%every===0)
       labels+='<text x="'+X(i)+'" y="'+(H-10)+'" font-size="10" fill="#9B8A7C" text-anchor="middle">'+x.date.slice(8,10)+'.'+x.date.slice(5,7)+'.</text>';
   });
-  return {W,H,P,iw,ih,n,X,labels};
+  return {W,H,P,iw,ih,n,X,labels,M};
 }
 function linePath(sel,X,yFn){let p='';sel.forEach((x,i)=>{p+=(i?'L':'M')+X(i)+' '+yFn(x)+' ';});return p;}
 
@@ -389,7 +394,7 @@ function drawRevenue(sel,c){
   sel.forEach((x,i)=>{
     const bh=x.upsellRevenue/max*f.ih;
     bars+='<rect x="'+(f.X(i)-bw/2)+'" y="'+(f.P.t+f.ih-bh)+'" width="'+bw+'" height="'+bh+'" rx="4" fill="#B5493A"/>';
-    if(f.n<=14){
+    if(f.n<=(f.M?7:14)){
       const inside=bh>=f.ih-18; // hoher Balken: Label unter die Oberkante (sonst Kollision mit Titelzeile)
       const lyy=inside?f.P.t+f.ih-bh+14:f.P.t+f.ih-bh-6;
       bars+='<text x="'+f.X(i)+'" y="'+lyy+'" font-size="10" font-weight="700" fill="#7A4A2B" stroke="#FFFFFF" stroke-width="3" paint-order="stroke" text-anchor="middle">'+fmtEur(x.upsellRevenue,c)+'</text>';
@@ -409,7 +414,8 @@ function drawWeekdays(sel,c){
     agg[wd].rev+=x.upsellRevenue;agg[wd].orders+=x.orders;agg[wd].ups+=x.upsellOrders;agg[wd].days++;
   });
   const max=Math.max(...agg.map(x=>x.rev),1);
-  const W=1020,H=230,P={l:30,r:30,t:24,b:48},iw=W-P.l-P.r,ih=H-P.t-P.b;
+  const M=isMobile();
+  const W=M?420:1020,H=230,P=M?{l:12,r:12,t:24,b:48}:{l:30,r:30,t:24,b:48},iw=W-P.l-P.r,ih=H-P.t-P.b;
   const bw=Math.min(72,iw/7*0.6);
   let bars='';
   agg.forEach((x,i)=>{
@@ -423,7 +429,7 @@ function drawWeekdays(sel,c){
     }
     bars+='<text x="'+cx+'" y="'+(H-26)+'" font-size="12" font-weight="700" fill="#3E2A1E" text-anchor="middle">'+names[i]+'</text>';
     const tr=x.orders?fmtP(x.ups/x.orders*100)+' %':'–';
-    bars+='<text x="'+cx+'" y="'+(H-10)+'" font-size="10" fill="#9B8A7C" text-anchor="middle">'+(x.days?tr:'keine Daten')+'</text>';
+    bars+='<text x="'+cx+'" y="'+(H-10)+'" font-size="10" fill="#9B8A7C" text-anchor="middle">'+(x.days?tr:(M?'–':'keine Daten'))+'</text>';
   });
   el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">'+bars+
     '<text x="'+P.l+'" y="14" font-size="10" fill="#9B8A7C">Balken: Upsell-Umsatz · darunter: Take-Rate je Wochentag</text></svg>';
