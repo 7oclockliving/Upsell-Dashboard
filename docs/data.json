@@ -1,0 +1,215 @@
+{
+  "generatedAt": "2026-08-11T10:06:03.247Z",
+  "since": "2026-08-10",
+  "currency": "EUR",
+  "totals": {
+    "orders": 291,
+    "upsellOrders": 16,
+    "takeRatePct": 5.5,
+    "upsellUnits": 20,
+    "upsellRevenue": 285.07
+  },
+  "ab": {
+    "test": {
+      "orders": 0,
+      "upsellOrders": 0,
+      "takeRatePct": 0,
+      "aov": 0
+    },
+    "control": {
+      "orders": 0,
+      "upsellOrders": 0,
+      "takeRatePct": 0,
+      "aov": 0
+    },
+    "none": {
+      "orders": 291,
+      "upsellOrders": 16,
+      "takeRatePct": 5.5,
+      "aov": 98.09
+    }
+  },
+  "products": [
+    {
+      "title": "Geriffeltes Weinglas | Paris",
+      "units": 3,
+      "orders": 3,
+      "revenue": 55,
+      "discountGiven": 19.97,
+      "scenarios": {
+        "Lose Gläser (Staffel)": 1,
+        "Gläser-Bundles": 2
+      }
+    },
+    {
+      "title": "Große Bowl Ø27cm in Cremeweiß matt | Nia",
+      "units": 2,
+      "orders": 2,
+      "revenue": 49.4,
+      "discountGiven": 26.58,
+      "scenarios": {
+        "Geschirr": 2
+      }
+    },
+    {
+      "title": "Dipschalen 6er Set in Cremeweiß matt | Nia",
+      "units": 2,
+      "orders": 2,
+      "revenue": 39,
+      "discountGiven": 20.98,
+      "scenarios": {
+        "Geschirr": 2
+      }
+    },
+    {
+      "title": "Karaffe im organischen Design | Alaska",
+      "units": 3,
+      "orders": 3,
+      "revenue": 35.7,
+      "discountGiven": 15.27,
+      "scenarios": {
+        "Gläser-Bundles": 3
+      }
+    },
+    {
+      "title": "Große Bowl Ø27cm in Cremeweiß gerillt | Nia",
+      "units": 1,
+      "orders": 1,
+      "revenue": 26.6,
+      "discountGiven": 11.39,
+      "scenarios": {
+        "Geschirr": 1
+      }
+    },
+    {
+      "title": "Großes perlenbesetztes Glas | Atlanta",
+      "units": 1,
+      "orders": 1,
+      "revenue": 10.99,
+      "discountGiven": 0,
+      "scenarios": {
+        "Lose Gläser (Staffel)": 1
+      }
+    },
+    {
+      "title": "Großes organisches Glas | Alaska",
+      "units": 1,
+      "orders": 1,
+      "revenue": 10.4,
+      "discountGiven": 2.59,
+      "scenarios": {
+        "Lose Gläser (Staffel)": 1
+      }
+    },
+    {
+      "title": "Glastasse Streifen-Design | Norway",
+      "units": 1,
+      "orders": 1,
+      "revenue": 10,
+      "discountGiven": 0,
+      "scenarios": {
+        "Gläser-Bundles": 1
+      }
+    },
+    {
+      "title": "Großes Glas Streifen-Design | Norway",
+      "units": 1,
+      "orders": 1,
+      "revenue": 9.8,
+      "discountGiven": 4.19,
+      "scenarios": {
+        "Gläser-Bundles": 1
+      }
+    },
+    {
+      "title": "Kleines organisches Glas | Alaska",
+      "units": 1,
+      "orders": 1,
+      "revenue": 8.18,
+      "discountGiven": 2.05,
+      "scenarios": {
+        "Lose Gläser (Staffel)": 1
+      }
+    },
+    {
+      "title": "Großes Glas Blumen-Design | Florenz",
+      "units": 1,
+      "orders": 1,
+      "revenue": 8,
+      "discountGiven": 1.99,
+      "scenarios": {
+        "Lose Gläser (Staffel)": 1
+      }
+    },
+    {
+      "title": "Großes Trinkglas im gerillten Design | Venice",
+      "units": 1,
+      "orders": 1,
+      "revenue": 8,
+      "discountGiven": 1.99,
+      "scenarios": {
+        "Lose Gläser (Staffel)": 1
+      }
+    },
+    {
+      "title": "Großes Glas Bogen-Design | Rom",
+      "units": 1,
+      "orders": 1,
+      "revenue": 7,
+      "discountGiven": 2.99,
+      "scenarios": {
+        "Lose Gläser (Staffel)": 1
+      }
+    },
+    {
+      "title": "Kleines Glas Bogen-Design | Rom",
+      "units": 1,
+      "orders": 1,
+      "revenue": 7,
+      "discountGiven": 2.99,
+      "scenarios": {
+        "Lose Gläser (Staffel)": 1
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Geschirr",
+      "upsellOrders": 3,
+      "units": 5,
+      "revenue": 115
+    },
+    {
+      "name": "Gläser-Bundles",
+      "upsellOrders": 7,
+      "units": 7,
+      "revenue": 90.5
+    },
+    {
+      "name": "Lose Gläser (Staffel)",
+      "upsellOrders": 6,
+      "units": 8,
+      "revenue": 79.57
+    }
+  ],
+  "daily": [
+    {
+      "date": "2026-08-09",
+      "orders": 6,
+      "upsellOrders": 0,
+      "upsellRevenue": 0
+    },
+    {
+      "date": "2026-08-10",
+      "orders": 207,
+      "upsellOrders": 9,
+      "upsellRevenue": 202.87
+    },
+    {
+      "date": "2026-08-11",
+      "orders": 78,
+      "upsellOrders": 7,
+      "upsellRevenue": 82.2
+    }
+  ]
+}
