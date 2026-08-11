@@ -139,7 +139,7 @@ function initTabs(){
     if(active!=='custom') render(); else if(customFrom&&customTo) render(); else updateTabs();
   }));
   const last=DATA.days.length?DATA.days[DATA.days.length-1].date:DATA.since;
-  document.getElementById('toDate').value=last;
+  document.getElementById('toDate').value=shiftDate(DATA.generatedAt.slice(0,10),-1)<last?shiftDate(DATA.generatedAt.slice(0,10),-1):last;
   document.getElementById('fromDate').value=DATA.since;
   document.getElementById('applyCustom').addEventListener('click',()=>{
     customFrom=document.getElementById('fromDate').value;
@@ -157,12 +157,15 @@ function daysBetween(a,b){return Math.round((new Date(b+'T00:00:00Z')-new Date(a
 function currentRange(){
   const days=DATA.days;
   if(!days.length) return {from:DATA.since,to:DATA.since,sel:[],prev:[]};
-  const last=days[days.length-1].date;
-  let from,to=last;
+  // Referenz = GESTERN (letzter abgeschlossener Tag): der laufende Tag ist
+  // unvollstaendig und wuerde die Zahlen verzerren. Er ist nur ueber
+  // "Custom" einsehbar. (Anforderung Alina, 11.08.2026)
+  const ref=shiftDate(DATA.generatedAt.slice(0,10),-1);
+  let from,to=ref;
   if(active==='custom'&&customFrom&&customTo){from=customFrom;to=customTo;}
   else{
     const r=RANGES.find(x=>x.key===active)||RANGES[0];
-    from=shiftDate(last,-((r.days||1)-1));
+    from=shiftDate(ref,-((r.days||1)-1));
   }
   const len=daysBetween(from,to);
   const pFrom=shiftDate(from,-len), pTo=shiftDate(from,-1);
@@ -220,7 +223,7 @@ function render(){
   document.getElementById('stamp').innerHTML=
     'Aktualisiert am '+new Date(DATA.generatedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})+' Uhr<br>'+
     '<em>Datensatz: '+fmtD(DATA.since)+' bis '+fmtD(last)+' · '+fmtN(allOrders)+' Bestellungen · alle Tage (inkl. Sa + So)</em>';
-  document.getElementById('rangeNote').textContent='Zeitraum: '+fmtD(from)+' bis '+fmtD(to)+' · Vergleich: gleich langer Zeitraum davor';
+  document.getElementById('rangeNote').textContent='Zeitraum: '+fmtD(from)+' bis '+fmtD(to)+' · endet am letzten abgeschlossenen Tag (gestern) · Vergleich: gleich langer Zeitraum davor';
 
   const tr=a.orders?a.upsellOrders/a.orders*100:0;
   const trPrev=p.orders?p.upsellOrders/p.orders*100:0;
@@ -231,6 +234,7 @@ function render(){
     tile('Upsell-Umsatz',fmtEur(a.upsellRevenue,c)+delta(a.upsellRevenue,p.upsellRevenue),fmtN(a.upsellUnits)+' Artikel · nach Rabatt',true),
   ].join('');
 
+  // AOV-Block
   const aovWith=a.upsellOrders?a.upsellOrdersRevenue/a.upsellOrders:0;
   const withoutOrders=a.orders-a.upsellOrders;
   const aovWithout=withoutOrders?(a.totalRevenue-a.upsellOrdersRevenue)/withoutOrders:0;
@@ -238,13 +242,15 @@ function render(){
   const uplift=aovWithout?((aovWith/aovWithout)-1)*100:0;
   const roi=a.discountGiven?a.upsellRevenue/a.discountGiven:0;
   document.getElementById('tiles2').innerHTML=[
+    tile('Ø Bestellwert overall',fmtEur(aovAll,c),'AOV aller Bestellungen im Zeitraum'),
     tile('Ø Bestellwert mit Upsell',fmtEur(aovWith,c),'AOV der Upsell-Bestellungen'),
-    tile('Ø Bestellwert ohne',fmtEur(aovWithout,c),'AOV overall: '+fmtEur(aovAll,c)),
+    tile('Ø Bestellwert ohne',fmtEur(aovWithout,c),'AOV der Bestellungen ohne Upsell'),
     tile('AOV-Uplift',(uplift>=0?'+':'')+fmtP(uplift)+' %','mit Upsell vs. ohne',true),
     tile('€-Mehrwert je Bestellung',fmtEur(aovWith-aovWithout,c),'Differenz der Ø Bestellwerte',true),
     tile('Upsell-ROI',roi?fmtP(roi)+'×':'–','€ Upsell-Umsatz je Rabatt-€ ('+fmtEur(a.discountGiven,c)+' Rabatt)'),
   ].join('');
 
+  // Produkte
   const box=document.getElementById('products');
   lastProds=Object.values(a.products).sort((x,y)=>y.revenue-x.revenue);
   if(!lastProds.length){box.innerHTML='<div class="empty">Keine Upsell-Käufe im gewählten Zeitraum.</div>';}
@@ -255,6 +261,7 @@ function render(){
       '</tbody></table>';
   }
 
+  // Szenario-Tabelle inkl. beider Take-Rates
   const scen=Object.values(a.scenarios).sort((x,y)=>y.revenue-x.revenue);
   const st=document.getElementById('scenarioTable');
   if(!scen.length){st.innerHTML='<div class="empty">Keine Daten im Zeitraum.</div>';}
@@ -271,6 +278,7 @@ function render(){
   drawPie('piePct',scen,c,'pct');
   drawPie('pieEur',scen,c,'eur');
 
+  // A/B
   const abBox=document.getElementById('ab');
   const t=a.ab.test,k=a.ab.control,n=a.ab.none;
   if((t.orders+k.orders)===0){
@@ -316,7 +324,7 @@ function drawPie(id,scen,c,mode){
     '<div class="legend">'+scen.map((s,i)=>'<span style="--dot:'+PIE_COLORS[i%PIE_COLORS.length]+'">'+esc(s.name)+'</span>').join('')+'</div>';
 }
 
-function chartFrame(sel){
+function chartFrame(sel,draw){
   const W=1020,H=250,P={l:46,r:52,t:20,b:34};
   const iw=W-P.l-P.r,ih=H-P.t-P.b;
   const n=sel.length;
@@ -358,7 +366,11 @@ function drawRevenue(sel,c){
   sel.forEach((x,i)=>{
     const bh=x.upsellRevenue/max*f.ih;
     bars+='<rect x="'+(f.X(i)-bw/2)+'" y="'+(f.P.t+f.ih-bh)+'" width="'+bw+'" height="'+bh+'" rx="4" fill="#B5493A"/>';
-    if(f.n<=14) bars+='<text x="'+f.X(i)+'" y="'+(f.P.t+f.ih-bh-6)+'" font-size="10" font-weight="700" fill="#7A4A2B" text-anchor="middle">'+fmtEur(x.upsellRevenue,c)+'</text>';
+    if(f.n<=14){
+      const inside=bh>=f.ih-18; // hoher Balken: Label IN den Balken (sonst Kollision mit Titelzeile)
+      const lyy=inside?f.P.t+f.ih-bh+14:f.P.t+f.ih-bh-6;
+      bars+='<text x="'+f.X(i)+'" y="'+lyy+'" font-size="10" font-weight="700" fill="'+(inside?'#FFFFFF':'#7A4A2B')+'" text-anchor="middle">'+fmtEur(x.upsellRevenue,c)+'</text>';
+    }
   });
   el.innerHTML='<svg viewBox="0 0 '+f.W+' '+f.H+'" style="width:100%;height:auto">'+bars+f.labels+
     '<text x="'+f.P.l+'" y="14" font-size="10" fill="#9B8A7C">Upsell-Umsatz pro Tag ('+(c||'EUR')+')</text></svg>';
@@ -381,7 +393,11 @@ function drawWeekdays(sel,c){
     const cx=P.l+iw/7*(i+0.5);
     const bh=x.rev/max*ih;
     bars+='<rect x="'+(cx-bw/2)+'" y="'+(P.t+ih-bh)+'" width="'+bw+'" height="'+Math.max(bh,1)+'" rx="5" fill="'+(x.days?'#B5493A':'#E5DCCF')+'"/>';
-    if(x.rev>0) bars+='<text x="'+cx+'" y="'+(P.t+ih-bh-7)+'" font-size="11" font-weight="700" fill="#7A4A2B" text-anchor="middle">'+fmtEur(x.rev,c)+'</text>';
+    if(x.rev>0){
+      const inside=bh>=ih-20;
+      const lyy=inside?P.t+ih-bh+16:P.t+ih-bh-7;
+      bars+='<text x="'+cx+'" y="'+lyy+'" font-size="11" font-weight="700" fill="'+(inside?'#FFFFFF':'#7A4A2B')+'" text-anchor="middle">'+fmtEur(x.rev,c)+'</text>';
+    }
     bars+='<text x="'+cx+'" y="'+(H-26)+'" font-size="12" font-weight="700" fill="#3E2A1E" text-anchor="middle">'+names[i]+'</text>';
     const tr=x.orders?fmtP(x.ups/x.orders*100)+' %':'–';
     bars+='<text x="'+cx+'" y="'+(H-10)+'" font-size="10" fill="#9B8A7C" text-anchor="middle">'+(x.days?tr:'keine Daten')+'</text>';
