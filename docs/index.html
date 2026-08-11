@@ -62,6 +62,27 @@
   .legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;background:var(--dot)}
   .csv-btn{float:right;font-family:var(--sans);font-size:12px;font-weight:700;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--cream2);color:var(--ink-soft);cursor:pointer;margin-top:-4px}
   svg text{font-family:var(--sans)}
+  .scroll-hint{display:none;font-size:11px;color:var(--muted);margin:6px 2px 0}
+  /* ---- Mobile (Handy) ---- */
+  @media(max-width:760px){
+    body{padding:18px 12px 48px;font-size:14px}
+    .brand{font-size:24px}
+    .stamp{font-size:12px}
+    .tabs{width:100%}
+    .tab{font-size:13px;padding:7px 11px;flex:1 1 auto;text-align:center}
+    .tiles{grid-template-columns:repeat(2,1fr);gap:10px}
+    .tile{padding:12px 13px}
+    .tile .label{font-size:10px;letter-spacing:1.2px}
+    .tile .value{font-size:22px}
+    .tile .sub{font-size:11px}
+    h2{font-size:19px}
+    h2 small{display:block;margin-left:0;margin-top:2px}
+    .csv-btn{float:none;display:inline-block;margin:6px 0 0}
+    .card{padding:12px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .card table{min-width:660px}
+    th,td{padding:7px 8px}
+    .scroll-hint{display:block}
+  }
 </style>
 </head>
 <body>
@@ -84,9 +105,11 @@
 
   <h2>Upsell-Produkte <button class="csv-btn" id="csvBtn">CSV exportieren</button></h2>
   <div class="card"><div id="products"></div></div>
+  <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
 
   <h2>Szenarien <small>Take-Rate „echt" = Käufe ÷ Anzeigen (Tracking ab 11.08.2026)</small></h2>
   <div class="card" id="scenarioTable"></div>
+  <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   <div class="grid2" style="margin-top:14px">
     <div class="card"><div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px">Umsatz-Anteile in %</div><div id="piePct"></div></div>
     <div class="card"><div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px">Umsatz in €</div><div id="pieEur"></div></div>
@@ -367,9 +390,9 @@ function drawRevenue(sel,c){
     const bh=x.upsellRevenue/max*f.ih;
     bars+='<rect x="'+(f.X(i)-bw/2)+'" y="'+(f.P.t+f.ih-bh)+'" width="'+bw+'" height="'+bh+'" rx="4" fill="#B5493A"/>';
     if(f.n<=14){
-      const inside=bh>=f.ih-18; // hoher Balken: Label IN den Balken (sonst Kollision mit Titelzeile)
+      const inside=bh>=f.ih-18; // hoher Balken: Label unter die Oberkante (sonst Kollision mit Titelzeile)
       const lyy=inside?f.P.t+f.ih-bh+14:f.P.t+f.ih-bh-6;
-      bars+='<text x="'+f.X(i)+'" y="'+lyy+'" font-size="10" font-weight="700" fill="'+(inside?'#FFFFFF':'#7A4A2B')+'" text-anchor="middle">'+fmtEur(x.upsellRevenue,c)+'</text>';
+      bars+='<text x="'+f.X(i)+'" y="'+lyy+'" font-size="10" font-weight="700" fill="#7A4A2B" stroke="#FFFFFF" stroke-width="3" paint-order="stroke" text-anchor="middle">'+fmtEur(x.upsellRevenue,c)+'</text>';
     }
   });
   el.innerHTML='<svg viewBox="0 0 '+f.W+' '+f.H+'" style="width:100%;height:auto">'+bars+f.labels+
@@ -396,7 +419,7 @@ function drawWeekdays(sel,c){
     if(x.rev>0){
       const inside=bh>=ih-20;
       const lyy=inside?P.t+ih-bh+16:P.t+ih-bh-7;
-      bars+='<text x="'+cx+'" y="'+lyy+'" font-size="11" font-weight="700" fill="'+(inside?'#FFFFFF':'#7A4A2B')+'" text-anchor="middle">'+fmtEur(x.rev,c)+'</text>';
+      bars+='<text x="'+cx+'" y="'+lyy+'" font-size="11" font-weight="700" fill="#7A4A2B" stroke="#FFFFFF" stroke-width="3" paint-order="stroke" text-anchor="middle">'+fmtEur(x.rev,c)+'</text>';
     }
     bars+='<text x="'+cx+'" y="'+(H-26)+'" font-size="12" font-weight="700" fill="#3E2A1E" text-anchor="middle">'+names[i]+'</text>';
     const tr=x.orders?fmtP(x.ups/x.orders*100)+' %':'–';
