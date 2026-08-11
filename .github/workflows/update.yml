@@ -13,7 +13,7 @@ name: Update Upsell-Dashboard
 
 on:
   schedule:
-    - cron: "30 4 * * *" # täglich 04:30 UTC = 06:30 deutscher Sommerzeit
+    - cron: "0 8 * * *" # täglich 08:00 UTC = 10:00 deutscher Sommerzeit (Winter: 09:00)
   workflow_dispatch: {}
 
 permissions:
