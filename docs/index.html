@@ -391,6 +391,7 @@ function renderAbandoned(a,p,c){
     effSub=good?'✓ mit Deal brechen WENIGER Kunden ab':'⚠ mit Deal brechen MEHR Kunden ab';
   }
   tiles.innerHTML=[
+    tile('Checkout erreicht',fmtN(A.total+a.orders),fmtN(a.orders)+' Käufe + '+fmtN(A.total)+' Abbrüche',false,'Alle messbaren Checkout-Besucher: abgeschlossene Bestellungen plus erfasste Abbrüche. Wichtig: Wer den Checkout öffnet und wieder geht, BEVOR er E-Mail/Telefon eintippt, kann hier nicht gezählt werden – die komplette Funnel-Zahl inkl. dieser Besucher zeigt nur Shopify Analytics.'),
     tile('Abgebrochene Checkouts',fmtN(A.total),fmtEur(A.revenue||0,c)+' Warenwert · Vorzeitraum: '+fmtN(P.total||0),false,'Checkouts, in denen der Kunde E-Mail/Telefon hinterlassen, aber nicht gekauft hat (Shopify „abandoned checkouts"). Ohne Kontaktdaten wird ein Abbruch nicht erfasst.'),
     tile('Abbruchquote gesamt',fmtR(rate(A.total,a.orders)),fmtN(A.total+a.orders)+' Checkouts: '+fmtN(A.total)+' Abbrüche · '+fmtN(a.orders)+' Käufe',false,'Abgebrochene Checkouts ÷ (Abgebrochene + abgeschlossene Bestellungen) im Zeitraum.'),
     tile('Abbruchquote mit Deal',fmtR(rS),fmtN(grpShown)+' Checkouts: '+fmtN(A.shown)+' Abbrüche · '+fmtN(ordersShown)+' Käufe',true,'Nur Checkouts, in denen der Deal angezeigt wurde (Tracking seit 11.08.2026). Achtung: Korrelation – wer den Deal sieht, hat einen anderen Warenkorb. Kausal klärt das nur der A/B-Test.'),
