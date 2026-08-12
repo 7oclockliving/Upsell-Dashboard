@@ -379,11 +379,23 @@ function renderAbandoned(a,p,c){
   const ordersShown=Object.values(a.shown).reduce((s,x)=>s+x.shown,0);
   const rate=(ab,ok)=>(ab+ok)?ab/(ab+ok)*100:null;
   const fmtR=(r)=>r===null?'–':fmtP(r)+' %';
+  // Gruppengroessen (12.08.2026, Wunsch Alina): Checkouts je Gruppe direkt
+  // anzeigen + eigene "Deal-Effekt"-Kachel (weniger/mehr Abbrueche mit Deal)
+  const grpShown=A.shown+ordersShown;
+  const grpNo=(A.total-A.shown)+(a.orders-ordersShown);
+  const rS=rate(A.shown,ordersShown),rN=rate(A.total-A.shown,a.orders-ordersShown);
+  let effVal='–',effSub='noch zu wenig Daten';
+  if(rS!==null&&rN!==null){
+    const diff=rS-rN,good=diff<=0;
+    effVal='<span style="color:var(--'+(good?'up':'down')+')">'+(good?'−':'+')+fmtP(Math.abs(diff))+' %-Pkt.</span>';
+    effSub=good?'✓ mit Deal brechen WENIGER Kunden ab':'⚠ mit Deal brechen MEHR Kunden ab';
+  }
   tiles.innerHTML=[
     tile('Abgebrochene Checkouts',fmtN(A.total),fmtEur(A.revenue||0,c)+' Warenwert · Vorzeitraum: '+fmtN(P.total||0),false,'Checkouts, in denen der Kunde E-Mail/Telefon hinterlassen, aber nicht gekauft hat (Shopify „abandoned checkouts"). Ohne Kontaktdaten wird ein Abbruch nicht erfasst.'),
-    tile('Abbruchquote gesamt',fmtR(rate(A.total,a.orders)),'Abbrüche ÷ (Abbrüche + Bestellungen)',false,'Abgebrochene Checkouts ÷ (Abgebrochene + abgeschlossene Bestellungen) im Zeitraum.'),
-    tile('Abbruchquote mit Deal',fmtR(rate(A.shown,ordersShown)),fmtN(A.shown)+' Abbrüche · '+fmtN(ordersShown)+' Käufe nach Deal-Anzeige',true,'Nur Checkouts, in denen der Deal angezeigt wurde (Tracking seit 11.08.2026). Achtung: Korrelation – wer den Deal sieht, hat einen anderen Warenkorb. Kausal klärt das nur der A/B-Test.'),
-    tile('Abbruchquote ohne Deal',fmtR(rate(A.total-A.shown,a.orders-ordersShown)),'Checkouts ohne Deal-Anzeige',false,'Alle übrigen Checkouts ohne Deal-Anzeige – als grober Vergleichswert zur Quote mit Deal.'),
+    tile('Abbruchquote gesamt',fmtR(rate(A.total,a.orders)),fmtN(A.total+a.orders)+' Checkouts: '+fmtN(A.total)+' Abbrüche · '+fmtN(a.orders)+' Käufe',false,'Abgebrochene Checkouts ÷ (Abgebrochene + abgeschlossene Bestellungen) im Zeitraum.'),
+    tile('Abbruchquote mit Deal',fmtR(rS),fmtN(grpShown)+' Checkouts: '+fmtN(A.shown)+' Abbrüche · '+fmtN(ordersShown)+' Käufe',true,'Nur Checkouts, in denen der Deal angezeigt wurde (Tracking seit 11.08.2026). Achtung: Korrelation – wer den Deal sieht, hat einen anderen Warenkorb. Kausal klärt das nur der A/B-Test.'),
+    tile('Abbruchquote ohne Deal',fmtR(rN),fmtN(grpNo)+' Checkouts: '+fmtN(A.total-A.shown)+' Abbrüche · '+fmtN(a.orders-ordersShown)+' Käufe',false,'Alle übrigen Checkouts ohne Deal-Anzeige – als grober Vergleichswert zur Quote mit Deal.'),
+    tile('Deal-Effekt auf Abbrüche',effVal,effSub,false,'Abbruchquote mit Deal minus Abbruchquote ohne Deal, in Prozentpunkten. Grün mit Minus = Kunden mit Deal brechen seltener ab (gut). Rot mit Plus = häufiger – dann genauer hinschauen. Bei kleinen Fallzahlen schwankt der Wert stark; aussagekräftig über mehrere Tage/Wochen.'),
   ].join('');
   const rows=[
     ['Alle Checkouts',A.total,a.orders],
@@ -395,8 +407,8 @@ function renderAbandoned(a,p,c){
     rows.push(['A/B: Test (sieht Deal)',A.ab.test,a.ab.test.orders]);
     rows.push(['A/B: Control (ohne Deal)',A.ab.control,a.ab.control.orders]);
   }
-  tb.innerHTML='<table><thead><tr><th>Gruppe</th><th class="num">Abgebrochen</th><th class="num">Abgeschlossen</th><th class="num">Abbruchquote</th></tr></thead><tbody>'+
-    rows.map(r=>'<tr><td><strong>'+r[0]+'</strong></td><td class="num">'+fmtN(r[1])+'</td><td class="num">'+fmtN(r[2])+'</td><td class="num"><strong>'+fmtR(rate(r[1],r[2]))+'</strong></td></tr>').join('')+
+  tb.innerHTML='<table><thead><tr><th>Gruppe</th><th class="num">Checkouts gesamt</th><th class="num">Abgebrochen</th><th class="num">Abgeschlossen</th><th class="num">Abbruchquote</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr><td><strong>'+r[0]+'</strong></td><td class="num">'+fmtN(r[1]+r[2])+'</td><td class="num">'+fmtN(r[1])+'</td><td class="num">'+fmtN(r[2])+'</td><td class="num"><strong>'+fmtR(rate(r[1],r[2]))+'</strong></td></tr>').join('')+
     '</tbody></table>';
   note.textContent='Hinweis: Als Abbruch zählen nur Checkouts mit hinterlassener E-Mail/Telefonnummer. „Deal angezeigt" wird erst seit dem 11.08.2026 getrackt, „aktiviert" erst mit dem Teaser-Test. Der Vergleich mit/ohne Deal ist Korrelation (unterschiedliche Warenkörbe) – kausal beantwortet das nur der A/B-Test.';
 }
