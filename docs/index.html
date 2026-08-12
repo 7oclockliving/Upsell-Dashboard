@@ -63,6 +63,11 @@
   .csv-btn{float:right;font-family:var(--sans);font-size:12px;font-weight:700;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--cream2);color:var(--ink-soft);cursor:pointer;margin-top:-4px}
   svg text{font-family:var(--sans)}
   .scroll-hint{display:none;font-size:11px;color:var(--muted);margin:6px 2px 0}
+  /* Info-Icons mit Erklaerung (Tippen/Hover) */
+  .info{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--cream2);border:1px solid var(--taupe);color:var(--ink-soft);font-size:10px;font-weight:700;font-family:Georgia,serif;font-style:italic;margin-left:6px;cursor:help;position:relative;vertical-align:middle;text-transform:none;letter-spacing:0;flex:none}
+  .info .tip{display:none;position:absolute;top:140%;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:12px;font-weight:400;font-family:var(--sans);font-style:normal;letter-spacing:0;line-height:1.5;padding:10px 12px;border-radius:9px;width:min(250px,78vw);z-index:20;text-align:left;text-transform:none;box-shadow:0 4px 14px rgba(62,42,30,.25)}
+  .info:hover .tip,.info:focus .tip,.info:focus-within .tip{display:block}
+  .tiles .tile:first-child .info .tip,h2 .info .tip{left:0;transform:none}
   /* ---- Mobile (Handy) ---- */
   @media(max-width:760px){
     body{padding:18px 12px 48px;font-size:14px}
@@ -103,15 +108,15 @@
   <div class="tiles" id="tiles"></div>
   <div class="tiles" id="tiles2"></div>
 
-  <h2>Upsell-Produkte <button class="csv-btn" id="csvBtn">CSV exportieren</button></h2>
+  <h2>Upsell-Produkte <span class="info" tabindex="0">i<span class="tip">Alle als Upsell verkauften Produkte im Zeitraum: Verkäufe = Stückzahl, Umsatz = bezahlter Preis nach Rabatt, Gewährter Rabatt = Differenz zum regulären Preis, Anteil = Umsatzanteil am stärksten Produkt.</span></span> <button class="csv-btn" id="csvBtn">CSV exportieren</button></h2>
   <div class="card"><div id="products"></div></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
 
-  <h2>Bestellungen mit Upsell <small>Bestellnummern im gewählten Zeitraum</small></h2>
+  <h2>Bestellungen mit Upsell <span class="info" tabindex="0">i<span class="tip">Jede einzelne Bestellung mit Deal-Artikel: Bestellnummer (im Shopify-Admin suchbar), kompletter Bestellwert und der darin enthaltene Upsell-Umsatz nach Rabatt.</span></span> <small>Bestellnummern im gewählten Zeitraum</small></h2>
   <div class="card" id="upsellOrders"></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
 
-  <h2>Szenarien <small>Take-Rate „echt" = Käufe ÷ Anzeigen (Tracking ab 11.08.2026)</small></h2>
+  <h2>Szenarien <span class="info" tabindex="0">i<span class="tip">Auswertung je Deal-Typ (Geschirr, Gläser-Bundles, Staffel). „Anteil aller Bestellungen" = Käufe dieses Szenarios ÷ alle Bestellungen. „Take-Rate echt" = Käufe ÷ Checkouts, denen dieses Szenario tatsächlich angezeigt wurde – die ehrlichere Quote (Tracking seit 11.08.2026).</span></span> <small>Take-Rate „echt" = Käufe ÷ Anzeigen (Tracking ab 11.08.2026)</small></h2>
   <div class="card" id="scenarioTable"></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   <div class="grid2" style="margin-top:14px">
@@ -119,20 +124,20 @@
     <div class="card"><div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px">Umsatz in €</div><div id="pieEur"></div></div>
   </div>
 
-  <h2>A/B-Test</h2>
+  <h2>A/B-Test <span class="info" tabindex="0">i<span class="tip">Wenn aktiv, sieht die Hälfte der Kunden den Deal (Test), die andere nicht (Control). Der Vergleich der beiden Gruppen zeigt den ECHTEN Effekt des Deals auf Take-Rate, Bestellwert und Abbrüche – ohne Verzerrung durch unterschiedliche Warenkörbe.</span></span></h2>
   <div class="card" id="ab"></div>
 
-  <h2>Checkout-Abbrüche <small>mit vs. ohne Deal-Anzeige</small></h2>
+  <h2>Checkout-Abbrüche <span class="info" tabindex="0">i<span class="tip">Vergleicht, wie oft Checkouts MIT Deal-Anzeige abgebrochen werden vs. ohne. Es zählen nur Checkouts, in denen der Kunde Kontaktdaten hinterlassen hat. Der Vergleich ist Korrelation – die kausale Antwort liefert der A/B-Test (Zeilen erscheinen automatisch, sobald er läuft).</span></span> <small>mit vs. ohne Deal-Anzeige</small></h2>
   <div class="tiles" id="abandonTiles"></div>
   <div class="card" id="abandonTable"></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   <div class="range-note" id="abandonNote"></div>
 
-  <h2>Verlauf</h2>
+  <h2>Verlauf <span class="info" tabindex="0">i<span class="tip">Oben: Bestellungen pro Tag (taupe Linie) vs. Upsell-Bestellungen (rote Linie). Unten: Upsell-Umsatz pro Tag in Euro (nach Rabatt).</span></span></h2>
   <div class="card" id="chartLines"></div>
   <div class="card" style="margin-top:14px" id="chartRevenue"></div>
 
-  <h2>Wochentage <small>im gewählten Zeitraum</small></h2>
+  <h2>Wochentage <span class="info" tabindex="0">i<span class="tip">Summiert den Zeitraum nach Wochentagen: Balken = Upsell-Umsatz, darunter die Take-Rate des Wochentags. Zeigt, an welchen Tagen der Deal am besten funktioniert – aussagekräftig ab ca. 2–4 Wochen Datenbasis.</span></span> <small>im gewählten Zeitraum</small></h2>
   <div class="card" id="weekdays"></div>
 
   <p class="footnote">Basis: alle Bestellungen mit Upsell-Markierung (<code>_sevn_upsell</code>), alle Kalendertage inkl. Sa + So.
@@ -272,10 +277,10 @@ function render(){
   const tr=a.orders?a.upsellOrders/a.orders*100:0;
   const trPrev=p.orders?p.upsellOrders/p.orders*100:0;
   document.getElementById('tiles').innerHTML=[
-    tile('Bestellungen',fmtN(a.orders)+delta(a.orders,p.orders),'im gewählten Zeitraum'),
-    tile('Mit Upsell',fmtN(a.upsellOrders)+delta(a.upsellOrders,p.upsellOrders),'Bestellungen mit ≥ 1 Upsell-Artikel'),
-    tile('Take-Rate overall',fmtP(tr)+' %'+delta(tr,trPrev),'% aller Bestellungen mit Upsell-Kauf',true),
-    tile('Upsell-Umsatz',fmtEur(a.upsellRevenue,c)+delta(a.upsellRevenue,p.upsellRevenue),fmtN(a.upsellUnits)+' Artikel · nach Rabatt',true),
+    tile('Bestellungen',fmtN(a.orders)+delta(a.orders,p.orders),'im gewählten Zeitraum',false,'Alle Bestellungen im gewählten Zeitraum. Der Pfeil vergleicht mit dem gleich langen Zeitraum davor (grün = mehr, rot = weniger).'),
+    tile('Mit Upsell',fmtN(a.upsellOrders)+delta(a.upsellOrders,p.upsellOrders),'Bestellungen mit ≥ 1 Upsell-Artikel',false,'Bestellungen, die mindestens einen Artikel aus dem Checkout-Deal enthalten.'),
+    tile('Take-Rate overall',fmtP(tr)+' %'+delta(tr,trPrev),'% aller Bestellungen mit Upsell-Kauf',true,'Mit Upsell ÷ Bestellungen. Anteil aller Bestellungen im Zeitraum, die einen Deal-Artikel gekauft haben.'),
+    tile('Upsell-Umsatz',fmtEur(a.upsellRevenue,c)+delta(a.upsellRevenue,p.upsellRevenue),fmtN(a.upsellUnits)+' Artikel · nach Rabatt',true,'Summe der tatsächlich bezahlten Deal-Artikel (Preis nach Rabatt) – nur die Upsell-Positionen, nicht die ganze Bestellung.'),
   ].join('');
 
   // AOV-Block
@@ -286,12 +291,12 @@ function render(){
   const uplift=aovWithout?((aovWith/aovWithout)-1)*100:0;
   const roi=a.discountGiven?a.upsellRevenue/a.discountGiven:0;
   document.getElementById('tiles2').innerHTML=[
-    tile('Ø Bestellwert overall',fmtEur(aovAll,c),'AOV aller Bestellungen im Zeitraum'),
-    tile('Ø Bestellwert mit Upsell',fmtEur(aovWith,c),'AOV der Upsell-Bestellungen'),
-    tile('Ø Bestellwert ohne',fmtEur(aovWithout,c),'AOV der Bestellungen ohne Upsell'),
-    tile('AOV-Uplift',(uplift>=0?'+':'')+fmtP(uplift)+' %','mit Upsell vs. ohne',true),
-    tile('€-Mehrwert je Bestellung',fmtEur(aovWith-aovWithout,c),'Differenz der Ø Bestellwerte',true),
-    tile('Upsell-ROI',roi?fmtP(roi)+'×':'–','€ Upsell-Umsatz je Rabatt-€ ('+fmtEur(a.discountGiven,c)+' Rabatt)'),
+    tile('Ø Bestellwert overall',fmtEur(aovAll,c),'AOV aller Bestellungen im Zeitraum',false,'Gesamtumsatz ÷ Anzahl aller Bestellungen (Average Order Value).'),
+    tile('Ø Bestellwert mit Upsell',fmtEur(aovWith,c),'AOV der Upsell-Bestellungen',false,'Kompletter Bestellwert der Bestellungen mit Upsell ÷ deren Anzahl. Zählt die ganze Bestellung, nicht nur die Deal-Artikel.'),
+    tile('Ø Bestellwert ohne',fmtEur(aovWithout,c),'AOV der Bestellungen ohne Upsell',false,'Bestellwert der Bestellungen ohne Deal-Artikel ÷ deren Anzahl.'),
+    tile('AOV-Uplift',(uplift>=0?'+':'')+fmtP(uplift)+' %','mit Upsell vs. ohne',true,'(Ø mit Upsell ÷ Ø ohne) − 1. Um wie viel Prozent eine Upsell-Bestellung im Schnitt größer ist. Vorsicht: Wer mehr kauft, sieht auch eher einen Deal – kein reiner Kausaleffekt.'),
+    tile('€-Mehrwert je Bestellung',fmtEur(aovWith-aovWithout,c),'Differenz der Ø Bestellwerte',true,'Ø Bestellwert mit Upsell minus Ø ohne – der zusätzliche Warenkorbwert pro Upsell-Bestellung in Euro.'),
+    tile('Upsell-ROI',roi?fmtP(roi)+'×':'–','€ Upsell-Umsatz je Rabatt-€ ('+fmtEur(a.discountGiven,c)+' Rabatt)',false,'Upsell-Umsatz ÷ gewährter Rabatt. Beispiel 7×: Jeder investierte Rabatt-Euro bringt 7 € Upsell-Umsatz.'),
   ].join('');
 
   // Produkte
@@ -375,10 +380,10 @@ function renderAbandoned(a,p,c){
   const rate=(ab,ok)=>(ab+ok)?ab/(ab+ok)*100:null;
   const fmtR=(r)=>r===null?'–':fmtP(r)+' %';
   tiles.innerHTML=[
-    tile('Abgebrochene Checkouts',fmtN(A.total),fmtEur(A.revenue||0,c)+' Warenwert · Vorzeitraum: '+fmtN(P.total||0)),
-    tile('Abbruchquote gesamt',fmtR(rate(A.total,a.orders)),'Abbrüche ÷ (Abbrüche + Bestellungen)'),
-    tile('Abbruchquote mit Deal',fmtR(rate(A.shown,ordersShown)),fmtN(A.shown)+' Abbrüche · '+fmtN(ordersShown)+' Käufe nach Deal-Anzeige',true),
-    tile('Abbruchquote ohne Deal',fmtR(rate(A.total-A.shown,a.orders-ordersShown)),'Checkouts ohne Deal-Anzeige'),
+    tile('Abgebrochene Checkouts',fmtN(A.total),fmtEur(A.revenue||0,c)+' Warenwert · Vorzeitraum: '+fmtN(P.total||0),false,'Checkouts, in denen der Kunde E-Mail/Telefon hinterlassen, aber nicht gekauft hat (Shopify „abandoned checkouts"). Ohne Kontaktdaten wird ein Abbruch nicht erfasst.'),
+    tile('Abbruchquote gesamt',fmtR(rate(A.total,a.orders)),'Abbrüche ÷ (Abbrüche + Bestellungen)',false,'Abgebrochene Checkouts ÷ (Abgebrochene + abgeschlossene Bestellungen) im Zeitraum.'),
+    tile('Abbruchquote mit Deal',fmtR(rate(A.shown,ordersShown)),fmtN(A.shown)+' Abbrüche · '+fmtN(ordersShown)+' Käufe nach Deal-Anzeige',true,'Nur Checkouts, in denen der Deal angezeigt wurde (Tracking seit 11.08.2026). Achtung: Korrelation – wer den Deal sieht, hat einen anderen Warenkorb. Kausal klärt das nur der A/B-Test.'),
+    tile('Abbruchquote ohne Deal',fmtR(rate(A.total-A.shown,a.orders-ordersShown)),'Checkouts ohne Deal-Anzeige',false,'Alle übrigen Checkouts ohne Deal-Anzeige – als grober Vergleichswert zur Quote mit Deal.'),
   ].join('');
   const rows=[
     ['Alle Checkouts',A.total,a.orders],
@@ -396,7 +401,8 @@ function renderAbandoned(a,p,c){
   note.textContent='Hinweis: Als Abbruch zählen nur Checkouts mit hinterlassener E-Mail/Telefonnummer. „Deal angezeigt" wird erst seit dem 11.08.2026 getrackt, „aktiviert" erst mit dem Teaser-Test. Der Vergleich mit/ohne Deal ist Korrelation (unterschiedliche Warenkörbe) – kausal beantwortet das nur der A/B-Test.';
 }
 
-function tile(label,value,sub,accent){return '<div class="tile"><div class="label">'+label+'</div><div class="value'+(accent?' accent':'')+'">'+value+'</div><div class="sub">'+sub+'</div></div>';}
+function info(t){return t?'<span class="info" tabindex="0">i<span class="tip">'+t+'</span></span>':'';}
+function tile(label,value,sub,accent,tip){return '<div class="tile"><div class="label">'+label+info(tip)+'</div><div class="value'+(accent?' accent':'')+'">'+value+'</div><div class="sub">'+sub+'</div></div>';}
 function esc(s){return String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
 
 function drawPie(id,scen,c,mode){
