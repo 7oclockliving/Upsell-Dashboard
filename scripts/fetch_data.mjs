@@ -309,16 +309,23 @@ async function main() {
         // startet, wird von Shopify nicht mit dem alten verknuepft -> die
         // echte Rueckkehr-Quote liegt tendenziell hoeher (Untergrenze).
         if (n.completedAt) {
-          a.recovered++;
-          a.recoveredRevenue = round2(a.recoveredRevenue + num(n.totalPriceSet?.shopMoney?.amount));
-          a.recoveredList.push({
-            name: n.name || '',
-            order: matchOrder(n.completedAt, num(n.totalPriceSet?.shopMoney?.amount)),
-            created: n.createdAt,
-            completed: n.completedAt,
-            value: num(n.totalPriceSet?.shopMoney?.amount),
-          });
-          continue; // NICHT als offenen Abbruch zaehlen
+          // Recovery nur fuer Deal-Warenkoerbe (Wunsch Alina, 13.08.2026):
+          // Ein zurueckgeholter Warenkorb ohne angezeigten Deal sagt nichts
+          // ueber die Wirkung des Deals aus -> nur zaehlen, wenn der Deal
+          // in diesem Checkout angezeigt wurde (_sevn_upsell_shown gesetzt).
+          const dealShown = (n.customAttributes || []).some((x) => x.key === SHOWN_ATTR);
+          if (dealShown) {
+            a.recovered++;
+            a.recoveredRevenue = round2(a.recoveredRevenue + num(n.totalPriceSet?.shopMoney?.amount));
+            a.recoveredList.push({
+              name: n.name || '',
+              order: matchOrder(n.completedAt, num(n.totalPriceSet?.shopMoney?.amount)),
+              created: n.createdAt,
+              completed: n.completedAt,
+              value: num(n.totalPriceSet?.shopMoney?.amount),
+            });
+          }
+          continue; // NICHT als offenen Abbruch zaehlen (auch ohne Deal)
         }
         a.total++;
         a.revenue = round2(a.revenue + num(n.totalPriceSet?.shopMoney?.amount));
