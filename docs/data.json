@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-13T10:17:42.067Z",
+ "generatedAt": "2026-08-13T13:43:04.933Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -24,6 +24,11 @@
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
+     "test": 0,
+     "control": 0,
+     "none": 0
+    },
+    "recAb": {
      "test": 0,
      "control": 0,
      "none": 0
@@ -145,6 +150,11 @@
      "test": 0,
      "control": 0,
      "none": 39
+    },
+    "recAb": {
+     "test": 0,
+     "control": 0,
+     "none": 0
     }
    },
    "products": {
@@ -495,6 +505,11 @@
      "test": 0,
      "control": 0,
      "none": 39
+    },
+    "recAb": {
+     "test": 0,
+     "control": 0,
+     "none": 1
     }
    },
    "products": {
@@ -868,6 +883,11 @@
      "test": 0,
      "control": 0,
      "none": 43
+    },
+    "recAb": {
+     "test": 0,
+     "control": 0,
+     "none": 1
     }
    },
    "products": {
@@ -1062,12 +1082,12 @@
   },
   {
    "date": "2026-08-13",
-   "orders": 85,
-   "totalRevenue": 6791.6,
-   "upsellOrders": 4,
-   "upsellUnits": 5,
-   "upsellRevenue": 109.3,
-   "upsellOrdersRevenue": 877.51,
+   "orders": 128,
+   "totalRevenue": 9870.54,
+   "upsellOrders": 7,
+   "upsellUnits": 8,
+   "upsellRevenue": 173.3,
+   "upsellOrdersRevenue": 1256.55,
    "activatedOrders": 0,
    "upsellOrdersList": [
     {
@@ -1101,34 +1121,63 @@
      "scenarios": [
       "Geschirr"
      ]
+    },
+    {
+     "name": "#229187",
+     "total": 28.78,
+     "upsellRevenue": 10.8,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#229189",
+     "total": 158.94,
+     "upsellRevenue": 26.6,
+     "scenarios": [
+      "Geschirr"
+     ]
+    },
+    {
+     "name": "#229219",
+     "total": 191.32,
+     "upsellRevenue": 26.6,
+     "scenarios": [
+      "Geschirr"
+     ]
     }
    ],
    "shown": {
     "Geschirr": {
-     "shown": 11,
-     "converted": 3
+     "shown": 15,
+     "converted": 5
     },
     "Lose Gläser (Staffel)": {
-     "shown": 21,
-     "converted": 0
+     "shown": 34,
+     "converted": 1
     },
     "Gläser-Bundles": {
-     "shown": 11,
+     "shown": 20,
      "converted": 1
     }
    },
    "abandoned": {
-    "total": 14,
-    "shown": 7,
+    "total": 25,
+    "shown": 15,
     "activated": 0,
-    "revenue": 934.35,
+    "revenue": 2092.02,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 14
+     "none": 25
+    },
+    "recAb": {
+     "test": 0,
+     "control": 0,
+     "none": 0
     }
    },
    "products": {
@@ -1160,12 +1209,12 @@
      }
     },
     "Große Bowl Ø27cm in Cremeweiß matt | Nia": {
-     "units": 1,
-     "orders": 1,
-     "revenue": 26.6,
-     "discountGiven": 11.39,
+     "units": 2,
+     "orders": 2,
+     "revenue": 53.2,
+     "discountGiven": 22.78,
      "scenarios": {
-      "Geschirr": 1
+      "Geschirr": 2
      }
     },
     "Dipschalen 6er Set in Cremeweiß | Nia": {
@@ -1176,18 +1225,41 @@
      "scenarios": {
       "Geschirr": 1
      }
+    },
+    "Geriffeltes kleines Glas | Paris": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 10.8,
+     "discountGiven": 1.19,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Große Bowl Ø27cm in Cremeweiß | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 26.6,
+     "discountGiven": 11.39,
+     "scenarios": {
+      "Geschirr": 1
+     }
     }
    },
    "scenarios": {
     "Geschirr": {
-     "upsellOrders": 3,
-     "units": 4,
-     "revenue": 91.8
+     "upsellOrders": 5,
+     "units": 6,
+     "revenue": 145
     },
     "Gläser-Bundles": {
      "upsellOrders": 1,
      "units": 1,
      "revenue": 17.5
+    },
+    "Lose Gläser (Staffel)": {
+     "upsellOrders": 1,
+     "units": 1,
+     "revenue": 10.8
     }
    },
    "ab": {
@@ -1202,9 +1274,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 85,
-     "upsellOrders": 4,
-     "revenue": 6791.6
+     "orders": 128,
+     "upsellOrders": 7,
+     "revenue": 9870.54
     }
    }
   }
