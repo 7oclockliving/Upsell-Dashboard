@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-13T08:51:41.448Z",
+ "generatedAt": "2026-08-13T09:12:47.623Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -22,6 +22,7 @@
     "revenue": 0,
     "recovered": 0,
     "recoveredRevenue": 0,
+    "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
@@ -134,11 +135,12 @@
    "shown": {},
    "abandoned": {
     "total": 39,
-    "shown": 0,
+    "shown": 1,
     "activated": 0,
-    "revenue": 3317.14,
+    "revenue": 3321.64,
     "recovered": 0,
     "recoveredRevenue": 0,
+    "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
@@ -480,6 +482,14 @@
     "revenue": 5634.61,
     "recovered": 1,
     "recoveredRevenue": 74.75,
+    "recoveredList": [
+     {
+      "name": "#67685594071372",
+      "created": "2026-08-11T19:28:06Z",
+      "completed": "2026-08-11T19:54:11Z",
+      "value": 74.75
+     }
+    ],
     "ab": {
      "test": 0,
      "control": 0,
@@ -852,6 +862,14 @@
     "revenue": 5325.51,
     "recovered": 1,
     "recoveredRevenue": 100,
+    "recoveredList": [
+     {
+      "name": "#67714158461260",
+      "created": "2026-08-12T19:41:33Z",
+      "completed": "2026-08-12T19:54:07Z",
+      "value": 100
+     }
+    ],
     "ab": {
      "test": 0,
      "control": 0,
@@ -1050,8 +1068,8 @@
   },
   {
    "date": "2026-08-13",
-   "orders": 64,
-   "totalRevenue": 5378.66,
+   "orders": 69,
+   "totalRevenue": 5665.07,
    "upsellOrders": 3,
    "upsellUnits": 4,
    "upsellRevenue": 88.3,
@@ -1089,25 +1107,26 @@
      "converted": 2
     },
     "Lose Gläser (Staffel)": {
-     "shown": 15,
+     "shown": 17,
      "converted": 0
     },
     "Gläser-Bundles": {
-     "shown": 8,
+     "shown": 9,
      "converted": 1
     }
    },
    "abandoned": {
-    "total": 8,
-    "shown": 3,
+    "total": 11,
+    "shown": 6,
     "activated": 0,
-    "revenue": 682.98,
+    "revenue": 760.43,
     "recovered": 0,
     "recoveredRevenue": 0,
+    "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 8
+     "none": 11
     }
    },
    "products": {
@@ -1172,9 +1191,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 64,
+     "orders": 69,
      "upsellOrders": 3,
-     "revenue": 5378.66
+     "revenue": 5665.07
     }
    }
   }
