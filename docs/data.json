@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-12T09:01:04.555Z",
+ "generatedAt": "2026-08-13T08:24:31.673Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -131,14 +131,14 @@
    ],
    "shown": {},
    "abandoned": {
-    "total": 40,
+    "total": 39,
     "shown": 0,
     "activated": 0,
-    "revenue": 3349.21,
+    "revenue": 3317.14,
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 40
+     "none": 39
     }
    },
    "products": {
@@ -470,14 +470,14 @@
     }
    },
    "abandoned": {
-    "total": 41,
-    "shown": 14,
+    "total": 39,
+    "shown": 13,
     "activated": 0,
-    "revenue": 5849.19,
+    "revenue": 5634.61,
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 41
+     "none": 39
     }
    },
    "products": {
@@ -656,12 +656,12 @@
   },
   {
    "date": "2026-08-12",
-   "orders": 61,
-   "totalRevenue": 4324.47,
-   "upsellOrders": 1,
-   "upsellUnits": 1,
-   "upsellRevenue": 29.99,
-   "upsellOrdersRevenue": 159.98,
+   "orders": 255,
+   "totalRevenue": 25137.13,
+   "upsellOrders": 20,
+   "upsellUnits": 23,
+   "upsellRevenue": 363.84,
+   "upsellOrdersRevenue": 3339.55,
    "activatedOrders": 0,
    "upsellOrdersList": [
     {
@@ -671,49 +671,466 @@
      "scenarios": [
       "Geschirr"
      ]
+    },
+    {
+     "name": "#228911",
+     "total": 41.79,
+     "upsellRevenue": 8.8,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#228935",
+     "total": 73.3,
+     "upsellRevenue": 7,
+     "scenarios": [
+      "Gläser-Bundles"
+     ]
+    },
+    {
+     "name": "#228938",
+     "total": 42.46,
+     "upsellRevenue": 8,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#228939",
+     "total": 320.3,
+     "upsellRevenue": 45.77,
+     "scenarios": [
+      "Geschirr"
+     ]
+    },
+    {
+     "name": "#228953",
+     "total": 112.94,
+     "upsellRevenue": 20.43,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#228965",
+     "total": 24.98,
+     "upsellRevenue": 9,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#228967",
+     "total": 116.77,
+     "upsellRevenue": 9.75,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#228972",
+     "total": 44.32,
+     "upsellRevenue": 13.5,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#228982",
+     "total": 108.48,
+     "upsellRevenue": 13.5,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#228993",
+     "total": 84.97,
+     "upsellRevenue": 9,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#228996",
+     "total": 821.68,
+     "upsellRevenue": 35,
+     "scenarios": [
+      "Geschirr"
+     ]
+    },
+    {
+     "name": "#228997",
+     "total": 61.86,
+     "upsellRevenue": 8,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#229010",
+     "total": 47.36,
+     "upsellRevenue": 10.4,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#229015",
+     "total": 31.64,
+     "upsellRevenue": 13.5,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#229017",
+     "total": 383.52,
+     "upsellRevenue": 26.6,
+     "scenarios": [
+      "Geschirr"
+     ]
+    },
+    {
+     "name": "#229025",
+     "total": 536.3,
+     "upsellRevenue": 44.2,
+     "scenarios": [
+      "Geschirr"
+     ]
+    },
+    {
+     "name": "#229058",
+     "total": 52.59,
+     "upsellRevenue": 16.8,
+     "scenarios": [
+      "Gläser-Bundles"
+     ]
+    },
+    {
+     "name": "#229060",
+     "total": 77.82,
+     "upsellRevenue": 8,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#229080",
+     "total": 196.49,
+     "upsellRevenue": 26.6,
+     "scenarios": [
+      "Geschirr"
+     ]
     }
    ],
    "shown": {
     "Gläser-Bundles": {
-     "shown": 5,
-     "converted": 0
+     "shown": 20,
+     "converted": 1
     },
     "Lose Gläser (Staffel)": {
-     "shown": 9,
-     "converted": 0
+     "shown": 78,
+     "converted": 13
     },
     "Geschirr": {
-     "shown": 7,
-     "converted": 1
+     "shown": 36,
+     "converted": 6
     }
    },
    "abandoned": {
-    "total": 7,
-    "shown": 4,
+    "total": 43,
+    "shown": 26,
     "activated": 0,
-    "revenue": 326.37,
+    "revenue": 5325.51,
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 7
+     "none": 43
     }
    },
    "products": {
     "Dipschalen 6er Set in Cremeweiß matt | Nia": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 49.49,
+     "discountGiven": 10.49,
+     "scenarios": {
+      "Geschirr": 2
+     }
+    },
+    "Großes perlenbesetztes Glas | Atlanta": {
      "units": 1,
      "orders": 1,
-     "revenue": 29.99,
-     "discountGiven": 0,
+     "revenue": 8.8,
+     "discountGiven": 2.19,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Glastasse Streifen-Design | Norway": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 14,
+     "discountGiven": 6,
+     "scenarios": {
+      "Gläser-Bundles": 2
+     }
+    },
+    "Geriffeltes organisches Glas | Alaska": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 8,
+     "discountGiven": 1.99,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Dipschalen 6er Set in Cremeweiß gerillt | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 20.11,
+     "discountGiven": 10.83,
      "scenarios": {
       "Geschirr": 1
+     }
+    },
+    "Große Bowl Ø27cm in Cremeweiß gerillt | Nia": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 52.26,
+     "discountGiven": 25.21,
+     "scenarios": {
+      "Geschirr": 2
+     }
+    },
+    "Geriffeltes Weinglas | Paris": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 20.43,
+     "discountGiven": 5.11,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Kleines organisches Glas | Alaska": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 17,
+     "discountGiven": 2.98,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 2
+     }
+    },
+    "Großes organisches Glas | Alaska": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 20.15,
+     "discountGiven": 5.83,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 2
+     }
+    },
+    "Geriffeltes Glas mit Glasdeckel & Glasstrohhalm | Paris": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 27,
+     "discountGiven": 2.98,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 2
+     }
+    },
+    "Gerilltes Trinkglas im To-Go Design | Liva": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 13.5,
+     "discountGiven": 1.49,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Geriffeltes kleines Glas | Paris": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 9,
+     "discountGiven": 2.99,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Salz- und Pfeffermühle Rillen-Design | Marlo": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 35,
+     "discountGiven": 14.99,
+     "scenarios": {
+      "Geschirr": 1
+     }
+    },
+    "Großes Glas mit zwei Bubbles | Tokyo": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 8,
+     "discountGiven": 1.99,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
+    },
+    "Große Bowl Ø27cm in Cremeweiß | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 26.6,
+     "discountGiven": 11.39,
+     "scenarios": {
+      "Geschirr": 1
+     }
+    },
+    "Große Bowl Ø27cm in Cremeweiß matt | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 24.7,
+     "discountGiven": 13.29,
+     "scenarios": {
+      "Geschirr": 1
+     }
+    },
+    "Großes Glas Streifen-Design | Norway": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 9.8,
+     "discountGiven": 4.19,
+     "scenarios": {
+      "Gläser-Bundles": 1
+     }
+    }
+   },
+   "scenarios": {
+    "Geschirr": {
+     "upsellOrders": 6,
+     "units": 8,
+     "revenue": 208.16
+    },
+    "Lose Gläser (Staffel)": {
+     "upsellOrders": 12,
+     "units": 12,
+     "revenue": 131.88
+    },
+    "Gläser-Bundles": {
+     "upsellOrders": 2,
+     "units": 3,
+     "revenue": 23.8
+    }
+   },
+   "ab": {
+    "test": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "control": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "none": {
+     "orders": 255,
+     "upsellOrders": 20,
+     "revenue": 25137.13
+    }
+   }
+  },
+  {
+   "date": "2026-08-13",
+   "orders": 61,
+   "totalRevenue": 5146.11,
+   "upsellOrders": 2,
+   "upsellUnits": 3,
+   "upsellRevenue": 61.7,
+   "upsellOrdersRevenue": 429.96,
+   "activatedOrders": 0,
+   "upsellOrdersList": [
+    {
+     "name": "#229107",
+     "total": 204.19,
+     "upsellRevenue": 44.2,
+     "scenarios": [
+      "Geschirr"
+     ]
+    },
+    {
+     "name": "#229116",
+     "total": 225.77,
+     "upsellRevenue": 17.5,
+     "scenarios": [
+      "Gläser-Bundles"
+     ]
+    }
+   ],
+   "shown": {
+    "Geschirr": {
+     "shown": 9,
+     "converted": 1
+    },
+    "Lose Gläser (Staffel)": {
+     "shown": 14,
+     "converted": 0
+    },
+    "Gläser-Bundles": {
+     "shown": 8,
+     "converted": 1
+    }
+   },
+   "abandoned": {
+    "total": 3,
+    "shown": 1,
+    "activated": 0,
+    "revenue": 392.2,
+    "ab": {
+     "test": 0,
+     "control": 0,
+     "none": 3
+    }
+   },
+   "products": {
+    "Große Bowl Ø27cm in Cremeweiß gerillt | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 24.7,
+     "discountGiven": 13.29,
+     "scenarios": {
+      "Geschirr": 1
+     }
+    },
+    "Dipschalen 6er Set in Cremeweiß gerillt | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 19.5,
+     "discountGiven": 10.49,
+     "scenarios": {
+      "Geschirr": 1
+     }
+    },
+    "Organischer Keramik Becher Cremeweiß | Alaska": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 17.5,
+     "discountGiven": 7.49,
+     "scenarios": {
+      "Gläser-Bundles": 1
      }
     }
    },
    "scenarios": {
     "Geschirr": {
      "upsellOrders": 1,
+     "units": 2,
+     "revenue": 44.2
+    },
+    "Gläser-Bundles": {
+     "upsellOrders": 1,
      "units": 1,
-     "revenue": 29.99
+     "revenue": 17.5
     }
    },
    "ab": {
@@ -729,8 +1146,8 @@
     },
     "none": {
      "orders": 61,
-     "upsellOrders": 1,
-     "revenue": 4324.47
+     "upsellOrders": 2,
+     "revenue": 5146.11
     }
    }
   }
