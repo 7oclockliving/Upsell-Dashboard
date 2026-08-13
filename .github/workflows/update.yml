@@ -38,5 +38,21 @@ jobs:
           git config user.name "sevn-dashboard-bot"
           git config user.email "actions@github.com"
           git add docs/data.json
-          git diff --cached --quiet || git commit -m "Datenupdate $(date -u +%F)"
-          git push
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen – nichts zu committen."
+            exit 0
+          fi
+          git commit -m "Datenupdate $(date -u +%F)"
+          # Push-Race-Schutz (13.08.2026): Falls zwischenzeitlich manuell auf
+          # main committet wurde, erst rebasen und mit Wiederholungen pushen,
+          # statt den Lauf mit "fetch first" scheitern zu lassen.
+          for i in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push abgelehnt – rebase & Wiederholung $i…"
+            git pull --rebase origin main || true
+            sleep 5
+          done
+          echo "Push nach mehreren Versuchen fehlgeschlagen."
+          exit 1
