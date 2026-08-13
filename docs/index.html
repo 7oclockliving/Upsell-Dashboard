@@ -132,7 +132,7 @@
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   <div class="range-note" id="abandonNote"></div>
   <div id="recoveredWrap" style="margin-top:16px;display:none">
-    <div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px">Wiederhergestellte Warenkörbe <span class="info" tabindex="0">i<span class="tip">Alle Warenkörbe, die zuerst abgebrochen und später doch gekauft wurden. Die „Bestellnr." wird automatisch zugeordnet: Beim Abschluss entsteht eine Bestellung mit praktisch identischem Zeitstempel – sie wird über Zeit + Betrag mit dem Warenkorb verknüpft (sehr zuverlässig, in seltenen Fällen kein Treffer → „–"). „Zeit bis Rückkehr" = Abstand zwischen erstem Warenkorb und Kauf – hilft beim Timing der Recovery-Mail.</span></span></div>
+    <div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px">Wiederhergestellte Warenkörbe (nur mit Deal) <span class="info" tabindex="0">i<span class="tip">Nur Warenkörbe, in denen der Deal angezeigt wurde, die zuerst abgebrochen und später doch gekauft wurden. Die „Bestellnr." wird automatisch zugeordnet: Beim Abschluss entsteht eine Bestellung mit praktisch identischem Zeitstempel – sie wird über Zeit + Betrag mit dem Warenkorb verknüpft (sehr zuverlässig, in seltenen Fällen kein Treffer → „–"). „Zeit bis Rückkehr" = Abstand zwischen erstem Warenkorb und Kauf – hilft beim Timing der Recovery-Mail.</span></span></div>
     <div class="card" id="recoveredTable"></div>
     <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   </div>
@@ -399,10 +399,12 @@ function renderAbandoned(a,p,c){
   // Warenkorb-Recovery (13.08.2026): wie viele Abbrecher kamen zurueck und
   // haben denselben Warenkorb doch noch gekauft? (Shopify completedAt)
   const rec=A.recovered||0;
-  const recBase=rec+A.total; // alle jemals abgebrochenen Warenkoerbe im Zeitraum
+  // Nur Deal-Warenkoerbe (13.08.2026): Basis = abgebrochene Deal-Warenkoerbe
+  // (A.shown = noch offen, mit Deal) + zurueckgeholte Deal-Warenkoerbe (rec).
+  const recBase=rec+A.shown;
   const recRate=recBase?rec/recBase*100:null;
   const recVal=recRate===null?'–':'<span style="color:var(--up)">'+fmtP(recRate)+' %</span>';
-  const recSub=recBase?fmtN(rec)+' von '+fmtN(recBase)+' zurückgeholt · '+fmtEur(A.recoveredRevenue||0,c)+' gerettet':'noch keine Daten';
+  const recSub=recBase?fmtN(rec)+' von '+fmtN(recBase)+' zurückgeholt (nur mit Deal) · '+fmtEur(A.recoveredRevenue||0,c)+' gerettet':'noch keine Deal-Abbrüche';
   tiles.innerHTML=[
     tile('Checkout erreicht',fmtN(A.total+a.orders),fmtN(a.orders)+' Käufe + '+fmtN(A.total)+' Abbrüche',false,'Alle messbaren Checkout-Besucher: abgeschlossene Bestellungen plus erfasste Abbrüche. Wichtig: Wer den Checkout öffnet und wieder geht, BEVOR er E-Mail/Telefon eintippt, kann hier nicht gezählt werden – die komplette Funnel-Zahl inkl. dieser Besucher zeigt nur Shopify Analytics.'),
     tile('Abgebrochene Checkouts',fmtN(A.total),fmtEur(A.revenue||0,c)+' Warenwert · Vorzeitraum: '+fmtN(P.total||0),false,'Checkouts, in denen der Kunde E-Mail/Telefon hinterlassen, aber nicht gekauft hat (Shopify „abandoned checkouts"). Ohne Kontaktdaten wird ein Abbruch nicht erfasst.'),
@@ -410,7 +412,7 @@ function renderAbandoned(a,p,c){
     tile('Abbruchquote mit Deal',fmtR(rS),fmtN(grpShown)+' Checkouts: '+fmtN(A.shown)+' Abbrüche · '+fmtN(ordersShown)+' Käufe',true,'Nur Checkouts, in denen der Deal angezeigt wurde (Tracking seit 11.08.2026). Achtung: Korrelation – wer den Deal sieht, hat einen anderen Warenkorb. Kausal klärt das nur der A/B-Test.'),
     tile('Abbruchquote ohne Deal',fmtR(rN),fmtN(grpNo)+' Checkouts: '+fmtN(A.total-A.shown)+' Abbrüche · '+fmtN(a.orders-ordersShown)+' Käufe',false,'Alle übrigen Checkouts ohne Deal-Anzeige – als grober Vergleichswert zur Quote mit Deal.'),
     tile('Deal-Effekt auf Abbrüche',effVal,effSub,false,'Abbruchquote mit Deal minus Abbruchquote ohne Deal, in Prozentpunkten. Grün mit Minus = Kunden mit Deal brechen seltener ab (gut). Rot mit Plus = häufiger – dann genauer hinschauen. Bei kleinen Fallzahlen schwankt der Wert stark; aussagekräftig über mehrere Tage/Wochen.'),
-    tile('Warenkorb-Recovery',recVal,recSub,false,'Anteil der abgebrochenen Warenkörbe, die der Kunde in den Folgetagen doch noch abgeschlossen hat (Shopify markiert denselben Checkout als „completed"). Zeigt, wie viele Abbrecher zurückkommen – z.B. über die Recovery-Mail. Hinweis: Startet ein Kunde später einen komplett NEUEN Checkout, verknüpft Shopify das nicht mit dem alten Abbruch – die echte Rückkehr-Quote liegt also eher höher (Untergrenze). Da Rückkehrer erst nach Tagen zählen, wächst der Wert für ältere Zeiträume noch nach.'),
+    tile('Warenkorb-Recovery',recVal,recSub,false,'Nur Warenkörbe MIT angezeigtem Deal: Anteil davon, den der Kunde in den Folgetagen doch noch abgeschlossen hat (Shopify markiert denselben Checkout als „completed"). Basis = abgebrochene Deal-Warenkörbe + zurückgeholte. Zeigt, wie viele Deal-Abbrecher zurückkommen – z.B. über die Recovery-Mail. Hinweis: Startet ein Kunde später einen komplett NEUEN Checkout, verknüpft Shopify das nicht mit dem alten Abbruch – die echte Rückkehr-Quote liegt also eher höher (Untergrenze). Da Rückkehrer erst nach Tagen zählen, wächst der Wert für ältere Zeiträume noch nach.'),
   ].join('');
   const rows=[
     ['Alle Checkouts',A.total,a.orders],
