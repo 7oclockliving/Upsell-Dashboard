@@ -131,6 +131,11 @@
   <div class="card" id="abandonTable"></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   <div class="range-note" id="abandonNote"></div>
+  <div id="recoveredWrap" style="margin-top:16px;display:none">
+    <div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px">Wiederhergestellte Warenkörbe <span class="info" tabindex="0">i<span class="tip">Alle Warenkörbe, die zuerst abgebrochen und später doch gekauft wurden. „Warenkorb-Nr." ist die Shopify-Checkout-Kennung – bei abgeschlossenen Käufen entspricht sie in der Regel der Bestellnummer (im Admin suchbar). „Zeit bis Rückkehr" = Abstand zwischen erstem Warenkorb und Kauf – hilft beim Timing der Recovery-Mail.</span></span></div>
+    <div class="card" id="recoveredTable"></div>
+    <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
+  </div>
 
   <h2>Verlauf <span class="info" tabindex="0">i<span class="tip">Oben: Bestellungen pro Tag (taupe Linie) vs. Upsell-Bestellungen (rote Linie). Unten: Upsell-Umsatz pro Tag in Euro (nach Rabatt).</span></span></h2>
   <div class="card" id="chartLines"></div>
@@ -217,7 +222,7 @@ function currentRange(){
 function merge(sel){
   const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,
     upsellOrdersList:[],
-    abandoned:{total:0,shown:0,activated:0,revenue:0,recovered:0,recoveredRevenue:0,ab:{test:0,control:0,none:0}},
+    abandoned:{total:0,shown:0,activated:0,revenue:0,recovered:0,recoveredRevenue:0,recoveredList:[],ab:{test:0,control:0,none:0}},
     products:{},scenarios:{},shown:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
   for(const d of sel){
     agg.orders+=d.orders;agg.totalRevenue+=d.totalRevenue;
@@ -229,6 +234,7 @@ function merge(sel){
     agg.abandoned.total+=ab.total||0;agg.abandoned.shown+=ab.shown||0;
     agg.abandoned.activated+=ab.activated||0;agg.abandoned.revenue+=ab.revenue||0;
     agg.abandoned.recovered+=ab.recovered||0;agg.abandoned.recoveredRevenue+=ab.recoveredRevenue||0;
+    for(const x of ab.recoveredList||[])agg.abandoned.recoveredList.push(x);
     for(const k of['test','control','none'])agg.abandoned.ab[k]+=(ab.ab||{})[k]||0;
     for(const[t,p]of Object.entries(d.products||{})){
       agg.products[t]??={title:t,units:0,orders:0,revenue:0,discountGiven:0,scenarios:{}};
@@ -420,6 +426,23 @@ function renderAbandoned(a,p,c){
     rows.map(r=>'<tr><td><strong>'+r[0]+'</strong></td><td class="num">'+fmtN(r[1]+r[2])+'</td><td class="num">'+fmtN(r[1])+'</td><td class="num">'+fmtN(r[2])+'</td><td class="num"><strong>'+fmtR(rate(r[1],r[2]))+'</strong></td></tr>').join('')+
     '</tbody></table>';
   note.textContent='Hinweis: Als Abbruch zählen nur Checkouts mit hinterlassener E-Mail/Telefonnummer. „Deal angezeigt" wird erst seit dem 11.08.2026 getrackt, „aktiviert" erst mit dem Teaser-Test. Der Vergleich mit/ohne Deal ist Korrelation (unterschiedliche Warenkörbe) – kausal beantwortet das nur der A/B-Test.';
+
+  // Wiederhergestellte Warenkörbe: Detailliste (13.08.2026, Wunsch Alina)
+  const rl=[...(A.recoveredList||[])].sort((x,y)=>String(y.completed).localeCompare(String(x.completed)));
+  const rtEl=document.getElementById('recoveredTable');
+  const rw=document.getElementById('recoveredWrap');
+  if(rtEl&&rw){
+    if(!rl.length){rw.style.display='none';}
+    else{
+      rw.style.display='';
+      const MAXR=200;
+      const dt2=(iso)=>iso?fmtD(iso.slice(0,10))+' '+iso.slice(11,16)+' Uhr':'–';
+      const dur=(a,b)=>{let m=Math.max(0,Math.round((new Date(b)-new Date(a))/60000));if(m<60)return m+' Min';const h=m/60;if(h<24)return Math.round(h)+' Std';const t=Math.round(h/24);return t+(t===1?' Tag':' Tage');};
+      rtEl.innerHTML='<table><thead><tr><th>Warenkorb-Nr.</th><th>Warenkorb erstellt</th><th>Kauf</th><th class="num">Zeit bis Rückkehr</th><th class="num">Warenwert</th></tr></thead><tbody>'+
+        rl.slice(0,MAXR).map(o=>'<tr><td><strong>'+esc(o.name||'–')+'</strong></td><td>'+dt2(o.created)+'</td><td>'+dt2(o.completed)+'</td><td class="num">'+dur(o.created,o.completed)+'</td><td class="num"><strong>'+fmtEur(o.value||0,c)+'</strong></td></tr>').join('')+
+        '</tbody></table>'+(rl.length>MAXR?'<div class="empty" style="padding:10px">… und '+fmtN(rl.length-MAXR)+' weitere</div>':'');
+    }
+  }
 }
 
 function info(t){return t?'<span class="info" tabindex="0">i<span class="tip">'+t+'</span></span>':'';}
