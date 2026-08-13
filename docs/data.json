@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-13T09:12:47.623Z",
+ "generatedAt": "2026-08-13T09:44:37.785Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -485,6 +485,7 @@
     "recoveredList": [
      {
       "name": "#67685594071372",
+      "order": "#228816",
       "created": "2026-08-11T19:28:06Z",
       "completed": "2026-08-11T19:54:11Z",
       "value": 74.75
@@ -865,6 +866,7 @@
     "recoveredList": [
      {
       "name": "#67714158461260",
+      "order": "#229051",
       "created": "2026-08-12T19:41:33Z",
       "completed": "2026-08-12T19:54:07Z",
       "value": 100
@@ -1068,12 +1070,12 @@
   },
   {
    "date": "2026-08-13",
-   "orders": 69,
-   "totalRevenue": 5665.07,
-   "upsellOrders": 3,
-   "upsellUnits": 4,
-   "upsellRevenue": 88.3,
-   "upsellOrdersRevenue": 643.53,
+   "orders": 77,
+   "totalRevenue": 6216.72,
+   "upsellOrders": 4,
+   "upsellUnits": 5,
+   "upsellRevenue": 109.3,
+   "upsellOrdersRevenue": 877.51,
    "activatedOrders": 0,
    "upsellOrdersList": [
     {
@@ -1099,19 +1101,27 @@
      "scenarios": [
       "Geschirr"
      ]
+    },
+    {
+     "name": "#229168",
+     "total": 233.98,
+     "upsellRevenue": 21,
+     "scenarios": [
+      "Geschirr"
+     ]
     }
    ],
    "shown": {
     "Geschirr": {
-     "shown": 10,
-     "converted": 2
+     "shown": 11,
+     "converted": 3
     },
     "Lose Gläser (Staffel)": {
-     "shown": 17,
+     "shown": 18,
      "converted": 0
     },
     "Gläser-Bundles": {
-     "shown": 9,
+     "shown": 10,
      "converted": 1
     }
    },
@@ -1165,13 +1175,22 @@
      "scenarios": {
       "Geschirr": 1
      }
+    },
+    "Dipschalen 6er Set in Cremeweiß | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 21,
+     "discountGiven": 8.99,
+     "scenarios": {
+      "Geschirr": 1
+     }
     }
    },
    "scenarios": {
     "Geschirr": {
-     "upsellOrders": 2,
-     "units": 3,
-     "revenue": 70.8
+     "upsellOrders": 3,
+     "units": 4,
+     "revenue": 91.8
     },
     "Gläser-Bundles": {
      "upsellOrders": 1,
@@ -1191,9 +1210,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 69,
-     "upsellOrders": 3,
-     "revenue": 5665.07
+     "orders": 77,
+     "upsellOrders": 4,
+     "revenue": 6216.72
     }
    }
   }
