@@ -111,8 +111,9 @@ const ORDERS_QUERY = `
  * Attribute der Extension (_sevn_upsell_shown / _sevn_upsell_activated /
  * _sevn_ab_upsell) haengen als customAttributes dran – damit laesst sich
  * die Abbruchquote mit/ohne Deal-Anzeige vergleichen (Korrelation!
- * Kausal beantwortet das nur der A/B-Test). completedAt != null wird
- * uebersprungen (spaeter doch abgeschlossen). Scope: read_orders.
+ * Kausal beantwortet das nur der A/B-Test). completedAt != null =
+ * Warenkorb spaeter doch abgeschlossen -> getrennt als Recovery gezaehlt
+ * (13.08.2026). Scope: read_orders.
  */
 const ABANDONED_QUERY = `
   query SevnAbandoned($cursor: String, $q: String!) {
@@ -172,6 +173,8 @@ async function main() {
       shown: 0, // davon: Deal wurde angezeigt
       activated: 0, // davon: Deal wurde aktiviert (Teaser-Modus)
       revenue: 0, // Warenwert der abgebrochenen Checkouts
+      recovered: 0, // spaeter doch abgeschlossen (Warenkorb-Recovery, 13.08.2026)
+      recoveredRevenue: 0, // Warenwert der zurueckgeholten Warenkoerbe
       ab: { test: 0, control: 0, none: 0 },
     },
     products: {}, // title -> {units, orders, revenue, discountGiven, scenarios{}}
@@ -272,10 +275,20 @@ async function main() {
       const data = await gql(ABANDONED_QUERY, { cursor: aCursor, q });
       const conn = data.abandonedCheckouts;
       for (const n of conn.nodes) {
-        if (n.completedAt) continue; // spaeter doch abgeschlossen -> keine Abbruch-Zaehlung
         const date = n.createdAt.slice(0, 10);
         days[date] ??= emptyDay();
         const a = days[date].abandoned;
+        // Warenkorb-Recovery (13.08.2026): Shopify setzt completedAt, sobald
+        // der Kunde DENSELBEN Checkout doch noch abschliesst (Recovery-Mail
+        // oder spaetere Sitzung). Diese Faelle getrennt zaehlen statt
+        // verwerfen. Hinweis: Wer spaeter einen KOMPLETT NEUEN Checkout
+        // startet, wird von Shopify nicht mit dem alten verknuepft -> die
+        // echte Rueckkehr-Quote liegt tendenziell hoeher (Untergrenze).
+        if (n.completedAt) {
+          a.recovered++;
+          a.recoveredRevenue = round2(a.recoveredRevenue + num(n.totalPriceSet?.shopMoney?.amount));
+          continue; // NICHT als offenen Abbruch zaehlen
+        }
         a.total++;
         a.revenue = round2(a.revenue + num(n.totalPriceSet?.shopMoney?.amount));
         const attrs = n.customAttributes || [];
