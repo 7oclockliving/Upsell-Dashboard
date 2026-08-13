@@ -266,6 +266,28 @@ async function main() {
     }
   }
 
+  // --- Order-Index fuer Recovery-Zuordnung (13.08.2026) --------------------
+  // AbandonedCheckout hat KEIN order-Feld. Wird ein Checkout doch abgeschlossen
+  // (completedAt), entsteht eine Bestellung, deren createdAt praktisch identisch
+  // mit completedAt ist (verifiziert: 1 Sek. Abstand). Wir ordnen die echte
+  // Bestellnummer ueber Zeitnaehe + Betrag zu (Untergrenze: sehr zuverlaessig
+  // bei exaktem Betrag im 10-Min-Fenster).
+  const orderIndex = orders.map((o) => ({
+    name: o.name,
+    t: new Date(o.createdAt).getTime(),
+    total: num(o.totalPriceSet?.shopMoney?.amount),
+  }));
+  const matchOrder = (completedAt, value) => {
+    if (!completedAt) return '';
+    const ct = new Date(completedAt).getTime();
+    const cands = orderIndex.filter((o) => Math.abs(o.t - ct) <= 10 * 60 * 1000);
+    if (!cands.length) return '';
+    const exact = cands.filter((o) => Math.abs(o.total - value) < 0.05);
+    const pool = exact.length ? exact : cands;
+    pool.sort((a, b) => Math.abs(a.t - ct) - Math.abs(b.t - ct));
+    return pool[0].name || '';
+  };
+
   // --- Abgebrochene Checkouts (11.08.2026) ---------------------------------
   // Defensiv: Schlaegt die Abandoned-Query fehl (z.B. fehlende Berechtigung),
   // laeuft der Rest des Datenlaufs normal weiter; das Dashboard zeigt dann
@@ -291,6 +313,7 @@ async function main() {
           a.recoveredRevenue = round2(a.recoveredRevenue + num(n.totalPriceSet?.shopMoney?.amount));
           a.recoveredList.push({
             name: n.name || '',
+            order: matchOrder(n.completedAt, num(n.totalPriceSet?.shopMoney?.amount)),
             created: n.createdAt,
             completed: n.completedAt,
             value: num(n.totalPriceSet?.shopMoney?.amount),
