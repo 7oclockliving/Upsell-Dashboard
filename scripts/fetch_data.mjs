@@ -120,6 +120,7 @@ const ABANDONED_QUERY = `
     abandonedCheckouts(first: 100, after: $cursor, query: $q) {
       pageInfo { hasNextPage endCursor }
       nodes {
+        name
         createdAt
         completedAt
         customAttributes { key value }
@@ -175,6 +176,7 @@ async function main() {
       revenue: 0, // Warenwert der abgebrochenen Checkouts
       recovered: 0, // spaeter doch abgeschlossen (Warenkorb-Recovery, 13.08.2026)
       recoveredRevenue: 0, // Warenwert der zurueckgeholten Warenkoerbe
+      recoveredList: [], // Details je Recovery: {name, created, completed, value}
       ab: { test: 0, control: 0, none: 0 },
     },
     products: {}, // title -> {units, orders, revenue, discountGiven, scenarios{}}
@@ -287,6 +289,12 @@ async function main() {
         if (n.completedAt) {
           a.recovered++;
           a.recoveredRevenue = round2(a.recoveredRevenue + num(n.totalPriceSet?.shopMoney?.amount));
+          a.recoveredList.push({
+            name: n.name || '',
+            created: n.createdAt,
+            completed: n.completedAt,
+            value: num(n.totalPriceSet?.shopMoney?.amount),
+          });
           continue; // NICHT als offenen Abbruch zaehlen
         }
         a.total++;
