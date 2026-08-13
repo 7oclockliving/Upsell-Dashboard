@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-13T09:44:37.785Z",
+ "generatedAt": "2026-08-13T10:17:42.067Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -861,17 +861,9 @@
     "shown": 26,
     "activated": 0,
     "revenue": 5325.51,
-    "recovered": 1,
-    "recoveredRevenue": 100,
-    "recoveredList": [
-     {
-      "name": "#67714158461260",
-      "order": "#229051",
-      "created": "2026-08-12T19:41:33Z",
-      "completed": "2026-08-12T19:54:07Z",
-      "value": 100
-     }
-    ],
+    "recovered": 0,
+    "recoveredRevenue": 0,
+    "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
@@ -1070,8 +1062,8 @@
   },
   {
    "date": "2026-08-13",
-   "orders": 77,
-   "totalRevenue": 6216.72,
+   "orders": 85,
+   "totalRevenue": 6791.6,
    "upsellOrders": 4,
    "upsellUnits": 5,
    "upsellRevenue": 109.3,
@@ -1117,26 +1109,26 @@
      "converted": 3
     },
     "Lose Gläser (Staffel)": {
-     "shown": 18,
+     "shown": 21,
      "converted": 0
     },
     "Gläser-Bundles": {
-     "shown": 10,
+     "shown": 11,
      "converted": 1
     }
    },
    "abandoned": {
-    "total": 11,
-    "shown": 6,
+    "total": 14,
+    "shown": 7,
     "activated": 0,
-    "revenue": 760.43,
+    "revenue": 934.35,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 11
+     "none": 14
     }
    },
    "products": {
@@ -1210,9 +1202,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 77,
+     "orders": 85,
      "upsellOrders": 4,
-     "revenue": 6216.72
+     "revenue": 6791.6
     }
    }
   }
