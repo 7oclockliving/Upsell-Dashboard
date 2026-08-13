@@ -132,7 +132,7 @@
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   <div class="range-note" id="abandonNote"></div>
   <div id="recoveredWrap" style="margin-top:16px;display:none">
-    <div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px">Wiederhergestellte Warenkörbe <span class="info" tabindex="0">i<span class="tip">Alle Warenkörbe, die zuerst abgebrochen und später doch gekauft wurden. „Warenkorb-Nr." ist die Shopify-Checkout-Kennung – bei abgeschlossenen Käufen entspricht sie in der Regel der Bestellnummer (im Admin suchbar). „Zeit bis Rückkehr" = Abstand zwischen erstem Warenkorb und Kauf – hilft beim Timing der Recovery-Mail.</span></span></div>
+    <div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px">Wiederhergestellte Warenkörbe <span class="info" tabindex="0">i<span class="tip">Alle Warenkörbe, die zuerst abgebrochen und später doch gekauft wurden. Die „Bestellnr." wird automatisch zugeordnet: Beim Abschluss entsteht eine Bestellung mit praktisch identischem Zeitstempel – sie wird über Zeit + Betrag mit dem Warenkorb verknüpft (sehr zuverlässig, in seltenen Fällen kein Treffer → „–"). „Zeit bis Rückkehr" = Abstand zwischen erstem Warenkorb und Kauf – hilft beim Timing der Recovery-Mail.</span></span></div>
     <div class="card" id="recoveredTable"></div>
     <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   </div>
@@ -438,8 +438,9 @@ function renderAbandoned(a,p,c){
       const MAXR=200;
       const dt2=(iso)=>iso?fmtD(iso.slice(0,10))+' '+iso.slice(11,16)+' Uhr':'–';
       const dur=(a,b)=>{let m=Math.max(0,Math.round((new Date(b)-new Date(a))/60000));if(m<60)return m+' Min';const h=m/60;if(h<24)return Math.round(h)+' Std';const t=Math.round(h/24);return t+(t===1?' Tag':' Tage');};
-      rtEl.innerHTML='<table><thead><tr><th>Warenkorb-Nr.</th><th>Warenkorb erstellt</th><th>Kauf</th><th class="num">Zeit bis Rückkehr</th><th class="num">Warenwert</th></tr></thead><tbody>'+
-        rl.slice(0,MAXR).map(o=>'<tr><td><strong>'+esc(o.name||'–')+'</strong></td><td>'+dt2(o.created)+'</td><td>'+dt2(o.completed)+'</td><td class="num">'+dur(o.created,o.completed)+'</td><td class="num"><strong>'+fmtEur(o.value||0,c)+'</strong></td></tr>').join('')+
+      const bn=(o)=>{const ord=o.order&&String(o.order).trim();if(ord)return '<strong>'+esc(ord)+'</strong>';return '<span style="color:var(--ink-soft)">–</span>';};
+      rtEl.innerHTML='<table><thead><tr><th>Bestellnr.</th><th>Warenkorb erstellt</th><th>Kaufdatum</th><th class="num">Zeit bis Rückkehr</th><th class="num">Warenwert</th></tr></thead><tbody>'+
+        rl.slice(0,MAXR).map(o=>'<tr><td>'+bn(o)+'</td><td>'+dt2(o.created)+'</td><td>'+dt2(o.completed)+'</td><td class="num">'+dur(o.created,o.completed)+'</td><td class="num"><strong>'+fmtEur(o.value||0,c)+'</strong></td></tr>').join('')+
         '</tbody></table>'+(rl.length>MAXR?'<div class="empty" style="padding:10px">… und '+fmtN(rl.length-MAXR)+' weitere</div>':'');
     }
   }
