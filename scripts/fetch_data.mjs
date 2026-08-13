@@ -177,7 +177,8 @@ async function main() {
       recovered: 0, // spaeter doch abgeschlossen (Warenkorb-Recovery, 13.08.2026)
       recoveredRevenue: 0, // Warenwert der zurueckgeholten Warenkoerbe
       recoveredList: [], // Details je Recovery: {name, created, completed, value}
-      ab: { test: 0, control: 0, none: 0 },
+      ab: { test: 0, control: 0, none: 0 }, // offene Abbrueche je A/B-Bucket
+      recAb: { test: 0, control: 0, none: 0 }, // Recovery je A/B-Bucket (unabh. vom Deal-Filter, 13.08.2026)
     },
     products: {}, // title -> {units, orders, revenue, discountGiven, scenarios{}}
     scenarios: {}, // name -> {upsellOrders, units, revenue}
@@ -309,7 +310,11 @@ async function main() {
         // startet, wird von Shopify nicht mit dem alten verknuepft -> die
         // echte Rueckkehr-Quote liegt tendenziell hoeher (Untergrenze).
         if (n.completedAt) {
-          // Recovery nur fuer Deal-Warenkoerbe (Wunsch Alina, 13.08.2026):
+          // Recovery je A/B-Bucket zaehlen (unabhaengig vom Deal-Filter), damit
+          // die A/B-Auswertung Test vs. Control vergleichen kann.
+          const rAbVal = (n.customAttributes || []).find((x) => x.key === AB_ATTR)?.value;
+          a.recAb[rAbVal === 'test' || rAbVal === 'control' ? rAbVal : 'none']++;
+          // Recovery-KACHEL nur fuer Deal-Warenkoerbe (Wunsch Alina, 13.08.2026):
           // Ein zurueckgeholter Warenkorb ohne angezeigten Deal sagt nichts
           // ueber die Wirkung des Deals aus -> nur zaehlen, wenn der Deal
           // in diesem Checkout angezeigt wurde (_sevn_upsell_shown gesetzt).
