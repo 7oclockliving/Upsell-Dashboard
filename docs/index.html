@@ -49,6 +49,14 @@
   .bar-bg{background:var(--cream2);border-radius:6px;height:10px;min-width:80px;overflow:hidden}
   .bar{background:var(--brick);height:100%;border-radius:6px}
   .pill{display:inline-block;background:var(--brick-soft);color:var(--brick);border-radius:999px;font-size:11px;font-weight:700;padding:2px 10px;margin:1px 2px 1px 0}
+  /* Produkt-Filterleiste (17.08.2026) */
+  .fbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .fchip{border:1px solid var(--line);background:var(--cream2);color:var(--ink-soft);font-family:var(--sans);font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer}
+  .fchip.on{background:var(--brick);border-color:var(--brick);color:#fff}
+  .fsearch{font-family:var(--sans);font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);min-width:180px}
+  th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+  th.sortable:hover{color:var(--ink)}
+  .fcount{font-size:12px;color:var(--muted);margin-top:8px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media(max-width:760px){.grid2{grid-template-columns:1fr}}
   .ab-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--cream2);font-size:14px}
@@ -112,7 +120,7 @@
   <div class="tiles" id="tiles"></div>
   <div class="tiles" id="tiles2"></div>
 
-  <h2>Upsell-Produkte <span class="info" tabindex="0">i<span class="tip">Alle als Upsell verkauften Produkte im Zeitraum: Verkäufe = Stückzahl, Umsatz = bezahlter Preis nach Rabatt, Gewährter Rabatt = Differenz zum regulären Preis, Anteil = Umsatzanteil am stärksten Produkt.</span></span> <button class="csv-btn" id="csvBtn">CSV exportieren</button></h2>
+  <h2>Upsell-Produkte <span class="info" tabindex="0">i<span class="tip">Alle als Upsell verkauften Produkte im Zeitraum: Verkäufe = Stückzahl, Umsatz = bezahlter Preis nach Rabatt, Gewährter Rabatt = Differenz zum regulären Preis, Anteil = Umsatzanteil am stärksten Produkt. Filtern: Chips = Szenario, Suchfeld = Produktname, Klick auf Spaltenköpfe sortiert (Verkäufe, Umsatz, Rabatt). Der CSV-Export übernimmt die gefilterte Ansicht.</span></span> <button class="csv-btn" id="csvBtn">CSV exportieren</button></h2>
   <div class="card"><div id="products"></div></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
 
@@ -310,16 +318,8 @@ function render(){
     tile('Upsell-ROI',roi?fmtP(roi)+'×':'–','€ Upsell-Umsatz je Rabatt-€ ('+fmtEur(a.discountGiven,c)+' Rabatt)',false,'Upsell-Umsatz ÷ gewährter Rabatt. Beispiel 7×: Jeder investierte Rabatt-Euro bringt 7 € Upsell-Umsatz.'),
   ].join('');
 
-  // Produkte
-  const box=document.getElementById('products');
-  lastProds=Object.values(a.products).sort((x,y)=>y.revenue-x.revenue);
-  if(!lastProds.length){box.innerHTML='<div class="empty">Keine Upsell-Käufe im gewählten Zeitraum.</div>';}
-  else{
-    const max=Math.max(...lastProds.map(x=>x.revenue),1);
-    box.innerHTML='<table><thead><tr><th>Produkt</th><th class="num">Verkäufe</th><th class="num">Umsatz</th><th class="num">Gewährter Rabatt</th><th style="width:22%">Anteil</th><th>Szenario</th></tr></thead><tbody>'+
-      lastProds.map(x=>'<tr><td><strong>'+esc(x.title)+'</strong></td><td class="num">'+fmtN(x.units)+'</td><td class="num"><strong>'+fmtEur(x.revenue,c)+'</strong></td><td class="num">'+fmtEur(x.discountGiven,c)+'</td><td><div class="bar-bg"><div class="bar" style="width:'+Math.max(3,Math.round(x.revenue/max*100))+'%"></div></div></td><td>'+Object.keys(x.scenarios).map(s=>'<span class="pill">'+esc(s)+'</span>').join('')+'</td></tr>').join('')+
-      '</tbody></table>';
-  }
+  // Produkte (17.08.2026: filter- & sortierbar, Wunsch Alina)
+  renderProducts(a,c);
 
   // Bestellungen mit Upsell (11.08.2026): Bestellnummern-Liste, neueste zuerst
   const uo=document.getElementById('upsellOrders');
@@ -472,6 +472,58 @@ function renderAbandoned(a,p,c){
         '</tbody></table>'+(rl.length>MAXR?'<div class="empty" style="padding:10px">… und '+fmtN(rl.length-MAXR)+' weitere</div>':'');
     }
   }
+}
+
+// Upsell-Produkte: praezise Filterung (17.08.2026, Wunsch Alina) –
+// Szenario-Chips, Produktsuche, klickbare Sortier-Spalten. Der CSV-Export
+// exportiert immer die aktuell gefilterte/sortierte Ansicht (lastProds).
+let prodAll=[],prodScen='alle',prodQuery='',prodSort={key:'revenue',dir:-1},prodCur='EUR';
+function renderProducts(a,c){
+  const box=document.getElementById('products');
+  prodAll=Object.values(a.products);prodCur=c;
+  if(!prodAll.length){lastProds=[];box.innerHTML='<div class="empty">Keine Upsell-Käufe im gewählten Zeitraum.</div>';return;}
+  const scens=[...new Set(prodAll.flatMap(p=>Object.keys(p.scenarios)))].sort();
+  if(prodScen!=='alle'&&!scens.includes(prodScen))prodScen='alle';
+  box.innerHTML='<div class="fbar" id="prodFbar">'+
+    ['alle',...scens].map(s=>'<button class="fchip'+(prodScen===s?' on':'')+'" data-s="'+esc(s)+'">'+(s==='alle'?'Alle Szenarien':esc(s))+'</button>').join('')+
+    '<input class="fsearch" id="prodSearch" type="search" placeholder="Produkt suchen…" value="'+esc(prodQuery)+'">'+
+    '</div><div id="prodTableWrap"></div>';
+  document.querySelectorAll('#prodFbar .fchip').forEach(b=>b.addEventListener('click',()=>{
+    prodScen=b.dataset.s;
+    document.querySelectorAll('#prodFbar .fchip').forEach(x=>x.classList.toggle('on',x.dataset.s===prodScen));
+    renderProdTable();
+  }));
+  const inp=document.getElementById('prodSearch');
+  inp.addEventListener('input',()=>{prodQuery=inp.value;renderProdTable();});
+  document.getElementById('prodTableWrap').addEventListener('click',(e)=>{
+    const th=e.target.closest('th[data-k]');if(!th)return;
+    const k=th.dataset.k;
+    if(prodSort.key===k)prodSort.dir*=-1;else prodSort={key:k,dir:k==='title'?1:-1};
+    renderProdTable();
+  });
+  renderProdTable();
+}
+function renderProdTable(){
+  const wrap=document.getElementById('prodTableWrap');if(!wrap)return;
+  const c=prodCur,q=prodQuery.trim().toLowerCase();
+  let list=prodAll.filter(p=>(prodScen==='alle'||p.scenarios[prodScen])&&(!q||p.title.toLowerCase().includes(q)));
+  const k=prodSort.key,dir=prodSort.dir;
+  list=list.slice().sort((x,y)=>{
+    const a=k==='title'?x.title.toLowerCase():x[k],b=k==='title'?y.title.toLowerCase():y[k];
+    return (a<b?-1:a>b?1:0)*dir;
+  });
+  lastProds=list; // CSV-Export nutzt die gefilterte Ansicht
+  if(!list.length){wrap.innerHTML='<div class="empty">Kein Produkt passt zum Filter.</div>';return;}
+  const max=Math.max(...list.map(x=>x.revenue),1);
+  const sumRev=list.reduce((s,x)=>s+x.revenue,0),sumU=list.reduce((s,x)=>s+x.units,0);
+  const arrow=(key)=>prodSort.key===key?(prodSort.dir>0?' ▲':' ▼'):'';
+  const th=(key,label,num)=>'<th class="sortable'+(num?' num':'')+'" data-k="'+key+'" title="Klicken zum Sortieren">'+label+arrow(key)+'</th>';
+  wrap.innerHTML='<table><thead><tr>'+
+    th('title','Produkt',false)+th('units','Verkäufe',true)+th('revenue','Umsatz',true)+th('discountGiven','Gewährter Rabatt',true)+
+    '<th style="width:22%">Anteil</th><th>Szenario</th></tr></thead><tbody>'+
+    list.map(x=>'<tr><td><strong>'+esc(x.title)+'</strong></td><td class="num">'+fmtN(x.units)+'</td><td class="num"><strong>'+fmtEur(x.revenue,c)+'</strong></td><td class="num">'+fmtEur(x.discountGiven,c)+'</td><td><div class="bar-bg"><div class="bar" style="width:'+Math.max(3,Math.round(x.revenue/max*100))+'%"></div></div></td><td>'+Object.keys(x.scenarios).map(s=>'<span class="pill">'+esc(s)+'</span>').join('')+'</td></tr>').join('')+
+    '</tbody></table>'+
+    '<div class="fcount">'+fmtN(list.length)+' von '+fmtN(prodAll.length)+' Produkten · '+fmtN(sumU)+' Verkäufe · '+fmtEur(sumRev,c)+' Umsatz in dieser Auswahl</div>';
 }
 
 // Einordnung & Trend (17.08.2026, Wunsch Alina): Kern-KPIs der letzten 30
