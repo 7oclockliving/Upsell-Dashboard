@@ -56,6 +56,23 @@
   .fsearch{font-family:var(--sans);font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);min-width:180px}
   th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
   th.sortable:hover{color:var(--ink)}
+  .sortic{margin-left:5px;font-size:10px;color:var(--taupe);font-weight:400}
+  .sortic.on{color:var(--brick);font-weight:700}
+  /* Bestellungen mit Upsell: festes, scrollbares Feld (~10 Zeilen), Kopfzeile bleibt stehen (17.08.2026) */
+  #upsellOrders{max-height:540px;overflow:auto}
+  #upsellOrders thead th{position:sticky;top:0;background:var(--card);z-index:2}
+  /* Seiten-Navigation (17.08.2026): Desktop links fixiert, mobil als Button unten rechts */
+  html{scroll-behavior:smooth}
+  h2[id]{scroll-margin-top:14px}
+  #sideNav{position:fixed;top:96px;left:max(8px,calc(50vw - 735px));width:180px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 8px;z-index:30;display:none}
+  @media(min-width:1470px){#sideNav{display:block}}
+  #sideNav a{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--ink-soft);text-decoration:none}
+  #sideNav a:hover{background:var(--cream2);color:var(--ink)}
+  #sideNav a.on{background:var(--brick-soft);color:var(--brick)}
+  #sideNav a svg{flex:none}
+  #navToggle{position:fixed;right:16px;bottom:16px;width:46px;height:46px;border-radius:50%;background:var(--brick);color:#fff;border:none;box-shadow:0 4px 14px rgba(62,42,30,.3);z-index:31;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  @media(min-width:1470px){#navToggle{display:none}}
+  body.navOpen #sideNav{display:block;left:auto;right:16px;top:auto;bottom:74px;max-height:70vh;overflow:auto}
   .fcount{font-size:12px;color:var(--muted);margin-top:8px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media(max-width:760px){.grid2{grid-template-columns:1fr}}
@@ -98,6 +115,8 @@
 </style>
 </head>
 <body>
+<nav id="sideNav" aria-label="Dashboard-Bereiche"></nav>
+<button id="navToggle" aria-label="Navigation öffnen"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/></svg></button>
 <div class="wrap">
   <header>
     <div class="brand">7 o'clock <small>SEVN Upsell-Dashboard</small></div>
@@ -112,23 +131,23 @@
   </div>
   <div class="range-note" id="rangeNote"></div>
 
-  <h2 style="margin-top:20px">Einordnung &amp; Trend <span class="info" tabindex="0">i<span class="tip">Deine Kern-KPIs der letzten 30 Tage im Vergleich mit E-Commerce-Benchmarks. Quellen (Stand 08/2026): Baymard-Institut 09/2025 (Warenkorbabbruch Ø 70,2 %), Salesforce Q3/2025 (Home &amp; Furniture 84–89 %), Shopify-Upsell-Benchmarks 2026 (Checkout-Upsell-Annahme 4–10 %, Upsell-Umsatzanteil guter Shops 8–15 %), Klaviyo 2026 (Recovery Ø 3,3 %, Top-10 % 7,7 %), Dynamic Yield 2026 (AOV EMEA ≈ 193 $ ≈ 178 €). Dieser Bereich ist unabhängig vom oben gewählten Zeitraum.</span></span> <small>letzte 30 Tage vs. E-Commerce-Benchmark</small></h2>
+  <h2 style="margin-top:20px" id="sec-einordnung">Einordnung &amp; Trend <span class="info" tabindex="0">i<span class="tip">Deine Kern-KPIs der letzten 30 Tage im Vergleich mit E-Commerce-Benchmarks. Quellen (Stand 08/2026): Baymard-Institut 09/2025 (Warenkorbabbruch Ø 70,2 %), Salesforce Q3/2025 (Home &amp; Furniture 84–89 %), Shopify-Upsell-Benchmarks 2026 (Checkout-Upsell-Annahme 4–10 %, Upsell-Umsatzanteil guter Shops 8–15 %), Klaviyo 2026 (Recovery Ø 3,3 %, Top-10 % 7,7 %), Dynamic Yield 2026 (AOV EMEA ≈ 193 $ ≈ 178 €). Dieser Bereich ist unabhängig vom oben gewählten Zeitraum.</span></span> <small>letzte 30 Tage vs. E-Commerce-Benchmark</small></h2>
   <div class="card" id="benchBox"></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
 
-  <h2>Upsell-Performance <span class="info" tabindex="0">i<span class="tip">Alle Kacheln in diesem Block beziehen sich auf den oben gewählten Zeitraum. Die kleinen Pfeile vergleichen jeweils mit dem gleich langen Zeitraum davor.</span></span> <small>im oben gewählten Zeitraum</small></h2>
+  <h2 id="sec-performance">Upsell-Performance <span class="info" tabindex="0">i<span class="tip">Alle Kacheln in diesem Block beziehen sich auf den oben gewählten Zeitraum. Die kleinen Pfeile vergleichen jeweils mit dem gleich langen Zeitraum davor.</span></span> <small>im oben gewählten Zeitraum</small></h2>
   <div class="tiles" id="tiles"></div>
   <div class="tiles" id="tiles2"></div>
 
-  <h2>Upsell-Produkte <span class="info" tabindex="0">i<span class="tip">Alle als Upsell verkauften Produkte im Zeitraum: Verkäufe = Stückzahl, Umsatz = bezahlter Preis nach Rabatt, Gewährter Rabatt = Differenz zum regulären Preis, Anteil = Umsatzanteil am stärksten Produkt. Filtern: Chips = Szenario, Suchfeld = Produktname, Klick auf Spaltenköpfe sortiert (Verkäufe, Umsatz, Rabatt). Der CSV-Export übernimmt die gefilterte Ansicht.</span></span> <button class="csv-btn" id="csvBtn">CSV exportieren</button></h2>
+  <h2 id="sec-produkte">Upsell-Produkte <span class="info" tabindex="0">i<span class="tip">Alle als Upsell verkauften Produkte im Zeitraum: Verkäufe = Stückzahl, Umsatz = bezahlter Preis nach Rabatt, Gewährter Rabatt = Differenz zum regulären Preis, Anteil = Umsatzanteil am stärksten Produkt. Filtern: Chips = Szenario, Suchfeld = Produktname, Klick auf Spaltenköpfe sortiert (Verkäufe, Umsatz, Rabatt). Der CSV-Export übernimmt die gefilterte Ansicht.</span></span> <button class="csv-btn" id="csvBtn">CSV exportieren</button></h2>
   <div class="card"><div id="products"></div></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
 
-  <h2>Bestellungen mit Upsell <span class="info" tabindex="0">i<span class="tip">Jede einzelne Bestellung mit Deal-Artikel: Bestellnummer (im Shopify-Admin suchbar), kompletter Bestellwert und der darin enthaltene Upsell-Umsatz nach Rabatt.</span></span> <small>Bestellnummern im gewählten Zeitraum</small></h2>
+  <h2 id="sec-bestellungen">Bestellungen mit Upsell <span class="info" tabindex="0">i<span class="tip">Jede einzelne Bestellung mit Deal-Artikel: Bestellnummer (im Shopify-Admin suchbar), kompletter Bestellwert und der darin enthaltene Upsell-Umsatz nach Rabatt.</span></span> <small>Bestellnummern im gewählten Zeitraum</small></h2>
   <div class="card" id="upsellOrders"></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
 
-  <h2>Szenarien <span class="info" tabindex="0">i<span class="tip">Auswertung je Deal-Typ (Geschirr, Gläser-Bundles, Staffel). „Anteil aller Bestellungen" = Käufe dieses Szenarios ÷ alle Bestellungen. „Take-Rate echt" = Käufe ÷ Checkouts, denen dieses Szenario tatsächlich angezeigt wurde – die ehrlichere Quote (Tracking seit 11.08.2026).</span></span> <small>Take-Rate „echt" = Käufe ÷ Anzeigen (Tracking ab 11.08.2026)</small></h2>
+  <h2 id="sec-szenarien">Szenarien <span class="info" tabindex="0">i<span class="tip">Auswertung je Deal-Typ (Geschirr, Gläser-Bundles, Staffel). „Anteil aller Bestellungen" = Käufe dieses Szenarios ÷ alle Bestellungen. „Take-Rate echt" = Käufe ÷ Checkouts, denen dieses Szenario tatsächlich angezeigt wurde – die ehrlichere Quote (Tracking seit 11.08.2026).</span></span> <small>Take-Rate „echt" = Käufe ÷ Anzeigen (Tracking ab 11.08.2026)</small></h2>
   <div class="card" id="scenarioTable"></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   <div class="grid2" style="margin-top:14px">
@@ -136,10 +155,10 @@
     <div class="card"><div style="font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px">Umsatz in €</div><div id="pieEur"></div></div>
   </div>
 
-  <h2>A/B-Test <span class="info" tabindex="0">i<span class="tip">Wenn aktiv, sieht die Hälfte der Kunden den Deal (Test), die andere nicht (Control). Der Vergleich der beiden Gruppen zeigt den ECHTEN Effekt des Deals auf Take-Rate, Bestellwert und Abbrüche – ohne Verzerrung durch unterschiedliche Warenkörbe.</span></span></h2>
+  <h2 id="sec-abtest">A/B-Test <span class="info" tabindex="0">i<span class="tip">Wenn aktiv, sieht die Hälfte der Kunden den Deal (Test), die andere nicht (Control). Der Vergleich der beiden Gruppen zeigt den ECHTEN Effekt des Deals auf Take-Rate, Bestellwert und Abbrüche – ohne Verzerrung durch unterschiedliche Warenkörbe.</span></span></h2>
   <div class="card" id="ab"></div>
 
-  <h2>Checkout-Abbrüche <span class="info" tabindex="0">i<span class="tip">Vergleicht, wie oft Checkouts MIT Deal-Anzeige abgebrochen werden vs. ohne. Es zählen nur Checkouts, in denen der Kunde Kontaktdaten hinterlassen hat. Der Vergleich ist Korrelation – die kausale Antwort liefert der A/B-Test (Zeilen erscheinen automatisch, sobald er läuft).</span></span> <small>mit vs. ohne Deal-Anzeige</small></h2>
+  <h2 id="sec-abbrueche">Checkout-Abbrüche <span class="info" tabindex="0">i<span class="tip">Vergleicht, wie oft Checkouts MIT Deal-Anzeige abgebrochen werden vs. ohne. Es zählen nur Checkouts, in denen der Kunde Kontaktdaten hinterlassen hat. Der Vergleich ist Korrelation – die kausale Antwort liefert der A/B-Test (Zeilen erscheinen automatisch, sobald er läuft).</span></span> <small>mit vs. ohne Deal-Anzeige</small></h2>
   <div class="tiles" id="abandonTiles"></div>
   <div class="card" id="abandonTable"></div>
   <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
@@ -150,11 +169,11 @@
     <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
   </div>
 
-  <h2>Verlauf <span class="info" tabindex="0">i<span class="tip">Oben: Bestellungen pro Tag (taupe Linie) vs. Upsell-Bestellungen (rote Linie). Unten: Upsell-Umsatz pro Tag in Euro (nach Rabatt).</span></span></h2>
+  <h2 id="sec-verlauf">Verlauf <span class="info" tabindex="0">i<span class="tip">Oben: Bestellungen pro Tag (taupe Linie) vs. Upsell-Bestellungen (rote Linie). Unten: Upsell-Umsatz pro Tag in Euro (nach Rabatt).</span></span></h2>
   <div class="card" id="chartLines"></div>
   <div class="card" style="margin-top:14px" id="chartRevenue"></div>
 
-  <h2>Wochentage <span class="info" tabindex="0">i<span class="tip">Summiert den Zeitraum nach Wochentagen: Balken = Upsell-Umsatz, darunter die Take-Rate des Wochentags. Zeigt, an welchen Tagen der Deal am besten funktioniert – aussagekräftig ab ca. 2–4 Wochen Datenbasis.</span></span> <small>im gewählten Zeitraum</small></h2>
+  <h2 id="sec-wochentage">Wochentage <span class="info" tabindex="0">i<span class="tip">Summiert den Zeitraum nach Wochentagen: Balken = Upsell-Umsatz, darunter die Take-Rate des Wochentags. Zeigt, an welchen Tagen der Deal am besten funktioniert – aussagekräftig ab ca. 2–4 Wochen Datenbasis.</span></span> <small>im gewählten Zeitraum</small></h2>
   <div class="card" id="weekdays"></div>
 
   <p class="footnote">Basis: alle Bestellungen mit Upsell-Markierung (<code>_sevn_upsell</code>), alle Kalendertage inkl. Sa + So.
@@ -516,7 +535,7 @@ function renderProdTable(){
   if(!list.length){wrap.innerHTML='<div class="empty">Kein Produkt passt zum Filter.</div>';return;}
   const max=Math.max(...list.map(x=>x.revenue),1);
   const sumRev=list.reduce((s,x)=>s+x.revenue,0),sumU=list.reduce((s,x)=>s+x.units,0);
-  const arrow=(key)=>prodSort.key===key?(prodSort.dir>0?' ▲':' ▼'):'';
+  const arrow=(key)=>prodSort.key===key?'<span class="sortic on">'+(prodSort.dir>0?'▲':'▼')+'</span>':'<span class="sortic">↕</span>';
   const th=(key,label,num)=>'<th class="sortable'+(num?' num':'')+'" data-k="'+key+'" title="Klicken zum Sortieren">'+label+arrow(key)+'</th>';
   wrap.innerHTML='<table><thead><tr>'+
     th('title','Produkt',false)+th('units','Verkäufe',true)+th('revenue','Umsatz',true)+th('discountGiven','Gewährter Rabatt',true)+
@@ -588,6 +607,38 @@ function renderBenchmarks(){
     rows.map(r=>'<tr><td><strong>'+r[0]+'</strong>'+info(r[5])+'</td><td class="num"><strong>'+r[1]+'</strong></td><td>'+r[2]+'</td><td class="num">'+r[3]+'</td><td>'+r[4]+'</td></tr>').join('')+
     '</tbody></table>';
 }
+
+// Seiten-Navigation (17.08.2026, Wunsch Alina): Bereichs-Links mit Icons,
+// Desktop fix links, mobil per Button unten rechts. Scroll-Spy markiert
+// den aktuell sichtbaren Bereich.
+function initNav(){
+  const nav=document.getElementById('sideNav');if(!nav)return;
+  const S=[
+    ['sec-einordnung','Einordnung & Trend','<path d="M2 13l4-5 3 3 5-7"/>'],
+    ['sec-performance','Upsell-Performance','<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>'],
+    ['sec-produkte','Upsell-Produkte','<path d="M3 5l5-2.5L13 5v6l-5 2.5L3 11z"/><path d="M3 5l5 2.5L13 5M8 7.5V13"/>'],
+    ['sec-bestellungen','Bestellungen','<path d="M3 4.5h10M3 8h10M3 11.5h6"/>'],
+    ['sec-szenarien','Szenarien','<circle cx="8" cy="8" r="5.5"/><path d="M8 2.5V8h5.5"/>'],
+    ['sec-abtest','A/B-Test','<rect x="2" y="3" width="5" height="10" rx="1"/><rect x="9" y="3" width="5" height="10" rx="1"/>'],
+    ['sec-abbrueche','Checkout-Abbrüche','<path d="M8 3l5.5 9.5H2.5z"/><path d="M8 7v3"/>'],
+    ['sec-verlauf','Verlauf','<path d="M2 9c2-5 4-5 6 0s4 5 6 0"/>'],
+    ['sec-wochentage','Wochentage','<rect x="2.5" y="3.5" width="11" height="10" rx="1.5"/><path d="M2.5 7h11M5.5 2v3M10.5 2v3"/>'],
+  ];
+  const ic=(p)=>'<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+  nav.innerHTML='<div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:4px 10px 8px">Bereiche</div>'+
+    S.map(s=>'<a href="#'+s[0]+'" data-id="'+s[0]+'">'+ic(s[2])+'<span>'+s[1]+'</span></a>').join('');
+  nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{document.body.classList.remove('navOpen');}));
+  const tg=document.getElementById('navToggle');
+  if(tg)tg.addEventListener('click',()=>document.body.classList.toggle('navOpen'));
+  const spy=()=>{
+    let cur=S[0][0];
+    for(const s of S){const el=document.getElementById(s[0]);if(el&&el.getBoundingClientRect().top<=140)cur=s[0];}
+    nav.querySelectorAll('a').forEach(a=>a.classList.toggle('on',a.dataset.id===cur));
+  };
+  window.addEventListener('scroll',spy,{passive:true});
+  spy();
+}
+initNav();
 
 function info(t){return t?'<span class="info" tabindex="0">i<span class="tip">'+t+'</span></span>':'';}
 function tile(label,value,sub,accent,tip){return '<div class="tile"><div class="label">'+label+info(tip)+'</div><div class="value'+(accent?' accent':'')+'">'+value+'</div><div class="sub">'+sub+'</div></div>';}
