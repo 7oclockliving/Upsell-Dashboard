@@ -104,6 +104,10 @@
   </div>
   <div class="range-note" id="rangeNote"></div>
 
+  <h2 style="margin-top:20px">Einordnung &amp; Trend <span class="info" tabindex="0">i<span class="tip">Deine Kern-KPIs der letzten 30 Tage im Vergleich mit E-Commerce-Benchmarks. Quellen (Stand 08/2026): Baymard-Institut 09/2025 (Warenkorbabbruch Ø 70,2 %), Salesforce Q3/2025 (Home &amp; Furniture 84–89 %), Shopify-Upsell-Benchmarks 2026 (Checkout-Upsell-Annahme 4–10 %, Upsell-Umsatzanteil guter Shops 8–15 %), Klaviyo 2026 (Recovery Ø 3,3 %, Top-10 % 7,7 %), Dynamic Yield 2026 (AOV EMEA ≈ 193 $ ≈ 178 €). Dieser Bereich ist unabhängig vom oben gewählten Zeitraum.</span></span> <small>letzte 30 Tage vs. E-Commerce-Benchmark</small></h2>
+  <div class="card" id="benchBox"></div>
+  <div class="scroll-hint">Tipp: Tabelle seitlich wischen für alle Spalten</div>
+
   <div class="tiles" id="tiles"></div>
   <div class="tiles" id="tiles2"></div>
 
@@ -385,6 +389,7 @@ function render(){
   drawLines(sel);
   drawRevenue(sel,c);
   drawWeekdays(sel,c);
+  renderBenchmarks();
 }
 
 // Checkout-Abbrüche (11.08.2026): Abbruchquote mit vs. ohne Deal-Anzeige.
@@ -466,6 +471,69 @@ function renderAbandoned(a,p,c){
         '</tbody></table>'+(rl.length>MAXR?'<div class="empty" style="padding:10px">… und '+fmtN(rl.length-MAXR)+' weitere</div>':'');
     }
   }
+}
+
+// Einordnung & Trend (17.08.2026, Wunsch Alina): Kern-KPIs der letzten 30
+// Tage gegen E-Com-Benchmarks, mit 7-Tage-Trend und automatischem Kurzfazit.
+// Unabhaengig vom gewaehlten Zeitraum-Tab. Benchmarks hardcodiert mit
+// Quellenangabe im Tooltip der Ueberschrift (Stand 08/2026).
+function renderBenchmarks(){
+  const box=document.getElementById('benchBox');
+  if(!box||!DATA)return;
+  const c0=DATA.currency||'EUR';
+  const ref=shiftDate(DATA.generatedAt.slice(0,10),-1);
+  const from=shiftDate(ref,-29);
+  const win=DATA.days.filter(x=>x.date>=from&&x.date<=ref);
+  if(!win.length){box.innerHTML='<div class="empty">Noch keine Daten.</div>';return;}
+  const S=(f)=>win.reduce((s,d)=>s+f(d),0);
+  const orders=S(d=>d.orders),rev=S(d=>d.totalRevenue),upsRev=S(d=>d.upsellRevenue);
+  const shown=S(d=>Object.values(d.shown||{}).reduce((a,x)=>a+x.shown,0));
+  const conv=S(d=>Object.values(d.shown||{}).reduce((a,x)=>a+x.converted,0));
+  const abTot=S(d=>(d.abandoned||{}).total||0);
+  const abShown=S(d=>(d.abandoned||{}).shown||0);
+  const rec=S(d=>(d.abandoned||{}).recovered||0);
+  const aov=orders?rev/orders:0;
+  const take=shown?conv/shown*100:null;
+  const share=rev?upsRev/rev*100:0;
+  const compl=(orders+abTot)?orders/(orders+abTot)*100:null;
+  const recR=(rec+abShown)?rec/(rec+abShown)*100:null;
+  // 7-Tage-Trend: letzte 7 vs. 7 davor, erst ab ~14 Tagen Datenbasis
+  const w7=DATA.days.filter(x=>x.date>=shiftDate(ref,-6)&&x.date<=ref);
+  const p7=DATA.days.filter(x=>x.date>=shiftDate(ref,-13)&&x.date<=shiftDate(ref,-7));
+  const enough=w7.length>=5&&p7.length>=5;
+  const calc=(arr)=>{const o=arr.reduce((s,d)=>s+d.orders,0),r=arr.reduce((s,d)=>s+d.totalRevenue,0),u=arr.reduce((s,d)=>s+d.upsellRevenue,0),sh=arr.reduce((s,d)=>s+Object.values(d.shown||{}).reduce((a,x)=>a+x.shown,0),0),cv=arr.reduce((s,d)=>s+Object.values(d.shown||{}).reduce((a,x)=>a+x.converted,0),0),ab=arr.reduce((s,d)=>s+((d.abandoned||{}).total||0),0);return{aov:o?r/o:0,take:sh?cv/sh*100:null,share:r?u/r*100:0,compl:(o+ab)?o/(o+ab)*100:null};};
+  const A7=calc(w7),P7=calc(p7);
+  const tr=(a,b,pp)=>{
+    if(!enough||a===null||b===null||!isFinite(a)||!isFinite(b))return '<span style="color:var(--muted)">– ab 14 Tagen</span>';
+    const d=pp?a-b:(b?(a/b-1)*100:0);
+    if(Math.abs(d)<0.05)return '<span style="color:var(--muted)">→ stabil</span>';
+    const up=d>0;
+    return '<span style="color:var(--'+(up?'up':'down')+');font-weight:700">'+(up?'↑ +':'↓ −')+fmtP(Math.abs(d))+(pp?' %-Pkt.':' %')+'</span>';
+  };
+  const badge=(cls,txt)=>{const c=cls==='gut'?['#E7EFE7','#3F5E3F']:cls==='warn'?['#F3DEDA','#8F3A2E']:['#F6ECD8','#8A6116'];return '<span style="display:inline-block;background:'+c[0]+';color:'+c[1]+';border-radius:999px;font-size:11px;font-weight:700;padding:2px 10px;white-space:nowrap">'+txt+'</span>';};
+  let b1;if(take===null)b1=badge('ok','noch keine Daten');else if(take>=10)b1=badge('gut','über Benchmark');else if(take>=4)b1=badge('gut','im Benchmark');else if(take>=2)b1=badge('ok','unter Benchmark');else b1=badge('warn','deutlich darunter');
+  let b2;if(share>=8)b2=badge('gut','Top-Shop-Niveau');else if(share>=4)b2=badge('gut','solide');else b2=badge('ok','Ausbaupotenzial');
+  let b3;if(aov>=178)b3=badge('gut','über EMEA-Schnitt');else b3=badge('ok','kategorie-typisch');
+  let b4;if(compl===null)b4=badge('ok','noch keine Daten');else if(compl>=85)b4=badge('gut','sehr stark');else if(compl>=75)b4=badge('gut','gesund');else if(compl>=60)b4=badge('ok','beobachten');else b4=badge('warn','kritisch');
+  let b5;if(recR===null)b5=badge('ok','noch keine Daten');else if(recR>=7.7)b5=badge('gut','Top-10 %-Niveau');else if(recR>=3.3)b5=badge('gut','über Schnitt');else if(recR>=1.5)b5=badge('ok','unter Schnitt');else b5=badge('ok','Untergrenze, s. Info');
+  const rows=[
+    ['Deal-Annahmequote',take===null?'–':fmtP(take)+' %',tr(A7.take,P7.take,true),'4–10 %',b1,'Käufe mit Deal ÷ Checkouts, denen der Deal angezeigt wurde (Tracking seit 11.08.). Benchmark: Annahmequote von In-Checkout-Upsells, Shopify-Benchmarks 2026.'],
+    ['Upsell-Anteil am Umsatz',fmtP(share)+' %',tr(A7.share,P7.share,true),'8–15 %',b2,'Bezahlter Upsell-Umsatz ÷ Gesamtumsatz. Benchmark: Anteil bei gut geführten Shops mit aktiven Upsell-Strategien (2026). Ein junger Upsell startet naturgemäß darunter und wächst mit Szenarien-Abdeckung.'],
+    ['Ø Bestellwert (AOV)',fmtEur(aov,c0),tr(A7.aov,P7.aov,false),'≈ 178 € (EMEA)',b3,'Gesamtumsatz ÷ Bestellungen. EMEA-Schnitt ≈ 193 $ ≈ 178 € (Dynamic Yield 2026); Home &amp; Furniture USA ≈ 253 $ – dort ziehen aber große Möbelkäufe den Schnitt hoch. Für ein Geschirr-/Gläser-Sortiment ist ein niedrigerer AOV normal – entscheidend ist der Trend.'],
+    ['Checkout-Abschlussquote',compl===null?'–':fmtP(compl)+' %',tr(A7.compl,P7.compl,true),'s. Info',b4,'Käufe ÷ (Käufe + erfasste Abbrüche mit Kontaktdaten). Die berühmten ~70 % Warenkorbabbruch (Baymard; Home sogar 84–89 %, Salesforce) messen eine FRÜHERE Funnel-Stufe und sind nicht 1:1 vergleichbar. Auf unserer Stufe (Kontaktdaten eingegeben) gilt: über 75 % = gesund, über 85 % = sehr stark.'],
+    ['Warenkorb-Recovery (mit Deal)',recR===null?'–':fmtP(recR)+' %','<span style="color:var(--muted)">– ab 14 Tagen</span>','Ø 3,3 % · Top 7,7 %',b5,'Zurückgeholte Deal-Warenkörbe ÷ abgebrochene Deal-Warenkörbe. Benchmark: Klaviyo Recovery-Flows 2026. Unser Wert ist eine Untergrenze (nur derselbe Checkout zählt, s. Recovery-Kachel unten) – real liegt er höher.'],
+  ];
+  const good=[],focus=[];
+  if(take!==null){if(take>=4)good.push('Deal-Annahme im Branchenrahmen ('+fmtP(take)+' %)');else focus.push('Deal-Annahme unter Benchmark ('+fmtP(take)+' % statt 4–10 %)');}
+  if(compl!==null){if(compl>=75)good.push('starker Checkout-Abschluss ('+fmtP(compl)+' %)');else focus.push('Checkout-Abschluss beobachten ('+fmtP(compl)+' %)');}
+  if(share>=8)good.push('Upsell-Umsatzanteil auf Top-Niveau');else focus.push('Upsell-Umsatzanteil ausbauen ('+fmtP(share)+' % von 8–15 %)');
+  const verdict='<strong>Kurzfazit:</strong> '+(good.length?good.join(' · '):'noch zu wenig Daten')+(focus.length?' &nbsp;·&nbsp; <span style="color:var(--ink-soft)">Fokus: '+focus.join(' · ')+'</span>':'')+'.';
+  const basis=win.length<30?'<div class="range-note" style="margin:0 0 10px">Datenbasis: '+win.length+' von 30 Tagen (Upsell live seit '+fmtD(DATA.since)+') – die Aussagekraft wächst täglich mit.</div>':'';
+  box.innerHTML=basis+
+    '<div style="font-size:14px;line-height:1.6;margin-bottom:12px">'+verdict+'</div>'+
+    '<table><thead><tr><th>KPI</th><th class="num">Unser Wert</th><th>7-Tage-Trend</th><th class="num">Benchmark</th><th>Einordnung</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr><td><strong>'+r[0]+'</strong>'+info(r[5])+'</td><td class="num"><strong>'+r[1]+'</strong></td><td>'+r[2]+'</td><td class="num">'+r[3]+'</td><td>'+r[4]+'</td></tr>').join('')+
+    '</tbody></table>';
 }
 
 function info(t){return t?'<span class="info" tabindex="0">i<span class="tip">'+t+'</span></span>':'';}
