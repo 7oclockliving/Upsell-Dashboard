@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-18T11:28:39.391Z",
+ "generatedAt": "2026-08-18T11:55:22.611Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -60,7 +60,7 @@
   },
   {
    "date": "2026-08-10",
-   "orders": 207,
+   "orders": 195,
    "totalRevenue": 21466.32,
    "upsellOrders": 9,
    "upsellUnits": 13,
@@ -68,7 +68,7 @@
    "upsellOrdersRevenue": 1243.33,
    "activatedOrders": 0,
    "excluded": {
-    "count": 0,
+    "count": 12,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -278,7 +278,7 @@
      "revenue": 0
     },
     "none": {
-     "orders": 207,
+     "orders": 195,
      "upsellOrders": 9,
      "revenue": 21466.32
     }
@@ -286,7 +286,7 @@
   },
   {
    "date": "2026-08-11",
-   "orders": 228,
+   "orders": 204,
    "totalRevenue": 23941.34,
    "upsellOrders": 23,
    "upsellUnits": 28,
@@ -294,7 +294,7 @@
    "upsellOrdersRevenue": 3807.24,
    "activatedOrders": 0,
    "excluded": {
-    "count": 1,
+    "count": 25,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -699,7 +699,7 @@
      "revenue": 0
     },
     "none": {
-     "orders": 228,
+     "orders": 204,
      "upsellOrders": 23,
      "revenue": 23941.34
     }
@@ -707,7 +707,7 @@
   },
   {
    "date": "2026-08-12",
-   "orders": 255,
+   "orders": 230,
    "totalRevenue": 25137.13,
    "upsellOrders": 20,
    "upsellUnits": 23,
@@ -715,7 +715,7 @@
    "upsellOrdersRevenue": 3339.55,
    "activatedOrders": 0,
    "excluded": {
-    "count": 0,
+    "count": 25,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -1097,7 +1097,7 @@
      "revenue": 0
     },
     "none": {
-     "orders": 255,
+     "orders": 230,
      "upsellOrders": 20,
      "revenue": 25137.13
     }
@@ -1105,7 +1105,7 @@
   },
   {
    "date": "2026-08-13",
-   "orders": 220,
+   "orders": 202,
    "totalRevenue": 20156.01,
    "upsellOrders": 12,
    "upsellUnits": 15,
@@ -1113,7 +1113,7 @@
    "upsellOrdersRevenue": 2009.69,
    "activatedOrders": 0,
    "excluded": {
-    "count": 0,
+    "count": 18,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -1399,7 +1399,7 @@
      "revenue": 0
     },
     "none": {
-     "orders": 220,
+     "orders": 202,
      "upsellOrders": 12,
      "revenue": 20156.01
     }
@@ -1407,7 +1407,7 @@
   },
   {
    "date": "2026-08-14",
-   "orders": 228,
+   "orders": 212,
    "totalRevenue": 20902.77,
    "upsellOrders": 19,
    "upsellUnits": 22,
@@ -1415,7 +1415,7 @@
    "upsellOrdersRevenue": 2219.88,
    "activatedOrders": 0,
    "excluded": {
-    "count": 0,
+    "count": 16,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -1763,7 +1763,7 @@
      "revenue": 0
     },
     "none": {
-     "orders": 228,
+     "orders": 212,
      "upsellOrders": 19,
      "revenue": 20902.77
     }
@@ -2507,7 +2507,7 @@
   },
   {
    "date": "2026-08-17",
-   "orders": 261,
+   "orders": 233,
    "totalRevenue": 25555.38,
    "upsellOrders": 15,
    "upsellUnits": 20,
@@ -2515,7 +2515,7 @@
    "upsellOrdersRevenue": 2160.77,
    "activatedOrders": 0,
    "excluded": {
-    "count": 1,
+    "count": 29,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -2821,7 +2821,7 @@
      "revenue": 0
     },
     "none": {
-     "orders": 261,
+     "orders": 233,
      "upsellOrders": 15,
      "revenue": 25555.38
     }
@@ -2829,15 +2829,15 @@
   },
   {
    "date": "2026-08-18",
-   "orders": 108,
-   "totalRevenue": 8503.96,
+   "orders": 92,
+   "totalRevenue": 8755.61,
    "upsellOrders": 7,
    "upsellUnits": 10,
    "upsellRevenue": 181.6,
    "upsellOrdersRevenue": 1275.01,
    "activatedOrders": 0,
    "excluded": {
-    "count": 0,
+    "count": 25,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -2900,11 +2900,11 @@
    ],
    "shown": {
     "Lose Gläser (Staffel)": {
-     "shown": 26,
+     "shown": 27,
      "converted": 2
     },
     "Gläser-Bundles": {
-     "shown": 13,
+     "shown": 14,
      "converted": 2
     },
     "Geschirr": {
@@ -2913,17 +2913,17 @@
     }
    },
    "abandoned": {
-    "total": 12,
-    "shown": 8,
+    "total": 14,
+    "shown": 9,
     "activated": 0,
-    "revenue": 1441.62,
+    "revenue": 1553.56,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 12
+     "none": 14
     },
     "recAb": {
      "test": 0,
@@ -3016,9 +3016,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 108,
+     "orders": 92,
      "upsellOrders": 7,
-     "revenue": 8503.96
+     "revenue": 8755.61
     }
    }
   }
