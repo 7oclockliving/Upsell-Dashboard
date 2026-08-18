@@ -166,10 +166,13 @@ async function main() {
     upsellRevenue: 0,
     upsellOrdersRevenue: 0, // Gesamt-Bestellwert der Bestellungen MIT Upsell (fuer AOV-Uplift)
     activatedOrders: 0, // Bestellungen mit Deal-Aktivierung (Teaser-Modus, ab App v19)
-    // Neusendungen & Kooperationen (18.08.2026, Wunsch Alina): per Tag
-    // markierte Gratis-Bestellungen, die aus ALLEN Kennzahlen ausgeklammert
-    // werden (verfaelschen sonst AOV, Take-Rate, Sichtbarkeit).
-    excluded: { count: 0, revenue: 0 },
+    // Neusendungen & Kooperationen (18.08.2026, Wunsch Alina): Erkennung
+    // strikt ueber die SKU-Labels der Marker-Produkte (SYS-NS-* = Neusendung
+    // inkl. Kategorien wie Defekt/Artikel fehlt/Schweiz, SYS-KOP = Kooperation)
+    // - genau wie im Neusendungs-Dashboard. Diese Bestellungen werden aus
+    // ALLEN Kennzahlen ausgeklammert (verfaelschen sonst AOV, Take-Rate,
+    // Sichtbarkeit) und getrennt gezaehlt.
+    excluded: { ns: 0, koop: 0, revenue: 0 },
     // Bestellnummern der Upsell-Bestellungen (11.08.2026, Wunsch Alina):
     // {name, total, upsellRevenue, scenarios[]} – KEINE Kundendaten!
     upsellOrdersList: [],
@@ -200,18 +203,15 @@ async function main() {
     days[date] ??= emptyDay();
     const d = days[date];
     // Neusendungen/Koops VOR allen Kennzahlen abfangen (18.08.2026, Fix):
-    // Erkennung ueber die Marker-PRODUKTE in der Bestellung (SKU "SYS-NS*" /
-    // "SYS-KOP" bzw. "Neusendung"/"Kooperation" im Artikelnamen), wie im
-    // Neusendungs-Dashboard. Tag-Match bleibt als Fallback bestehen.
-    const isExcluded =
-      (o.tags || []).some((t) => /neusendung|kooperation/i.test(String(t))) ||
-      (o.lineItems?.nodes || []).some(
-        (li) =>
-          /^SYS-(NS|KOP)/i.test(String(li.sku || '')) ||
-          /neusendung|kooperation/i.test(String(li.title || '')),
-      );
-    if (isExcluded) {
-      d.excluded.count++;
+    // Erkennung STRIKT ueber die SKU-Labels der Marker-Produkte, wie im
+    // Neusendungs-Dashboard: SYS-NS-* (alle Neusendungs-Kategorien inkl.
+    // Schweiz) und SYS-KOP (Kooperationen/Influencer).
+    const liSkus = (o.lineItems?.nodes || []).map((li) => String(li.sku || ''));
+    const isNs = liSkus.some((s) => /^SYS-NS/i.test(s));
+    const isKoop = liSkus.some((s) => /^SYS-KOP/i.test(s));
+    if (isNs || isKoop) {
+      if (isNs) d.excluded.ns++;
+      else d.excluded.koop++;
       d.excluded.revenue = round2(d.excluded.revenue + num(o.totalPriceSet?.shopMoney?.amount));
       continue;
     }
