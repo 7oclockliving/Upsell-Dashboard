@@ -88,6 +88,7 @@ const ORDERS_QUERY = `
       nodes {
         id
         name
+        tags
         createdAt
         totalPriceSet { shopMoney { amount currencyCode } }
         customAttributes { key value }
@@ -164,6 +165,10 @@ async function main() {
     upsellRevenue: 0,
     upsellOrdersRevenue: 0, // Gesamt-Bestellwert der Bestellungen MIT Upsell (fuer AOV-Uplift)
     activatedOrders: 0, // Bestellungen mit Deal-Aktivierung (Teaser-Modus, ab App v19)
+    // Neusendungen & Kooperationen (18.08.2026, Wunsch Alina): per Tag
+    // markierte Gratis-Bestellungen, die aus ALLEN Kennzahlen ausgeklammert
+    // werden (verfaelschen sonst AOV, Take-Rate, Sichtbarkeit).
+    excluded: { count: 0, revenue: 0 },
     // Bestellnummern der Upsell-Bestellungen (11.08.2026, Wunsch Alina):
     // {name, total, upsellRevenue, scenarios[]} – KEINE Kundendaten!
     upsellOrdersList: [],
@@ -193,6 +198,12 @@ async function main() {
     const date = o.createdAt.slice(0, 10);
     days[date] ??= emptyDay();
     const d = days[date];
+    // Neusendungen/Koops VOR allen Kennzahlen abfangen (Tag-Match, case-insensitive)
+    if ((o.tags || []).some((t) => /neusendung|kooperation/i.test(String(t)))) {
+      d.excluded.count++;
+      d.excluded.revenue = round2(d.excluded.revenue + num(o.totalPriceSet?.shopMoney?.amount));
+      continue;
+    }
     d.orders++;
     d.totalRevenue += num(o.totalPriceSet?.shopMoney?.amount);
     currency = o.totalPriceSet?.shopMoney?.currencyCode || currency;
