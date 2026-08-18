@@ -81,7 +81,13 @@ async function gql(query, variables) {
   return json.data;
 }
 
-const ORDERS_QUERY = `
+/**
+ * Neukunden-Erkennung (18.08.2026, Wunsch Alina): customerJourneySummary.
+ * customerOrderIndex = 1 -> erste Bestellung dieses Kunden (Neukunde).
+ * Braucht ggf. zusaetzlichen Scope -> withJourney=false als Fallback,
+ * damit der restliche Datenlauf nie daran scheitert.
+ */
+const ordersQuery = (withJourney) => `
   query SevnOrders($cursor: String, $q: String!) {
     orders(first: 100, after: $cursor, query: $q, sortKey: CREATED_AT) {
       pageInfo { hasNextPage endCursor }
@@ -90,6 +96,7 @@ const ORDERS_QUERY = `
         name
         tags
         createdAt
+        ${withJourney ? 'customerJourneySummary { customerOrderIndex }' : ''}
         totalPriceSet { shopMoney { amount currencyCode } }
         customAttributes { key value }
         lineItems(first: 100) {
@@ -144,15 +151,31 @@ const num = (v) => Math.round(parseFloat(v || '0') * 100) / 100;
 const round2 = (x) => Math.round(x * 100) / 100;
 
 async function main() {
-  const orders = [];
-  let cursor = null;
   const q = `created_at:>=${SINCE}`;
-  for (let page = 0; page < 100; page++) {
-    const data = await gql(ORDERS_QUERY, { cursor, q });
-    const conn = data.orders;
-    orders.push(...conn.nodes);
-    if (!conn.pageInfo.hasNextPage) break;
-    cursor = conn.pageInfo.endCursor;
+  let journeyAvailable = true;
+  let orders = [];
+  // Erst mit Kundenhistorie versuchen; scheitert das (fehlender Scope),
+  // einmal komplett ohne wiederholen, damit der Datenlauf nie ausfaellt.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      orders = [];
+      let cursor = null;
+      for (let page = 0; page < 100; page++) {
+        const data = await gql(ordersQuery(journeyAvailable), { cursor, q });
+        const conn = data.orders;
+        orders.push(...conn.nodes);
+        if (!conn.pageInfo.hasNextPage) break;
+        cursor = conn.pageInfo.endCursor;
+      }
+      break;
+    } catch (e) {
+      if (journeyAvailable) {
+        journeyAvailable = false;
+        console.error('WARNUNG: Kundenhistorie (Neukunden) nicht verfuegbar:', e.message);
+      } else {
+        throw e;
+      }
+    }
   }
 
   const days = {}; // key: yyyy-mm-dd (Datum aus createdAt, UTC)
@@ -173,6 +196,11 @@ async function main() {
     // ALLEN Kennzahlen ausgeklammert (verfaelschen sonst AOV, Take-Rate,
     // Sichtbarkeit) und getrennt gezaehlt.
     excluded: { ns: 0, koop: 0, revenue: 0 },
+    // Neukunden (18.08.2026): normale Bestellungen mit customerOrderIndex = 1
+    newCustomers: 0,
+    // Shop-Sessions des Tages aus Shopify Analytics (ShopifyQL) fuer die
+    // Conversion-Rate; 0 = nicht verfuegbar (siehe sessionsAvailable).
+    sessions: 0,
     // Bestellnummern der Upsell-Bestellungen (11.08.2026, Wunsch Alina):
     // {name, total, upsellRevenue, scenarios[]} – KEINE Kundendaten!
     upsellOrdersList: [],
@@ -218,6 +246,7 @@ async function main() {
     d.orders++;
     d.totalRevenue += num(o.totalPriceSet?.shopMoney?.amount);
     currency = o.totalPriceSet?.shopMoney?.currencyCode || currency;
+    if (o.customerJourneySummary?.customerOrderIndex === 1) d.newCustomers++;
 
     const abVal =
       (o.customAttributes || []).find((a) => a.key === AB_ATTR)?.value || 'none';
@@ -370,11 +399,36 @@ async function main() {
     console.error('WARNUNG: Abgebrochene Checkouts nicht verfuegbar:', e.message);
   }
 
+  // --- Shop-Sessions fuer die Conversion-Rate (18.08.2026) ------------------
+  // ShopifyQL (Shopify Analytics): Sessions pro Tag, gleiche Zahl wie im
+  // Shopify-Admin unter Analytics. Braucht ggf. zusaetzlichen Scope
+  // (read_reports) -> defensiv, Dashboard zeigt sonst einen Hinweis.
+  let sessionsAvailable = true;
+  try {
+    const sq = `FROM sessions SHOW sessions GROUP BY day SINCE ${SINCE} UNTIL today ORDER BY day ASC`;
+    const data = await gql(
+      `query SevnSessions($sq: String!) { shopifyqlQuery(query: $sq) { parseErrors tableData { rows } } }`,
+      { sq },
+    );
+    const rows = data.shopifyqlQuery?.tableData?.rows || [];
+    for (const r of rows) {
+      const date = String(r.day).slice(0, 10);
+      days[date] ??= emptyDay();
+      days[date].sessions = parseInt(r.sessions || '0', 10) || 0;
+    }
+    if (!rows.length) sessionsAvailable = false;
+  } catch (e) {
+    sessionsAvailable = false;
+    console.error('WARNUNG: Sessions (Conversion) nicht verfuegbar:', e.message);
+  }
+
   const out = {
     generatedAt: new Date().toISOString(),
     since: SINCE,
     currency,
     abandonedAvailable,
+    sessionsAvailable,
+    journeyAvailable,
     days: Object.entries(days)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, d]) => ({
