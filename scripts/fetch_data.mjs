@@ -228,7 +228,7 @@ async function main() {
     const shownVal = (o.customAttributes || []).find((a) => a.key === SHOWN_ATTR)?.value;
     const shownGroup = shownVal ? scenarioGroup(shownVal) : null;
     if (shownGroup) {
-      d.shown[shownGroup] ?>= { shown: 0, converted: 0 };
+      d.shown[shownGroup] ??= { shown: 0, converted: 0 };
       d.shown[shownGroup].shown++;
     }
     if ((o.customAttributes || []).some((a) => a.key === ACTIVATED_ATTR)) {
