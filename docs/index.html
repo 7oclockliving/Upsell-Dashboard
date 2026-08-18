@@ -255,7 +255,7 @@ function currentRange(){
 }
 
 function merge(sel){
-  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,excluded:{ns:0,koop:0,revenue:0},sessions:0,newCustomers:0,
+  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,excluded:{ns:0,koop:0,zero:0,revenue:0},sessions:0,newCustomers:0,
     upsellOrdersList:[],
     abandoned:{total:0,shown:0,activated:0,revenue:0,recovered:0,recoveredRevenue:0,recoveredList:[],ab:{test:0,control:0,none:0},recAb:{test:0,control:0,none:0}},
     products:{},scenarios:{},shown:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
@@ -264,7 +264,7 @@ function merge(sel){
     agg.upsellOrders+=d.upsellOrders;agg.upsellUnits+=d.upsellUnits;agg.upsellRevenue+=d.upsellRevenue;
     agg.upsellOrdersRevenue+=d.upsellOrdersRevenue||0;
     agg.activatedOrders+=d.activatedOrders||0;
-    const ex=d.excluded||{};agg.excluded.ns+=ex.ns||0;agg.excluded.koop+=ex.koop||0;agg.excluded.revenue+=ex.revenue||0;
+    const ex=d.excluded||{};agg.excluded.ns+=ex.ns||0;agg.excluded.koop+=ex.koop||0;agg.excluded.zero+=ex.zero||0;agg.excluded.revenue+=ex.revenue||0;
     agg.sessions+=d.sessions||0;agg.newCustomers+=d.newCustomers||0;
     for(const o of d.upsellOrdersList||[])agg.upsellOrdersList.push({...o,date:d.date});
     const ab=d.abandoned||{};
@@ -341,6 +341,7 @@ function render(){
     tile('Deal-Sichtbarkeit',fmtP(vis)+' %'+delta(vis,visPrev),fmtN(shownOrd)+' von '+fmtN(a.orders)+' Bestellungen sahen den Deal',false,'Bestellungen, denen der Deal im Checkout angezeigt wurde ÷ alle Bestellungen. Zeigt, wie oft der Deal überhaupt erscheint – der größte Hebel für mehr Upsell-Umsatz (mehr Szenarien = mehr Sichtbarkeit). Anzeige-Tracking erst seit 11.08.2026 – Zeiträume mit dem 10.08. unterschätzen die Quote leicht.'),
     tile('Neusendungen',fmtN(a.excluded.ns),'aus allen Kennzahlen rausgerechnet',false,'Bestellungen mit einem Neusendungs-Marker-Produkt – erkannt strikt über die SKU-Labels SYS-NS-* (alle Kategorien: Defekt, Artikel fehlt, Falscher Artikel, Transportschaden, Kulanz, Schweiz usw.), genau wie im Neusendungs-Dashboard. Sie zählen in KEINER Kennzahl dieses Dashboards mit.'),
     tile('Kooperationen',fmtN(a.excluded.koop),'aus allen Kennzahlen rausgerechnet',false,'Bestellungen mit dem Kooperations-Marker-Produkt (SKU SYS-KOP) – Influencer- und Partner-Pakete, 0 €. Sie zählen in KEINER Kennzahl dieses Dashboards mit.'),
+    (a.excluded.zero?tile('Sonstige 0-€-Bestellungen',fmtN(a.excluded.zero),'ohne Marker-Produkt · rausgerechnet',false,'Sicherheitsnetz: 0-€-Bestellungen OHNE Neusendungs-/Kooperations-Marker-Produkt (z. B. vom Team manuell angelegt, Marker vergessen). Auch sie zählen in KEINER Kennzahl mit – echte Kundenbestellungen sind nie 0 €.'):''),
   ].join('');
 
   // AOV-Block
