@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-18T08:02:13.669Z",
+ "generatedAt": "2026-08-18T11:28:39.391Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -13,6 +13,10 @@
    "upsellRevenue": 0,
    "upsellOrdersRevenue": 0,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 0,
+    "revenue": 0
+   },
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
@@ -63,6 +67,10 @@
    "upsellRevenue": 202.87,
    "upsellOrdersRevenue": 1243.33,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 0,
+    "revenue": 0
+   },
    "upsellOrdersList": [
     {
      "name": "#228500",
@@ -278,13 +286,17 @@
   },
   {
    "date": "2026-08-11",
-   "orders": 229,
+   "orders": 228,
    "totalRevenue": 23941.34,
    "upsellOrders": 23,
    "upsellUnits": 28,
    "upsellRevenue": 441.62,
    "upsellOrdersRevenue": 3807.24,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 1,
+    "revenue": 0
+   },
    "upsellOrdersList": [
     {
      "name": "#228627",
@@ -687,7 +699,7 @@
      "revenue": 0
     },
     "none": {
-     "orders": 229,
+     "orders": 228,
      "upsellOrders": 23,
      "revenue": 23941.34
     }
@@ -702,6 +714,10 @@
    "upsellRevenue": 363.84,
    "upsellOrdersRevenue": 3339.55,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 0,
+    "revenue": 0
+   },
    "upsellOrdersList": [
     {
      "name": "#228885",
@@ -1096,6 +1112,10 @@
    "upsellRevenue": 296.9,
    "upsellOrdersRevenue": 2009.69,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 0,
+    "revenue": 0
+   },
    "upsellOrdersList": [
     {
      "name": "#229107",
@@ -1394,6 +1414,10 @@
    "upsellRevenue": 292.84,
    "upsellOrdersRevenue": 2219.88,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 0,
+    "revenue": 0
+   },
    "upsellOrdersList": [
     {
      "name": "#229324",
@@ -1754,6 +1778,10 @@
    "upsellRevenue": 419.75,
    "upsellOrdersRevenue": 3770.26,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 0,
+    "revenue": 0
+   },
    "upsellOrdersList": [
     {
      "name": "#229552",
@@ -2121,6 +2149,10 @@
    "upsellRevenue": 396.88,
    "upsellOrdersRevenue": 3544.19,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 0,
+    "revenue": 0
+   },
    "upsellOrdersList": [
     {
      "name": "#229726",
@@ -2475,13 +2507,17 @@
   },
   {
    "date": "2026-08-17",
-   "orders": 262,
+   "orders": 261,
    "totalRevenue": 25555.38,
    "upsellOrders": 15,
    "upsellUnits": 20,
    "upsellRevenue": 346.87,
    "upsellOrdersRevenue": 2160.77,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 1,
+    "revenue": 0
+   },
    "upsellOrdersList": [
     {
      "name": "#230034",
@@ -2619,17 +2655,17 @@
     }
    },
    "abandoned": {
-    "total": 38,
-    "shown": 20,
+    "total": 37,
+    "shown": 19,
     "activated": 0,
-    "revenue": 3496.29,
+    "revenue": 3402.6,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 38
+     "none": 37
     },
     "recAb": {
      "test": 0,
@@ -2785,7 +2821,7 @@
      "revenue": 0
     },
     "none": {
-     "orders": 262,
+     "orders": 261,
      "upsellOrders": 15,
      "revenue": 25555.38
     }
@@ -2793,13 +2829,17 @@
   },
   {
    "date": "2026-08-18",
-   "orders": 39,
-   "totalRevenue": 2627.28,
-   "upsellOrders": 3,
-   "upsellUnits": 4,
-   "upsellRevenue": 54.9,
-   "upsellOrdersRevenue": 385.61,
+   "orders": 108,
+   "totalRevenue": 8503.96,
+   "upsellOrders": 7,
+   "upsellUnits": 10,
+   "upsellRevenue": 181.6,
+   "upsellOrdersRevenue": 1275.01,
    "activatedOrders": 0,
+   "excluded": {
+    "count": 0,
+    "revenue": 0
+   },
    "upsellOrdersList": [
     {
      "name": "#230302",
@@ -2824,34 +2864,66 @@
      "scenarios": [
       "Gläser-Bundles"
      ]
+    },
+    {
+     "name": "#230360",
+     "total": 194.19,
+     "upsellRevenue": 44.2,
+     "scenarios": [
+      "Geschirr"
+     ]
+    },
+    {
+     "name": "#230372",
+     "total": 49.71,
+     "upsellRevenue": 11.7,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#230374",
+     "total": 291.42,
+     "upsellRevenue": 26.6,
+     "scenarios": [
+      "Geschirr"
+     ]
+    },
+    {
+     "name": "#230392",
+     "total": 354.08,
+     "upsellRevenue": 44.2,
+     "scenarios": [
+      "Geschirr"
+     ]
     }
    ],
    "shown": {
     "Lose Gläser (Staffel)": {
-     "shown": 7,
-     "converted": 1
+     "shown": 26,
+     "converted": 2
     },
     "Gläser-Bundles": {
-     "shown": 6,
+     "shown": 13,
      "converted": 2
     },
     "Geschirr": {
-     "shown": 3,
-     "converted": 0
+     "shown": 16,
+     "converted": 3
     }
    },
    "abandoned": {
-    "total": 3,
-    "shown": 2,
+    "total": 12,
+    "shown": 8,
     "activated": 0,
-    "revenue": 698.47,
+    "revenue": 1441.62,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 3
+     "none": 12
     },
     "recAb": {
      "test": 0,
@@ -2886,6 +2958,33 @@
      "scenarios": {
       "Gläser-Bundles": 1
      }
+    },
+    "Große Bowl Ø27cm in Cremeweiß matt | Nia": {
+     "units": 3,
+     "orders": 3,
+     "revenue": 76,
+     "discountGiven": 37.97,
+     "scenarios": {
+      "Geschirr": 3
+     }
+    },
+    "Dipschalen 6er Set in Cremeweiß matt | Nia": {
+     "units": 2,
+     "orders": 2,
+     "revenue": 39,
+     "discountGiven": 20.98,
+     "scenarios": {
+      "Geschirr": 2
+     }
+    },
+    "Großes organisches Glas | Alaska": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 11.7,
+     "discountGiven": 1.29,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
     }
    },
    "scenarios": {
@@ -2895,9 +2994,14 @@
      "revenue": 46.9
     },
     "Lose Gläser (Staffel)": {
-     "upsellOrders": 1,
-     "units": 1,
-     "revenue": 8
+     "upsellOrders": 2,
+     "units": 2,
+     "revenue": 19.7
+    },
+    "Geschirr": {
+     "upsellOrders": 3,
+     "units": 5,
+     "revenue": 115
     }
    },
    "ab": {
@@ -2912,9 +3016,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 39,
-     "upsellOrders": 3,
-     "revenue": 2627.28
+     "orders": 108,
+     "upsellOrders": 7,
+     "revenue": 8503.96
     }
    }
   }
