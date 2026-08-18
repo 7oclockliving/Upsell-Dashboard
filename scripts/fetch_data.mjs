@@ -195,7 +195,7 @@ async function main() {
     // - genau wie im Neusendungs-Dashboard. Diese Bestellungen werden aus
     // ALLEN Kennzahlen ausgeklammert (verfaelschen sonst AOV, Take-Rate,
     // Sichtbarkeit) und getrennt gezaehlt.
-    excluded: { ns: 0, koop: 0, revenue: 0 },
+    excluded: { ns: 0, koop: 0, zero: 0, revenue: 0 },
     // Neukunden (18.08.2026): normale Bestellungen mit customerOrderIndex = 1
     newCustomers: 0,
     // Shop-Sessions des Tages aus Shopify Analytics (ShopifyQL) fuer die
@@ -237,10 +237,15 @@ async function main() {
     const liSkus = (o.lineItems?.nodes || []).map((li) => String(li.sku || ''));
     const isNs = liSkus.some((s) => /^SYS-NS/i.test(s));
     const isKoop = liSkus.some((s) => /^SYS-KOP/i.test(s));
-    if (isNs || isKoop) {
+    const orderTotal = num(o.totalPriceSet?.shopMoney?.amount);
+    // Sicherheitsnetz (18.08.2026, Wunsch Alina): JEDE 0-Euro-Bestellung wird
+    // ausgeklammert - auch wenn das Team mal vergisst, das Marker-Produkt
+    // beizulegen. Echte Kundenbestellungen sind nie 0 Euro.
+    if (isNs || isKoop || orderTotal === 0) {
       if (isNs) d.excluded.ns++;
-      else d.excluded.koop++;
-      d.excluded.revenue = round2(d.excluded.revenue + num(o.totalPriceSet?.shopMoney?.amount));
+      else if (isKoop) d.excluded.koop++;
+      else d.excluded.zero++;
+      d.excluded.revenue = round2(d.excluded.revenue + orderTotal);
       continue;
     }
     d.orders++;
