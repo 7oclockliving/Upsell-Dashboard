@@ -255,7 +255,7 @@ function currentRange(){
 }
 
 function merge(sel){
-  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,
+  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,excluded:{count:0,revenue:0},
     upsellOrdersList:[],
     abandoned:{total:0,shown:0,activated:0,revenue:0,recovered:0,recoveredRevenue:0,recoveredList:[],ab:{test:0,control:0,none:0},recAb:{test:0,control:0,none:0}},
     products:{},scenarios:{},shown:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
@@ -264,6 +264,7 @@ function merge(sel){
     agg.upsellOrders+=d.upsellOrders;agg.upsellUnits+=d.upsellUnits;agg.upsellRevenue+=d.upsellRevenue;
     agg.upsellOrdersRevenue+=d.upsellOrdersRevenue||0;
     agg.activatedOrders+=d.activatedOrders||0;
+    const ex=d.excluded||{};agg.excluded.count+=ex.count||0;agg.excluded.revenue+=ex.revenue||0;
     for(const o of d.upsellOrdersList||[])agg.upsellOrdersList.push({...o,date:d.date});
     const ab=d.abandoned||{};
     agg.abandoned.total+=ab.total||0;agg.abandoned.shown+=ab.shown||0;
@@ -317,11 +318,18 @@ function render(){
 
   const tr=a.orders?a.upsellOrders/a.orders*100:0;
   const trPrev=p.orders?p.upsellOrders/p.orders*100:0;
+  // Deal-Sichtbarkeit (18.08.2026): Bestellungen mit Deal-Anzeige / alle
+  const shownOrd=Object.values(a.shown).reduce((s,x)=>s+x.shown,0);
+  const shownOrdPrev=Object.values(p.shown).reduce((s,x)=>s+x.shown,0);
+  const vis=a.orders?shownOrd/a.orders*100:0;
+  const visPrev=p.orders?shownOrdPrev/p.orders*100:0;
   document.getElementById('tiles').innerHTML=[
     tile('Bestellungen',fmtN(a.orders)+delta(a.orders,p.orders),'im gewählten Zeitraum',false,'Alle Bestellungen im gewählten Zeitraum. Der Pfeil vergleicht mit dem gleich langen Zeitraum davor (grün = mehr, rot = weniger).'),
     tile('Mit Upsell',fmtN(a.upsellOrders)+delta(a.upsellOrders,p.upsellOrders),'Bestellungen mit ≥ 1 Upsell-Artikel',false,'Bestellungen, die mindestens einen Artikel aus dem Checkout-Deal enthalten.'),
     tile('Take-Rate overall',fmtP(tr)+' %'+delta(tr,trPrev),'% aller Bestellungen mit Upsell-Kauf',true,'Mit Upsell ÷ Bestellungen. Anteil aller Bestellungen im Zeitraum, die einen Deal-Artikel gekauft haben.'),
     tile('Upsell-Umsatz',fmtEur(a.upsellRevenue,c)+delta(a.upsellRevenue,p.upsellRevenue),fmtN(a.upsellUnits)+' Artikel · nach Rabatt',true,'Summe der tatsächlich bezahlten Deal-Artikel (Preis nach Rabatt) – nur die Upsell-Positionen, nicht die ganze Bestellung.'),
+    tile('Deal-Sichtbarkeit',fmtP(vis)+' %'+delta(vis,visPrev),fmtN(shownOrd)+' von '+fmtN(a.orders)+' Bestellungen sahen den Deal',false,'Bestellungen, denen der Deal im Checkout angezeigt wurde ÷ alle Bestellungen. Zeigt, wie oft der Deal überhaupt erscheint – der größte Hebel für mehr Upsell-Umsatz (mehr Szenarien = mehr Sichtbarkeit). Anzeige-Tracking erst seit 11.08.2026 – Zeiträume mit dem 10.08. unterschätzen die Quote leicht.'),
+    tile('Neusendungen & Koops',fmtN(a.excluded.count),'aus allen Kennzahlen rausgerechnet'+(a.excluded.revenue?' · '+fmtEur(a.excluded.revenue,c):''),false,'Bestellungen mit Tag „Neusendung" oder „Kooperation" (Ersatzlieferungen, Influencer-Pakete – meist 0 €). Sie zählen in KEINER Kennzahl dieses Dashboards mit: weder bei Bestellungen, AOV, Take-Rate, Sichtbarkeit noch Abbrüchen. Diese Kachel zeigt nur, wie viele ausgeklammert wurden. Erfassung ab Datenlauf 18.08.2026 (ältere Läufe enthalten sie noch).'),
   ].join('');
 
   // AOV-Block
