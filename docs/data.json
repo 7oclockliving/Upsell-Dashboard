@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-18T13:43:43.948Z",
+ "generatedAt": "2026-08-18T14:12:29.955Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -2867,12 +2867,12 @@
   },
   {
    "date": "2026-08-18",
-   "orders": 117,
-   "totalRevenue": 11849.3,
-   "upsellOrders": 11,
-   "upsellUnits": 14,
-   "upsellRevenue": 217.65,
-   "upsellOrdersRevenue": 2040.67,
+   "orders": 123,
+   "totalRevenue": 12186.2,
+   "upsellOrders": 12,
+   "upsellUnits": 15,
+   "upsellRevenue": 244.25,
+   "upsellOrdersRevenue": 2218.79,
    "activatedOrders": 0,
    "excluded": {
     "ns": 22,
@@ -2880,7 +2880,7 @@
     "zero": 2,
     "revenue": 0
    },
-   "newCustomers": 79,
+   "newCustomers": 83,
    "sessions": 0,
    "upsellOrdersList": [
     {
@@ -2970,11 +2970,19 @@
      "scenarios": [
       "Lose Gläser (Staffel)"
      ]
+    },
+    {
+     "name": "#230446",
+     "total": 178.12,
+     "upsellRevenue": 26.6,
+     "scenarios": [
+      "Geschirr"
+     ]
     }
    ],
    "shown": {
     "Lose Gläser (Staffel)": {
-     "shown": 36,
+     "shown": 39,
      "converted": 6
     },
     "Gläser-Bundles": {
@@ -2982,8 +2990,8 @@
      "converted": 2
     },
     "Geschirr": {
-     "shown": 21,
-     "converted": 3
+     "shown": 22,
+     "converted": 4
     }
    },
    "abandoned": {
@@ -3034,12 +3042,12 @@
      }
     },
     "Große Bowl Ø27cm in Cremeweiß matt | Nia": {
-     "units": 3,
-     "orders": 3,
-     "revenue": 76,
-     "discountGiven": 37.97,
+     "units": 4,
+     "orders": 4,
+     "revenue": 102.6,
+     "discountGiven": 49.36,
      "scenarios": {
-      "Geschirr": 3
+      "Geschirr": 4
      }
     },
     "Dipschalen 6er Set in Cremeweiß matt | Nia": {
@@ -3100,9 +3108,9 @@
      "revenue": 55.75
     },
     "Geschirr": {
-     "upsellOrders": 3,
-     "units": 5,
-     "revenue": 115
+     "upsellOrders": 4,
+     "units": 6,
+     "revenue": 141.6
     }
    },
    "ab": {
@@ -3117,9 +3125,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 117,
-     "upsellOrders": 11,
-     "revenue": 11849.3
+     "orders": 123,
+     "upsellOrders": 12,
+     "revenue": 12186.2
     }
    }
   }
