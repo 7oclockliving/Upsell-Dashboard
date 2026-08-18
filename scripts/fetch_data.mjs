@@ -95,6 +95,7 @@ const ORDERS_QUERY = `
         lineItems(first: 100) {
           nodes {
             title
+            sku
             quantity
             customAttributes { key value }
             originalTotalSet { shopMoney { amount } }
@@ -198,8 +199,18 @@ async function main() {
     const date = o.createdAt.slice(0, 10);
     days[date] ??= emptyDay();
     const d = days[date];
-    // Neusendungen/Koops VOR allen Kennzahlen abfangen (Tag-Match, case-insensitive)
-    if ((o.tags || []).some((t) => /neusendung|kooperation/i.test(String(t)))) {
+    // Neusendungen/Koops VOR allen Kennzahlen abfangen (18.08.2026, Fix):
+    // Erkennung ueber die Marker-PRODUKTE in der Bestellung (SKU "SYS-NS*" /
+    // "SYS-KOP" bzw. "Neusendung"/"Kooperation" im Artikelnamen), wie im
+    // Neusendungs-Dashboard. Tag-Match bleibt als Fallback bestehen.
+    const isExcluded =
+      (o.tags || []).some((t) => /neusendung|kooperation/i.test(String(t))) ||
+      (o.lineItems?.nodes || []).some(
+        (li) =>
+          /^SYS-(NS|KOP)/i.test(String(li.sku || '')) ||
+          /neusendung|kooperation/i.test(String(li.title || '')),
+      );
+    if (isExcluded) {
       d.excluded.count++;
       d.excluded.revenue = round2(d.excluded.revenue + num(o.totalPriceSet?.shopMoney?.amount));
       continue;
@@ -217,7 +228,7 @@ async function main() {
     const shownVal = (o.customAttributes || []).find((a) => a.key === SHOWN_ATTR)?.value;
     const shownGroup = shownVal ? scenarioGroup(shownVal) : null;
     if (shownGroup) {
-      d.shown[shownGroup] ??= { shown: 0, converted: 0 };
+      d.shown[shownGroup] ?>= { shown: 0, converted: 0 };
       d.shown[shownGroup].shown++;
     }
     if ((o.customAttributes || []).some((a) => a.key === ACTIVATED_ATTR)) {
