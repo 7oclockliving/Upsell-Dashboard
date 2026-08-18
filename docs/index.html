@@ -255,7 +255,7 @@ function currentRange(){
 }
 
 function merge(sel){
-  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,excluded:{count:0,revenue:0},
+  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,excluded:{ns:0,koop:0,revenue:0},
     upsellOrdersList:[],
     abandoned:{total:0,shown:0,activated:0,revenue:0,recovered:0,recoveredRevenue:0,recoveredList:[],ab:{test:0,control:0,none:0},recAb:{test:0,control:0,none:0}},
     products:{},scenarios:{},shown:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
@@ -264,7 +264,7 @@ function merge(sel){
     agg.upsellOrders+=d.upsellOrders;agg.upsellUnits+=d.upsellUnits;agg.upsellRevenue+=d.upsellRevenue;
     agg.upsellOrdersRevenue+=d.upsellOrdersRevenue||0;
     agg.activatedOrders+=d.activatedOrders||0;
-    const ex=d.excluded||{};agg.excluded.count+=ex.count||0;agg.excluded.revenue+=ex.revenue||0;
+    const ex=d.excluded||{};agg.excluded.ns+=ex.ns||0;agg.excluded.koop+=ex.koop||0;agg.excluded.revenue+=ex.revenue||0;
     for(const o of d.upsellOrdersList||[])agg.upsellOrdersList.push({...o,date:d.date});
     const ab=d.abandoned||{};
     agg.abandoned.total+=ab.total||0;agg.abandoned.shown+=ab.shown||0;
@@ -329,7 +329,8 @@ function render(){
     tile('Take-Rate overall',fmtP(tr)+' %'+delta(tr,trPrev),'% aller Bestellungen mit Upsell-Kauf',true,'Mit Upsell ÷ Bestellungen. Anteil aller Bestellungen im Zeitraum, die einen Deal-Artikel gekauft haben.'),
     tile('Upsell-Umsatz',fmtEur(a.upsellRevenue,c)+delta(a.upsellRevenue,p.upsellRevenue),fmtN(a.upsellUnits)+' Artikel · nach Rabatt',true,'Summe der tatsächlich bezahlten Deal-Artikel (Preis nach Rabatt) – nur die Upsell-Positionen, nicht die ganze Bestellung.'),
     tile('Deal-Sichtbarkeit',fmtP(vis)+' %'+delta(vis,visPrev),fmtN(shownOrd)+' von '+fmtN(a.orders)+' Bestellungen sahen den Deal',false,'Bestellungen, denen der Deal im Checkout angezeigt wurde ÷ alle Bestellungen. Zeigt, wie oft der Deal überhaupt erscheint – der größte Hebel für mehr Upsell-Umsatz (mehr Szenarien = mehr Sichtbarkeit). Anzeige-Tracking erst seit 11.08.2026 – Zeiträume mit dem 10.08. unterschätzen die Quote leicht.'),
-    tile('Neusendungen & Koops',fmtN(a.excluded.count),'aus allen Kennzahlen rausgerechnet'+(a.excluded.revenue?' · '+fmtEur(a.excluded.revenue,c):''),false,'Bestellungen, die ein Neusendungs- oder Kooperations-Produkt enthalten (z. B. „Neusendung: Defekt", „KOOPERATION") oder entsprechend getaggt sind – erkannt wie im Neusendungs-Dashboard. Sie zählen in KEINER Kennzahl dieses Dashboards mit: weder bei Bestellungen, AOV, Take-Rate, Sichtbarkeit noch Abbrüchen. Diese Kachel zeigt nur, wie viele ausgeklammert wurden.'),
+    tile('Neusendungen',fmtN(a.excluded.ns),'aus allen Kennzahlen rausgerechnet',false,'Bestellungen mit einem Neusendungs-Marker-Produkt – erkannt strikt über die SKU-Labels SYS-NS-* (alle Kategorien: Defekt, Artikel fehlt, Falscher Artikel, Transportschaden, Kulanz, Schweiz usw.), genau wie im Neusendungs-Dashboard. Sie zählen in KEINER Kennzahl dieses Dashboards mit.'),
+    tile('Kooperationen',fmtN(a.excluded.koop),'aus allen Kennzahlen rausgerechnet',false,'Bestellungen mit dem Kooperations-Marker-Produkt (SKU SYS-KOP) – Influencer- und Partner-Pakete, 0 €. Sie zählen in KEINER Kennzahl dieses Dashboards mit.'),
   ].join('');
 
   // AOV-Block
