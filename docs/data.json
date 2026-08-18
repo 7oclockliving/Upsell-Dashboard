@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-18T11:55:22.611Z",
+ "generatedAt": "2026-08-18T12:18:43.246Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -14,7 +14,8 @@
    "upsellOrdersRevenue": 0,
    "activatedOrders": 0,
    "excluded": {
-    "count": 0,
+    "ns": 0,
+    "koop": 0,
     "revenue": 0
    },
    "upsellOrdersList": [],
@@ -68,7 +69,8 @@
    "upsellOrdersRevenue": 1243.33,
    "activatedOrders": 0,
    "excluded": {
-    "count": 12,
+    "ns": 9,
+    "koop": 3,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -294,7 +296,8 @@
    "upsellOrdersRevenue": 3807.24,
    "activatedOrders": 0,
    "excluded": {
-    "count": 25,
+    "ns": 19,
+    "koop": 6,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -715,7 +718,8 @@
    "upsellOrdersRevenue": 3339.55,
    "activatedOrders": 0,
    "excluded": {
-    "count": 25,
+    "ns": 21,
+    "koop": 4,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -1113,7 +1117,8 @@
    "upsellOrdersRevenue": 2009.69,
    "activatedOrders": 0,
    "excluded": {
-    "count": 18,
+    "ns": 17,
+    "koop": 1,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -1415,7 +1420,8 @@
    "upsellOrdersRevenue": 2219.88,
    "activatedOrders": 0,
    "excluded": {
-    "count": 16,
+    "ns": 16,
+    "koop": 0,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -1779,7 +1785,8 @@
    "upsellOrdersRevenue": 3770.26,
    "activatedOrders": 0,
    "excluded": {
-    "count": 0,
+    "ns": 0,
+    "koop": 0,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -2150,7 +2157,8 @@
    "upsellOrdersRevenue": 3544.19,
    "activatedOrders": 0,
    "excluded": {
-    "count": 0,
+    "ns": 0,
+    "koop": 0,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -2515,7 +2523,8 @@
    "upsellOrdersRevenue": 2160.77,
    "activatedOrders": 0,
    "excluded": {
-    "count": 29,
+    "ns": 20,
+    "koop": 9,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -2829,15 +2838,16 @@
   },
   {
    "date": "2026-08-18",
-   "orders": 92,
-   "totalRevenue": 8755.61,
-   "upsellOrders": 7,
-   "upsellUnits": 10,
-   "upsellRevenue": 181.6,
-   "upsellOrdersRevenue": 1275.01,
+   "orders": 98,
+   "totalRevenue": 9149.11,
+   "upsellOrders": 9,
+   "upsellUnits": 12,
+   "upsellRevenue": 197.6,
+   "upsellOrdersRevenue": 1408.2,
    "activatedOrders": 0,
    "excluded": {
-    "count": 25,
+    "ns": 22,
+    "koop": 9,
     "revenue": 0
    },
    "upsellOrdersList": [
@@ -2896,34 +2906,50 @@
      "scenarios": [
       "Geschirr"
      ]
+    },
+    {
+     "name": "#230411",
+     "total": 90.73,
+     "upsellRevenue": 8,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#230419",
+     "total": 42.46,
+     "upsellRevenue": 8,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
     }
    ],
    "shown": {
     "Lose Gläser (Staffel)": {
-     "shown": 27,
-     "converted": 2
+     "shown": 31,
+     "converted": 4
     },
     "Gläser-Bundles": {
      "shown": 14,
      "converted": 2
     },
     "Geschirr": {
-     "shown": 16,
+     "shown": 17,
      "converted": 3
     }
    },
    "abandoned": {
-    "total": 14,
-    "shown": 9,
+    "total": 15,
+    "shown": 10,
     "activated": 0,
-    "revenue": 1553.56,
+    "revenue": 1693.34,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 14
+     "none": 15
     },
     "recAb": {
      "test": 0,
@@ -2942,12 +2968,12 @@
      }
     },
     "Kleines organisches Glas | Alaska": {
-     "units": 1,
-     "orders": 1,
-     "revenue": 8,
-     "discountGiven": 1.99,
+     "units": 2,
+     "orders": 2,
+     "revenue": 16,
+     "discountGiven": 3.98,
      "scenarios": {
-      "Lose Gläser (Staffel)": 1
+      "Lose Gläser (Staffel)": 2
      }
     },
     "Karaffe im organischen Design | Alaska": {
@@ -2985,6 +3011,15 @@
      "scenarios": {
       "Lose Gläser (Staffel)": 1
      }
+    },
+    "Großes Glas Bogen-Design | Rom": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 8,
+     "discountGiven": 1.99,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
     }
    },
    "scenarios": {
@@ -2994,9 +3029,9 @@
      "revenue": 46.9
     },
     "Lose Gläser (Staffel)": {
-     "upsellOrders": 2,
-     "units": 2,
-     "revenue": 19.7
+     "upsellOrders": 4,
+     "units": 4,
+     "revenue": 35.7
     },
     "Geschirr": {
      "upsellOrders": 3,
@@ -3016,9 +3051,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 92,
-     "upsellOrders": 7,
-     "revenue": 8755.61
+     "orders": 98,
+     "upsellOrders": 9,
+     "revenue": 9149.11
     }
    }
   }
