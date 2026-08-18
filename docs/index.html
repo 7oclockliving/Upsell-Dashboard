@@ -61,6 +61,9 @@
   /* Bestellungen mit Upsell: festes, scrollbares Feld (~10 Zeilen), Kopfzeile bleibt stehen (17.08.2026) */
   #upsellOrders{max-height:540px;overflow:auto}
   #upsellOrders thead th{position:sticky;top:0;background:var(--card);z-index:2}
+  /* Upsell-Produkte ebenso: scrollbares Feld (~10 Zeilen), Filterleiste + Kopfzeile bleiben stehen (18.08.2026) */
+  #prodTableWrap{max-height:620px;overflow:auto}
+  #prodTableWrap thead th{position:sticky;top:0;background:var(--card);z-index:2}
   /* Seiten-Navigation (17.08.2026): Desktop links fixiert, mobil als Button unten rechts */
   html{scroll-behavior:smooth}
   h2[id]{scroll-margin-top:14px}
