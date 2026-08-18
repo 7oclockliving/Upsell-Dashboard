@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-18T14:12:29.955Z",
+ "generatedAt": "2026-08-18T15:00:44.807Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -2365,17 +2365,17 @@
     }
    },
    "abandoned": {
-    "total": 59,
+    "total": 58,
     "shown": 27,
     "activated": 0,
-    "revenue": 6019.02,
+    "revenue": 6003.04,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 59
+     "none": 58
     },
     "recAb": {
      "test": 0,
@@ -2867,12 +2867,12 @@
   },
   {
    "date": "2026-08-18",
-   "orders": 123,
-   "totalRevenue": 12186.2,
-   "upsellOrders": 12,
-   "upsellUnits": 15,
-   "upsellRevenue": 244.25,
-   "upsellOrdersRevenue": 2218.79,
+   "orders": 136,
+   "totalRevenue": 13118.39,
+   "upsellOrders": 13,
+   "upsellUnits": 16,
+   "upsellRevenue": 255.95,
+   "upsellOrdersRevenue": 2261.39,
    "activatedOrders": 0,
    "excluded": {
     "ns": 22,
@@ -2880,7 +2880,7 @@
     "zero": 2,
     "revenue": 0
    },
-   "newCustomers": 83,
+   "newCustomers": 88,
    "sessions": 0,
    "upsellOrdersList": [
     {
@@ -2978,15 +2978,23 @@
      "scenarios": [
       "Geschirr"
      ]
+    },
+    {
+     "name": "#230456",
+     "total": 42.6,
+     "upsellRevenue": 11.7,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
     }
    ],
    "shown": {
     "Lose Gläser (Staffel)": {
-     "shown": 39,
-     "converted": 6
+     "shown": 45,
+     "converted": 7
     },
     "Gläser-Bundles": {
-     "shown": 17,
+     "shown": 19,
      "converted": 2
     },
     "Geschirr": {
@@ -2995,17 +3003,17 @@
     }
    },
    "abandoned": {
-    "total": 20,
-    "shown": 13,
+    "total": 21,
+    "shown": 14,
     "activated": 0,
-    "revenue": 2252.24,
+    "revenue": 2304.24,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 20
+     "none": 21
     },
     "recAb": {
      "test": 0,
@@ -3060,12 +3068,12 @@
      }
     },
     "Großes organisches Glas | Alaska": {
-     "units": 1,
-     "orders": 1,
-     "revenue": 11.7,
-     "discountGiven": 1.29,
+     "units": 2,
+     "orders": 2,
+     "revenue": 23.4,
+     "discountGiven": 2.58,
      "scenarios": {
-      "Lose Gläser (Staffel)": 1
+      "Lose Gläser (Staffel)": 2
      }
     },
     "Großes Glas Bogen-Design | Rom": {
@@ -3103,9 +3111,9 @@
      "revenue": 46.9
     },
     "Lose Gläser (Staffel)": {
-     "upsellOrders": 6,
-     "units": 6,
-     "revenue": 55.75
+     "upsellOrders": 7,
+     "units": 7,
+     "revenue": 67.45
     },
     "Geschirr": {
      "upsellOrders": 4,
@@ -3125,9 +3133,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 123,
-     "upsellOrders": 12,
-     "revenue": 12186.2
+     "orders": 136,
+     "upsellOrders": 13,
+     "revenue": 13118.39
     }
    }
   }
