@@ -201,6 +201,10 @@ async function main() {
     // Shop-Sessions des Tages aus Shopify Analytics (ShopifyQL) fuer die
     // Conversion-Rate; 0 = nicht verfuegbar (siehe sessionsAvailable).
     sessions: 0,
+    // Kauf-Sessions (19.08.2026): Sessions, die zu einer Bestellung fuehrten -
+    // Shopifys eigene Conversion-Definition, damit die Kachel 1:1 dem
+    // Shopify-Admin entspricht (sessions * conversion_rate je Tag).
+    convSessions: 0,
     // Bestellnummern der Upsell-Bestellungen (11.08.2026, Wunsch Alina):
     // {name, total, upsellRevenue, scenarios[]} – KEINE Kundendaten!
     upsellOrdersList: [],
@@ -410,7 +414,7 @@ async function main() {
   // (read_reports) -> defensiv, Dashboard zeigt sonst einen Hinweis.
   let sessionsAvailable = true;
   try {
-    const sq = `FROM sessions SHOW sessions GROUP BY day SINCE ${SINCE} UNTIL today ORDER BY day ASC`;
+    const sq = `FROM sessions SHOW sessions, conversion_rate GROUP BY day SINCE ${SINCE} UNTIL today ORDER BY day ASC`;
     const data = await gql(
       `query SevnSessions($sq: String!) { shopifyqlQuery(query: $sq) { parseErrors tableData { rows } } }`,
       { sq },
@@ -420,6 +424,7 @@ async function main() {
       const date = String(r.day).slice(0, 10);
       days[date] ??= emptyDay();
       days[date].sessions = parseInt(r.sessions || '0', 10) || 0;
+      days[date].convSessions = Math.round(days[date].sessions * (parseFloat(r.conversion_rate || '0') || 0));
     }
     if (!rows.length) sessionsAvailable = false;
   } catch (e) {
