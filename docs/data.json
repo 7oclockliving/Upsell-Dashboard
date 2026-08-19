@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-19T09:48:46.053Z",
+ "generatedAt": "2026-08-19T11:38:00.976Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -23,6 +23,7 @@
    },
    "newCustomers": 4,
    "sessions": 0,
+   "convSessions": 0,
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
@@ -81,6 +82,7 @@
    },
    "newCustomers": 142,
    "sessions": 9502,
+   "convSessions": 156,
    "upsellOrdersList": [
     {
      "name": "#228500",
@@ -311,6 +313,7 @@
    },
    "newCustomers": 160,
    "sessions": 9122,
+   "convSessions": 176,
    "upsellOrdersList": [
     {
      "name": "#228627",
@@ -736,6 +739,7 @@
    },
    "newCustomers": 150,
    "sessions": 9583,
+   "convSessions": 180,
    "upsellOrdersList": [
     {
      "name": "#228885",
@@ -1138,6 +1142,7 @@
    },
    "newCustomers": 156,
    "sessions": 8666,
+   "convSessions": 158,
    "upsellOrdersList": [
     {
      "name": "#229107",
@@ -1444,6 +1449,7 @@
    },
    "newCustomers": 141,
    "sessions": 8721,
+   "convSessions": 160,
    "upsellOrdersList": [
     {
      "name": "#229324",
@@ -1812,6 +1818,7 @@
    },
    "newCustomers": 136,
    "sessions": 8335,
+   "convSessions": 148,
    "upsellOrdersList": [
     {
      "name": "#229552",
@@ -2187,6 +2194,7 @@
    },
    "newCustomers": 208,
    "sessions": 11557,
+   "convSessions": 231,
    "upsellOrdersList": [
     {
      "name": "#229726",
@@ -2556,6 +2564,7 @@
    },
    "newCustomers": 186,
    "sessions": 10088,
+   "convSessions": 184,
    "upsellOrdersList": [
     {
      "name": "#230034",
@@ -2882,6 +2891,7 @@
    },
    "newCustomers": 193,
    "sessions": 11286,
+   "convSessions": 201,
    "upsellOrdersList": [
     {
      "name": "#230302",
@@ -3234,21 +3244,22 @@
   },
   {
    "date": "2026-08-19",
-   "orders": 75,
-   "totalRevenue": 7160.55,
-   "upsellOrders": 4,
-   "upsellUnits": 6,
-   "upsellRevenue": 90.73,
-   "upsellOrdersRevenue": 833.77,
+   "orders": 99,
+   "totalRevenue": 10534.3,
+   "upsellOrders": 7,
+   "upsellUnits": 9,
+   "upsellRevenue": 133.13,
+   "upsellOrdersRevenue": 1111.22,
    "activatedOrders": 0,
    "excluded": {
-    "ns": 16,
-    "koop": 4,
+    "ns": 17,
+    "koop": 5,
     "zero": 0,
     "revenue": 0
    },
-   "newCustomers": 53,
-   "sessions": 3115,
+   "newCustomers": 72,
+   "sessions": 4340,
+   "convSessions": 76,
    "upsellOrdersList": [
     {
      "name": "#230606",
@@ -3281,34 +3292,58 @@
      "scenarios": [
       "Gläser-Bundles"
      ]
+    },
+    {
+     "name": "#230690",
+     "total": 52.98,
+     "upsellRevenue": 7,
+     "scenarios": [
+      "Gläser-Bundles"
+     ]
+    },
+    {
+     "name": "#230696",
+     "total": 36.38,
+     "upsellRevenue": 14.4,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
+    },
+    {
+     "name": "#230710",
+     "total": 188.09,
+     "upsellRevenue": 21,
+     "scenarios": [
+      "Geschirr"
+     ]
     }
    ],
    "shown": {
     "Gläser-Bundles": {
-     "shown": 19,
-     "converted": 1
+     "shown": 24,
+     "converted": 2
     },
     "Lose Gläser (Staffel)": {
-     "shown": 12,
-     "converted": 1
+     "shown": 17,
+     "converted": 2
     },
     "Geschirr": {
-     "shown": 9,
-     "converted": 2
+     "shown": 19,
+     "converted": 3
     }
    },
    "abandoned": {
-    "total": 16,
+    "total": 17,
     "shown": 7,
     "activated": 0,
-    "revenue": 2108.48,
+    "revenue": 2227.07,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 16
+     "none": 17
     },
     "recAb": {
      "test": 0,
@@ -3318,12 +3353,12 @@
    },
    "products": {
     "Dipschalen 6er Set in Cremeweiß | Nia": {
-     "units": 1,
-     "orders": 1,
-     "revenue": 21.43,
-     "discountGiven": 9.18,
+     "units": 2,
+     "orders": 2,
+     "revenue": 42.43,
+     "discountGiven": 18.17,
      "scenarios": {
-      "Geschirr": 1
+      "Geschirr": 2
      }
     },
     "Glas mit Spiral-Twist | Orlando": {
@@ -3370,23 +3405,41 @@
      "scenarios": {
       "Gläser-Bundles": 1
      }
+    },
+    "Großes Glas Bogen-Design | Rom": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 7,
+     "discountGiven": 2.99,
+     "scenarios": {
+      "Gläser-Bundles": 1
+     }
+    },
+    "Trinkglas mit Deckel und Strohhalm im To-Go Design | Liv": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 14.4,
+     "discountGiven": 1.59,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
     }
    },
    "scenarios": {
     "Geschirr": {
-     "upsellOrders": 2,
-     "units": 3,
-     "revenue": 65.63
+     "upsellOrders": 3,
+     "units": 4,
+     "revenue": 86.63
     },
     "Lose Gläser (Staffel)": {
-     "upsellOrders": 1,
-     "units": 1,
-     "revenue": 9
+     "upsellOrders": 2,
+     "units": 2,
+     "revenue": 23.4
     },
     "Gläser-Bundles": {
-     "upsellOrders": 1,
-     "units": 2,
-     "revenue": 16.1
+     "upsellOrders": 2,
+     "units": 3,
+     "revenue": 23.1
     }
    },
    "ab": {
@@ -3401,9 +3454,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 75,
-     "upsellOrders": 4,
-     "revenue": 7160.55
+     "orders": 99,
+     "upsellOrders": 7,
+     "revenue": 10534.3
     }
    }
   }
