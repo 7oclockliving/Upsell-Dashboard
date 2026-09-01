@@ -87,7 +87,7 @@ async function gql(query, variables) {
  * Braucht ggf. zusaetzlichen Scope -> withJourney=false als Fallback,
  * damit der restliche Datenlauf nie daran scheitert.
  */
-const ordersQuery = (withJourney) => `
+const ordersQuery = (withJourney, withCost) => `
   query SevnOrders($cursor: String, $q: String!) {
     orders(first: 100, after: $cursor, query: $q, sortKey: CREATED_AT) {
       pageInfo { hasNextPage endCursor }
@@ -98,6 +98,7 @@ const ordersQuery = (withJourney) => `
         createdAt
         ${withJourney ? 'customerJourneySummary { customerOrderIndex }' : ''}
         totalPriceSet { shopMoney { amount currencyCode } }
+        totalTaxSet { shopMoney { amount } }
         customAttributes { key value }
         lineItems(first: 100) {
           nodes {
@@ -107,6 +108,7 @@ const ordersQuery = (withJourney) => `
             customAttributes { key value }
             originalTotalSet { shopMoney { amount } }
             discountedTotalSet { shopMoney { amount } }
+            ${withCost ? 'variant { inventoryItem { unitCost { amount } } }' : ''}
           }
         }
       }
@@ -153,15 +155,18 @@ const round2 = (x) => Math.round(x * 100) / 100;
 async function main() {
   const q = `created_at:>=${SINCE}`;
   let journeyAvailable = true;
+  // Einkaufspreise (31.08.2026, Rohmarge): variant.inventoryItem.unitCost
+  // braucht read_products -> defensiv, wie die Kundenhistorie.
+  let cogsAvailable = true;
   let orders = [];
-  // Erst mit Kundenhistorie versuchen; scheitert das (fehlender Scope),
-  // einmal komplett ohne wiederholen, damit der Datenlauf nie ausfaellt.
-  for (let attempt = 0; attempt < 2; attempt++) {
+  // Erst mit allen Zusatzfeldern versuchen; scheitert das (fehlender Scope),
+  // stufenweise ohne wiederholen, damit der Datenlauf nie ausfaellt.
+  for (let attempt = 0; attempt < 3; attempt++) {
     try {
       orders = [];
       let cursor = null;
       for (let page = 0; page < 100; page++) {
-        const data = await gql(ordersQuery(journeyAvailable), { cursor, q });
+        const data = await gql(ordersQuery(journeyAvailable, cogsAvailable), { cursor, q });
         const conn = data.orders;
         orders.push(...conn.nodes);
         if (!conn.pageInfo.hasNextPage) break;
@@ -169,7 +174,10 @@ async function main() {
       }
       break;
     } catch (e) {
-      if (journeyAvailable) {
+      if (cogsAvailable) {
+        cogsAvailable = false;
+        console.error('WARNUNG: Einkaufspreise (Wareneinsatz) nicht verfuegbar:', e.message);
+      } else if (journeyAvailable) {
         journeyAvailable = false;
         console.error('WARNUNG: Kundenhistorie (Neukunden) nicht verfuegbar:', e.message);
       } else {
@@ -188,6 +196,11 @@ async function main() {
     upsellUnits: 0,
     upsellRevenue: 0,
     upsellOrdersRevenue: 0, // Gesamt-Bestellwert der Bestellungen MIT Upsell (fuer AOV-Uplift)
+    // Rohmarge Upsell (31.08.2026, Wunsch Alina): Wareneinsatz (Shopify
+    // "Kosten pro Artikel") und Netto-Umsatz (ohne MwSt, exakt je Bestellung
+    // ueber totalTaxSet) der Deal-Artikel.
+    upsellCogs: 0,
+    upsellRevenueNet: 0,
     activatedOrders: 0, // Bestellungen mit Deal-Aktivierung (Teaser-Modus, ab App v19)
     // Neusendungen & Kooperationen (18.08.2026, Wunsch Alina): Erkennung
     // strikt ueber die SKU-Labels der Marker-Produkte (SYS-NS-* = Neusendung
@@ -256,6 +269,10 @@ async function main() {
     d.totalRevenue += num(o.totalPriceSet?.shopMoney?.amount);
     currency = o.totalPriceSet?.shopMoney?.currencyCode || currency;
     if (o.customerJourneySummary?.customerOrderIndex === 1) d.newCustomers++;
+    // Netto-Anteil dieser Bestellung (31.08.2026, Rohmarge): MwSt exakt aus
+    // Shopify (totalTaxSet) statt pauschal 19 % - korrekt auch fuer Schweiz.
+    const orderTax = num(o.totalTaxSet?.shopMoney?.amount);
+    const netRatio = orderTotal > 0 ? (orderTotal - orderTax) / orderTotal : 1;
 
     const abVal =
       (o.customAttributes || []).find((a) => a.key === AB_ATTR)?.value || 'none';
@@ -311,6 +328,10 @@ async function main() {
 
       d.upsellUnits += li.quantity;
       d.upsellRevenue = round2(d.upsellRevenue + paid);
+      // Rohmarge (31.08.2026): Einkaufskosten und Netto-Erloes des Artikels.
+      const unitCost = num(li.variant?.inventoryItem?.unitCost?.amount);
+      d.upsellCogs = round2(d.upsellCogs + unitCost * li.quantity);
+      d.upsellRevenueNet = round2(d.upsellRevenueNet + paid * netRatio);
       orderUpsellPaid = round2(orderUpsellPaid + paid);
     }
     if (orderHasUpsell) {
@@ -439,6 +460,7 @@ async function main() {
     abandonedAvailable,
     sessionsAvailable,
     journeyAvailable,
+    cogsAvailable,
     days: Object.entries(days)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, d]) => ({
