@@ -255,7 +255,7 @@ function currentRange(){
 }
 
 function merge(sel){
-  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,discountGiven:0,activatedOrders:0,excluded:{ns:0,koop:0,zero:0,revenue:0},sessions:0,convSessions:0,newCustomers:0,
+  const agg={orders:0,totalRevenue:0,upsellOrders:0,upsellUnits:0,upsellRevenue:0,upsellOrdersRevenue:0,upsellCogs:0,upsellRevenueNet:0,discountGiven:0,activatedOrders:0,excluded:{ns:0,koop:0,zero:0,revenue:0},sessions:0,convSessions:0,newCustomers:0,
     upsellOrdersList:[],
     abandoned:{total:0,shown:0,activated:0,revenue:0,recovered:0,recoveredRevenue:0,recoveredList:[],ab:{test:0,control:0,none:0},recAb:{test:0,control:0,none:0}},
     products:{},scenarios:{},shown:{},ab:{test:{orders:0,upsellOrders:0,revenue:0},control:{orders:0,upsellOrders:0,revenue:0},none:{orders:0,upsellOrders:0,revenue:0}}};
@@ -263,6 +263,7 @@ function merge(sel){
     agg.orders+=d.orders;agg.totalRevenue+=d.totalRevenue;
     agg.upsellOrders+=d.upsellOrders;agg.upsellUnits+=d.upsellUnits;agg.upsellRevenue+=d.upsellRevenue;
     agg.upsellOrdersRevenue+=d.upsellOrdersRevenue||0;
+    agg.upsellCogs+=d.upsellCogs||0;agg.upsellRevenueNet+=d.upsellRevenueNet||0;
     agg.activatedOrders+=d.activatedOrders||0;
     const ex=d.excluded||{};agg.excluded.ns+=ex.ns||0;agg.excluded.koop+=ex.koop||0;agg.excluded.zero+=ex.zero||0;agg.excluded.revenue+=ex.revenue||0;
     agg.sessions+=d.sessions||0;agg.convSessions+=d.convSessions||0;agg.newCustomers+=d.newCustomers||0;
@@ -355,6 +356,11 @@ function render(){
   const aovAll=a.orders?a.totalRevenue/a.orders:0;
   const uplift=aovWithout?((aovWith/aovWithout)-1)*100:0;
   const roi=a.discountGiven?a.upsellRevenue/a.discountGiven:0;
+  // Rohmarge Upsell (31.08.2026, Wunsch Alina): Netto (ohne MwSt) minus Wareneinsatz
+  const cAv=DATA.cogsAvailable!==false&&(a.upsellRevenueNet>0||a.upsellCogs>0);
+  const upMargin=a.upsellRevenueNet-a.upsellCogs;
+  const upMarginPrev=(p.upsellRevenueNet||0)-(p.upsellCogs||0);
+  const upMarginPct=a.upsellRevenueNet?upMargin/a.upsellRevenueNet*100:0;
   document.getElementById('tiles2').innerHTML=[
     tile('Ø Bestellwert overall',fmtEur(aovAll,c),'AOV aller Bestellungen im Zeitraum',false,'Gesamtumsatz ÷ Anzahl aller Bestellungen (Average Order Value).'),
     tile('Ø Bestellwert mit Upsell',fmtEur(aovWith,c),'AOV der Upsell-Bestellungen',false,'Kompletter Bestellwert der Bestellungen mit Upsell ÷ deren Anzahl. Zählt die ganze Bestellung, nicht nur die Deal-Artikel.'),
@@ -362,6 +368,8 @@ function render(){
     tile('AOV-Uplift',(uplift>=0?'+':'')+fmtP(uplift)+' %','mit Upsell vs. ohne',true,'(Ø mit Upsell ÷ Ø ohne) − 1. Um wie viel Prozent eine Upsell-Bestellung im Schnitt größer ist. Vorsicht: Wer mehr kauft, sieht auch eher einen Deal – kein reiner Kausaleffekt.'),
     tile('€-Mehrwert je Bestellung',fmtEur(aovWith-aovWithout,c),'Differenz der Ø Bestellwerte',true,'Ø Bestellwert mit Upsell minus Ø ohne – der zusätzliche Warenkorbwert pro Upsell-Bestellung in Euro.'),
     tile('Upsell-ROI',roi?fmtP(roi)+'×':'–','€ Upsell-Umsatz je Rabatt-€ ('+fmtEur(a.discountGiven,c)+' Rabatt)',false,'Upsell-Umsatz ÷ gewährter Rabatt. Beispiel 7×: Jeder investierte Rabatt-Euro bringt 7 € Upsell-Umsatz.'),
+    tile('Upsell-Wareneinsatz',cAv?fmtEur(a.upsellCogs,c):'–',cAv?'Einkaufskosten der verkauften Deal-Artikel':'Einkaufspreise nicht verfügbar','','Summe der Einkaufspreise (Shopify „Kosten pro Artikel") aller verkauften Upsell-Artikel im Zeitraum. Artikel ohne hinterlegten Einkaufspreis zählen mit 0 €.'),
+    tile('Upsell-Rohmarge',cAv?(fmtEur(upMargin,c)+delta(upMargin,upMarginPrev)):'–',cAv?(fmtP(upMarginPct)+' % vom Netto-Upsell-Umsatz ('+fmtEur(a.upsellRevenueNet,c)+')'):'Einkaufspreise nicht verfügbar',true,'Netto-Upsell-Umsatz (nach Abzug der MwSt – exakt je Bestellung aus Shopify, korrekt auch für Schweiz-Bestellungen) minus Wareneinsatz. Das ist die Rohmarge der Deal-Artikel: Versand, Zahlungsgebühren und Werbekosten sind hier NICHT abgezogen.'),
   ].join('');
 
   // Produkte (17.08.2026: filter- & sortierbar, Wunsch Alina)
