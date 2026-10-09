@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-08T14:47:45.070Z",
+ "generatedAt": "2026-10-09T14:30:54.135Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -8,15 +8,15 @@
  "cogsAvailable": true,
  "days": [
   {
-   "date": "2026-08-09",
-   "orders": 6,
-   "totalRevenue": 609.71,
-   "upsellOrders": 0,
-   "upsellUnits": 0,
-   "upsellRevenue": 0,
-   "upsellOrdersRevenue": 0,
-   "upsellCogs": 0,
-   "upsellRevenueNet": 0,
+   "date": "2026-08-10",
+   "orders": 99,
+   "totalRevenue": 11121.29,
+   "upsellOrders": 7,
+   "upsellUnits": 8,
+   "upsellRevenue": 120.27,
+   "upsellOrdersRevenue": 981.49,
+   "upsellCogs": 29.78,
+   "upsellRevenueNet": 100.77,
    "activatedOrders": 0,
    "excluded": {
     "ns": 0,
@@ -24,87 +24,10 @@
     "zero": 0,
     "revenue": 0
    },
-   "newCustomers": 4,
-   "sessions": 0,
-   "convSessions": 0,
-   "upsellOrdersList": [],
-   "shown": {},
-   "abandoned": {
-    "total": 0,
-    "shown": 0,
-    "activated": 0,
-    "revenue": 0,
-    "recovered": 0,
-    "recoveredRevenue": 0,
-    "recoveredList": [],
-    "ab": {
-     "test": 0,
-     "control": 0,
-     "none": 0
-    },
-    "recAb": {
-     "test": 0,
-     "control": 0,
-     "none": 0
-    }
-   },
-   "products": {},
-   "scenarios": {},
-   "ab": {
-    "test": {
-     "orders": 0,
-     "upsellOrders": 0,
-     "revenue": 0
-    },
-    "control": {
-     "orders": 0,
-     "upsellOrders": 0,
-     "revenue": 0
-    },
-    "none": {
-     "orders": 6,
-     "upsellOrders": 0,
-     "revenue": 609.71
-    }
-   }
-  },
-  {
-   "date": "2026-08-10",
-   "orders": 194,
-   "totalRevenue": 21466.32,
-   "upsellOrders": 9,
-   "upsellUnits": 13,
-   "upsellRevenue": 202.87,
-   "upsellOrdersRevenue": 1243.33,
-   "upsellCogs": 50.5,
-   "upsellRevenueNet": 169.87,
-   "activatedOrders": 0,
-   "excluded": {
-    "ns": 9,
-    "koop": 3,
-    "zero": 1,
-    "revenue": 0
-   },
-   "newCustomers": 142,
+   "newCustomers": 65,
    "sessions": 9502,
    "convSessions": 156,
    "upsellOrdersList": [
-    {
-     "name": "#228500",
-     "total": 77.16,
-     "upsellRevenue": 38.4,
-     "scenarios": [
-      "Lose Gläser (Staffel)"
-     ]
-    },
-    {
-     "name": "#228512",
-     "total": 184.68,
-     "upsellRevenue": 44.2,
-     "scenarios": [
-      "Geschirr"
-     ]
-    },
     {
      "name": "#228515",
      "total": 194.19,
@@ -183,50 +106,31 @@
     }
    },
    "products": {
-    "Geriffeltes Weinglas | Paris": {
-     "units": 3,
-     "orders": 3,
-     "revenue": 55,
-     "discountGiven": 19.97,
-     "scenarios": {
-      "Lose Gläser (Staffel)": 1,
-      "Gläser-Bundles": 2
-     }
-    },
-    "Großes organisches Glas | Alaska": {
-     "units": 1,
-     "orders": 1,
-     "revenue": 10.4,
-     "discountGiven": 2.59,
-     "scenarios": {
-      "Lose Gläser (Staffel)": 1
-     }
-    },
-    "Großes Glas Blumen-Design | Florenz": {
-     "units": 1,
-     "orders": 1,
-     "revenue": 8,
-     "discountGiven": 1.99,
-     "scenarios": {
-      "Lose Gläser (Staffel)": 1
-     }
-    },
     "Große Bowl Ø27cm in Cremeweiß matt | Nia": {
-     "units": 2,
-     "orders": 2,
-     "revenue": 49.4,
-     "discountGiven": 26.58,
+     "units": 1,
+     "orders": 1,
+     "revenue": 24.7,
+     "discountGiven": 13.29,
      "scenarios": {
-      "Geschirr": 2
+      "Geschirr": 1
      }
     },
     "Dipschalen 6er Set in Cremeweiß matt | Nia": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 19.5,
+     "discountGiven": 10.49,
+     "scenarios": {
+      "Geschirr": 1
+     }
+    },
+    "Geriffeltes Weinglas | Paris": {
      "units": 2,
      "orders": 2,
-     "revenue": 39,
-     "discountGiven": 20.98,
+     "revenue": 35,
+     "discountGiven": 14.98,
      "scenarios": {
-      "Geschirr": 2
+      "Gläser-Bundles": 2
      }
     },
     "Großes perlenbesetztes Glas | Atlanta": {
@@ -267,20 +171,20 @@
     }
    },
    "scenarios": {
-    "Lose Gläser (Staffel)": {
-     "upsellOrders": 3,
-     "units": 5,
-     "revenue": 57.57
-    },
     "Geschirr": {
-     "upsellOrders": 2,
-     "units": 4,
-     "revenue": 88.4
+     "upsellOrders": 1,
+     "units": 2,
+     "revenue": 44.2
     },
     "Gläser-Bundles": {
      "upsellOrders": 4,
      "units": 4,
      "revenue": 56.9
+    },
+    "Lose Gläser (Staffel)": {
+     "upsellOrders": 2,
+     "units": 2,
+     "revenue": 19.17
     }
    },
    "ab": {
@@ -295,9 +199,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 194,
-     "upsellOrders": 9,
-     "revenue": 21466.32
+     "orders": 99,
+     "upsellOrders": 7,
+     "revenue": 11121.29
     }
    }
   },
@@ -4806,17 +4710,17 @@
     }
    },
    "abandoned": {
-    "total": 40,
-    "shown": 21,
+    "total": 39,
+    "shown": 20,
     "activated": 0,
-    "revenue": 3674.76,
+    "revenue": 3338.28,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 40
+     "none": 39
     },
     "recAb": {
      "test": 0,
@@ -6144,7 +6048,7 @@
     "total": 31,
     "shown": 21,
     "activated": 0,
-    "revenue": 3741.7,
+    "revenue": 3654.82,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
@@ -13922,17 +13826,17 @@
     }
    },
    "abandoned": {
-    "total": 55,
+    "total": 54,
     "shown": 26,
     "activated": 0,
-    "revenue": 3964.24,
+    "revenue": 3874.35,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 55
+     "none": 54
     },
     "recAb": {
      "test": 0,
@@ -14310,14 +14214,14 @@
   },
   {
    "date": "2026-09-23",
-   "orders": 167,
-   "totalRevenue": 16289.8,
-   "upsellOrders": 5,
-   "upsellUnits": 10,
-   "upsellRevenue": 122.01,
-   "upsellOrdersRevenue": 596.99,
-   "upsellCogs": 25.73,
-   "upsellRevenueNet": 102.93,
+   "orders": 281,
+   "totalRevenue": 25293.82,
+   "upsellOrders": 6,
+   "upsellUnits": 11,
+   "upsellRevenue": 128.5,
+   "upsellOrdersRevenue": 617.28,
+   "upsellCogs": 27.54,
+   "upsellRevenueNet": 108.34,
    "activatedOrders": 0,
    "excluded": {
     "ns": 7,
@@ -14325,7 +14229,7 @@
     "zero": 2,
     "revenue": 0
    },
-   "newCustomers": 124,
+   "newCustomers": 200,
    "sessions": 9005,
    "convSessions": 294,
    "upsellOrdersList": [
@@ -14368,23 +14272,31 @@
      "scenarios": [
       "Lose Gläser (Staffel)"
      ]
+    },
+    {
+     "name": "#238497",
+     "total": 20.29,
+     "upsellRevenue": 6.49,
+     "scenarios": [
+      "Lose Gläser (Staffel)"
+     ]
     }
    ],
    "shown": {
     "Lose Gläser (Staffel)": {
-     "shown": 48,
-     "converted": 5
+     "shown": 84,
+     "converted": 6
     },
     "Gläser-Bundles": {
-     "shown": 20,
+     "shown": 28,
      "converted": 0
     },
     "Geschirr": {
-     "shown": 18,
+     "shown": 28,
      "converted": 0
     },
     "Sonstige": {
-     "shown": 6,
+     "shown": 10,
      "converted": 0
     }
    },
@@ -14469,13 +14381,22 @@
      "scenarios": {
       "Lose Gläser (Staffel)": 1
      }
+    },
+    "Perlenbesetzte Glastasse | Atlanta": {
+     "units": 1,
+     "orders": 1,
+     "revenue": 6.49,
+     "discountGiven": 0,
+     "scenarios": {
+      "Lose Gläser (Staffel)": 1
+     }
     }
    },
    "scenarios": {
     "Lose Gläser (Staffel)": {
-     "upsellOrders": 4,
-     "units": 4,
-     "revenue": 42.21
+     "upsellOrders": 5,
+     "units": 5,
+     "revenue": 48.7
     },
     "Gläser-Bundles": {
      "upsellOrders": 1,
@@ -14495,9 +14416,9 @@
      "revenue": 0
     },
     "none": {
-     "orders": 167,
-     "upsellOrders": 5,
-     "revenue": 16289.8
+     "orders": 281,
+     "upsellOrders": 6,
+     "revenue": 25293.82
     }
    }
   },
@@ -14527,7 +14448,7 @@
     "total": 54,
     "shown": 23,
     "activated": 0,
-    "revenue": 4169.09,
+    "revenue": 4169.03,
     "recovered": 2,
     "recoveredRevenue": 348.97,
     "recoveredList": [
@@ -14997,9 +14918,9 @@
    "shown": {},
    "abandoned": {
     "total": 28,
-    "shown": 17,
+    "shown": 18,
     "activated": 0,
-    "revenue": 2121.73,
+    "revenue": 2241.72,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
@@ -15243,7 +15164,7 @@
     "total": 22,
     "shown": 12,
     "activated": 0,
-    "revenue": 2356.33,
+    "revenue": 2342.83,
     "recovered": 1,
     "recoveredRevenue": 122.98,
     "recoveredList": [
@@ -15365,7 +15286,7 @@
     "revenue": 0
    },
    "newCustomers": 0,
-   "sessions": 7676,
+   "sessions": 7677,
    "convSessions": 148,
    "upsellOrdersList": [],
    "shown": {},
@@ -15426,27 +15347,96 @@
     "revenue": 0
    },
    "newCustomers": 0,
-   "sessions": 4568,
-   "convSessions": 72,
+   "sessions": 7780,
+   "convSessions": 129,
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 12,
-    "shown": 4,
+    "total": 27,
+    "shown": 15,
     "activated": 0,
-    "revenue": 1883.43,
+    "revenue": 4049.91,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 12
+     "none": 27
     },
     "recAb": {
      "test": 0,
      "control": 0,
      "none": 0
+    }
+   },
+   "products": {},
+   "scenarios": {},
+   "ab": {
+    "test": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "control": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "none": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    }
+   }
+  },
+  {
+   "date": "2026-10-09",
+   "orders": 0,
+   "totalRevenue": 0,
+   "upsellOrders": 0,
+   "upsellUnits": 0,
+   "upsellRevenue": 0,
+   "upsellOrdersRevenue": 0,
+   "upsellCogs": 0,
+   "upsellRevenueNet": 0,
+   "activatedOrders": 0,
+   "excluded": {
+    "ns": 0,
+    "koop": 0,
+    "zero": 0,
+    "revenue": 0
+   },
+   "newCustomers": 0,
+   "sessions": 3828,
+   "convSessions": 71,
+   "upsellOrdersList": [],
+   "shown": {},
+   "abandoned": {
+    "total": 13,
+    "shown": 10,
+    "activated": 0,
+    "revenue": 1711.8,
+    "recovered": 1,
+    "recoveredRevenue": 98.2,
+    "recoveredList": [
+     {
+      "name": "#68142327497036",
+      "order": "",
+      "created": "2026-10-09T00:37:04Z",
+      "completed": "2026-10-09T00:54:20Z",
+      "value": 98.2
+     }
+    ],
+    "ab": {
+     "test": 0,
+     "control": 0,
+     "none": 13
+    },
+    "recAb": {
+     "test": 0,
+     "control": 0,
+     "none": 1
     }
    },
    "products": {},
