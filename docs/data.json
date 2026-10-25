@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-24T12:10:16.710Z",
+ "generatedAt": "2026-10-25T12:42:36.994Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -14806,17 +14806,17 @@
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 55,
-    "shown": 30,
+    "total": 54,
+    "shown": 29,
     "activated": 0,
-    "revenue": 4650.6,
+    "revenue": 4566.66,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 55
+     "none": 54
     },
     "recAb": {
      "test": 0,
@@ -15442,7 +15442,7 @@
     "total": 25,
     "shown": 15,
     "activated": 0,
-    "revenue": 3604.28,
+    "revenue": 3613.03,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
@@ -16426,15 +16426,76 @@
     "revenue": 0
    },
    "newCustomers": 0,
-   "sessions": 3554,
-   "convSessions": 51,
+   "sessions": 7510,
+   "convSessions": 129,
+   "upsellOrdersList": [],
+   "shown": {},
+   "abandoned": {
+    "total": 22,
+    "shown": 15,
+    "activated": 0,
+    "revenue": 2719.5,
+    "recovered": 0,
+    "recoveredRevenue": 0,
+    "recoveredList": [],
+    "ab": {
+     "test": 0,
+     "control": 0,
+     "none": 22
+    },
+    "recAb": {
+     "test": 0,
+     "control": 0,
+     "none": 0
+    }
+   },
+   "products": {},
+   "scenarios": {},
+   "ab": {
+    "test": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "control": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "none": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    }
+   }
+  },
+  {
+   "date": "2026-10-25",
+   "orders": 0,
+   "totalRevenue": 0,
+   "upsellOrders": 0,
+   "upsellUnits": 0,
+   "upsellRevenue": 0,
+   "upsellOrdersRevenue": 0,
+   "upsellCogs": 0,
+   "upsellRevenueNet": 0,
+   "activatedOrders": 0,
+   "excluded": {
+    "ns": 0,
+    "koop": 0,
+    "zero": 0,
+    "revenue": 0
+   },
+   "newCustomers": 0,
+   "sessions": 4392,
+   "convSessions": 80,
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
     "total": 9,
-    "shown": 6,
+    "shown": 7,
     "activated": 0,
-    "revenue": 1344.93,
+    "revenue": 580.75,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
