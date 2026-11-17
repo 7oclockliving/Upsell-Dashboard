@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-16T17:15:49.654Z",
+ "generatedAt": "2026-11-17T17:01:16.216Z",
  "since": "2026-08-10",
  "currency": "EUR",
  "abandonedAvailable": true,
@@ -526,17 +526,9 @@
     "shown": 0,
     "activated": 0,
     "revenue": 0,
-    "recovered": 1,
-    "recoveredRevenue": 21.99,
-    "recoveredList": [
-     {
-      "name": "#67685807161676",
-      "order": "#229965",
-      "created": "2026-08-11T20:18:04Z",
-      "completed": "2026-08-16T18:33:51Z",
-      "value": 21.99
-     }
-    ],
+    "recovered": 0,
+    "recoveredRevenue": 0,
+    "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
@@ -545,7 +537,7 @@
     "recAb": {
      "test": 0,
      "control": 0,
-     "none": 1
+     "none": 0
     }
    },
    "products": {
@@ -2345,17 +2337,17 @@
     }
    },
    "abandoned": {
-    "total": 33,
-    "shown": 14,
+    "total": 2,
+    "shown": 1,
     "activated": 0,
-    "revenue": 3171.09,
+    "revenue": 262.44,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 33
+     "none": 2
     },
     "recAb": {
      "test": 0,
@@ -2676,17 +2668,17 @@
     }
    },
    "abandoned": {
-    "total": 33,
-    "shown": 17,
+    "total": 23,
+    "shown": 12,
     "activated": 0,
-    "revenue": 2934.56,
+    "revenue": 2052.06,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 33
+     "none": 23
     },
     "recAb": {
      "test": 0,
@@ -5446,17 +5438,17 @@
     }
    },
    "abandoned": {
-    "total": 28,
-    "shown": 20,
+    "total": 27,
+    "shown": 19,
     "activated": 0,
-    "revenue": 2681.86,
+    "revenue": 2483.97,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 28
+     "none": 27
     },
     "recAb": {
      "test": 0,
@@ -15664,7 +15656,7 @@
     "total": 34,
     "shown": 21,
     "activated": 0,
-    "revenue": 3797.28,
+    "revenue": 3655.03,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
@@ -15969,7 +15961,7 @@
     "total": 21,
     "shown": 8,
     "activated": 0,
-    "revenue": 2302.98,
+    "revenue": 2162.22,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
@@ -16282,7 +16274,7 @@
     "total": 21,
     "shown": 13,
     "activated": 0,
-    "revenue": 3926.78,
+    "revenue": 3965.07,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
@@ -16924,7 +16916,7 @@
     "total": 58,
     "shown": 2,
     "activated": 0,
-    "revenue": 5566.14,
+    "revenue": 5545.6,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
@@ -17112,17 +17104,17 @@
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 51,
+    "total": 49,
     "shown": 1,
     "activated": 0,
-    "revenue": 4485.86,
+    "revenue": 4261.03,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 51
+     "none": 49
     },
     "recAb": {
      "test": 0,
@@ -17356,17 +17348,17 @@
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 58,
+    "total": 57,
     "shown": 0,
     "activated": 0,
-    "revenue": 6718.58,
+    "revenue": 6636.15,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 58
+     "none": 57
     },
     "recAb": {
      "test": 0,
@@ -17417,17 +17409,17 @@
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 48,
+    "total": 47,
     "shown": 0,
     "activated": 0,
-    "revenue": 4123.33,
+    "revenue": 4069.36,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 48
+     "none": 47
     },
     "recAb": {
      "test": 0,
@@ -17539,17 +17531,17 @@
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 41,
+    "total": 40,
     "shown": 2,
     "activated": 0,
-    "revenue": 4723.31,
+    "revenue": 4563.32,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 41
+     "none": 40
     },
     "recAb": {
      "test": 0,
@@ -17600,17 +17592,17 @@
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 52,
+    "total": 51,
     "shown": 1,
     "activated": 0,
-    "revenue": 5481.98,
+    "revenue": 5423.01,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 52
+     "none": 51
     },
     "recAb": {
      "test": 0,
@@ -17661,17 +17653,17 @@
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 39,
+    "total": 37,
     "shown": 2,
     "activated": 0,
-    "revenue": 4188.82,
+    "revenue": 3755.92,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 39
+     "none": 37
     },
     "recAb": {
      "test": 0,
@@ -17722,17 +17714,17 @@
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 35,
+    "total": 34,
     "shown": 0,
     "activated": 0,
-    "revenue": 3142.99,
+    "revenue": 2916.04,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 35
+     "none": 34
     },
     "recAb": {
      "test": 0,
@@ -17778,27 +17770,27 @@
     "revenue": 0
    },
    "newCustomers": 0,
-   "sessions": 15908,
+   "sessions": 15909,
    "convSessions": 389,
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 61,
+    "total": 58,
     "shown": 0,
     "activated": 0,
-    "revenue": 7434.91,
+    "revenue": 6990.07,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 61
+     "none": 58
     },
     "recAb": {
      "test": 0,
      "control": 0,
-     "none": 0
+     "none": 1
     }
    },
    "products": {},
@@ -17839,22 +17831,83 @@
     "revenue": 0
    },
    "newCustomers": 0,
-   "sessions": 8631,
-   "convSessions": 159,
+   "sessions": 14831,
+   "convSessions": 288,
    "upsellOrdersList": [],
    "shown": {},
    "abandoned": {
-    "total": 24,
+    "total": 37,
     "shown": 1,
     "activated": 0,
-    "revenue": 2421.83,
+    "revenue": 3445.71,
     "recovered": 0,
     "recoveredRevenue": 0,
     "recoveredList": [],
     "ab": {
      "test": 0,
      "control": 0,
-     "none": 24
+     "none": 37
+    },
+    "recAb": {
+     "test": 0,
+     "control": 0,
+     "none": 0
+    }
+   },
+   "products": {},
+   "scenarios": {},
+   "ab": {
+    "test": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "control": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    },
+    "none": {
+     "orders": 0,
+     "upsellOrders": 0,
+     "revenue": 0
+    }
+   }
+  },
+  {
+   "date": "2026-11-17",
+   "orders": 0,
+   "totalRevenue": 0,
+   "upsellOrders": 0,
+   "upsellUnits": 0,
+   "upsellRevenue": 0,
+   "upsellOrdersRevenue": 0,
+   "upsellCogs": 0,
+   "upsellRevenueNet": 0,
+   "activatedOrders": 0,
+   "excluded": {
+    "ns": 0,
+    "koop": 0,
+    "zero": 0,
+    "revenue": 0
+   },
+   "newCustomers": 0,
+   "sessions": 8788,
+   "convSessions": 196,
+   "upsellOrdersList": [],
+   "shown": {},
+   "abandoned": {
+    "total": 27,
+    "shown": 0,
+    "activated": 0,
+    "revenue": 3375.17,
+    "recovered": 0,
+    "recoveredRevenue": 0,
+    "recoveredList": [],
+    "ab": {
+     "test": 0,
+     "control": 0,
+     "none": 27
     },
     "recAb": {
      "test": 0,
